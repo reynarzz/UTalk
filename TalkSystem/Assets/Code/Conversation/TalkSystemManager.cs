@@ -26,29 +26,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using TMPro;
 
 namespace TalkSystem
 {
-    public class TalkCloud : MonoBehaviour
+    public class TalkSystemManager : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI _text;
-        [SerializeField] private TalkAsset _talkAsset;
-
-        private TextMeshControl _meshControl;
-        private CharByCharWriteStyle _charByChar;
-
-        private void Start()
-        {
-            Init();
-        }
-
-        public void Init()
-        {
-            _meshControl = new TextMeshControl(_text);
-            _charByChar = new CharByCharWriteStyle();
-
-            _charByChar.Write(this, _meshControl, _talkAsset.GetPage(0));
-        }
+        [SerializeField] private TalkMaster _master;
     }
 }

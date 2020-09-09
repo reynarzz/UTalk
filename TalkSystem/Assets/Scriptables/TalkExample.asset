@@ -14,13 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _language: 0
   _pages:
-  - _pageText: asdasdfasd
+  - _pageText: God Is Love!
     _sprite: {fileID: 0}
     _highlight:
-    - _words: 
+    - _words: Love!
       _color:
         serializedVersion: 2
-        rgba: 4278190080
+        rgba: 4278216959
       _type: 1
     _wordEvent:
       _word: 
+    _charByChar:
+      _normalWriteSpeed: 0.01
+      _fastWriteSpeed: 0
+      _highlightedWordSpeed: 0

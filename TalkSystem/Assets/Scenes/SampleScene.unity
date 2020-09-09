@@ -211,6 +211,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _text: {fileID: 1506204589}
+  _talkAsset: {fileID: 11400000, guid: 26f325aa6f24b1c4dac4de519c30c162, type: 2}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
