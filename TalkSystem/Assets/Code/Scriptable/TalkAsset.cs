@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace TalkSystem
+namespace Talk
 {
     public enum WriteType
     {
@@ -78,7 +78,7 @@ namespace TalkSystem
         public Highlight[] Highlight => _highlight;
         public WordEvent Event => _wordEvent;
 
-        public static TextPage Error => new TextPage("Invalid Page", null, default, TalkSystem.Highlight.Error);
+        public static TextPage Error => new TextPage("Invalid Page", null, default, Talk.Highlight.Error);
 
         #region WriteStyleInfo
         public CharByCharInfo CharByCharInfo => _charByChar;

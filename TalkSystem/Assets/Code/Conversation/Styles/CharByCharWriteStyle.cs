@@ -28,7 +28,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace TalkSystem
+namespace Talk
 {
     [Serializable]
     public struct CharByCharInfo
@@ -49,7 +49,6 @@ namespace TalkSystem
 
         private WaitForSeconds _writeSpeed;
 
-        private Coroutine _coroutine;
         private readonly MonoBehaviour _mono;
 
         public event Action OnPageWriten;
@@ -66,7 +65,7 @@ namespace TalkSystem
 
             _writeSpeed = _normalSpeed;
 
-            _coroutine = _mono.StartCoroutine(WriteByChar(control, page));
+            _mono.StartCoroutine(WriteByChar(control, page));
         }
 
         private IEnumerator WriteByChar(TextControl control, TextPage page)
@@ -100,7 +99,7 @@ namespace TalkSystem
         {
             for (int i = 0; i < hightlights.Length; i++)
             {
-                if(hightlights[i].Word.ToLower() == word.ToLower())
+                if (hightlights[i].Word.ToLower() == word.ToLower())
                 {
                     return hightlights[i];
                 }

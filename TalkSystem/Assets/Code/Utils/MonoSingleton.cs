@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace TalkSystem
+namespace Talk
 {
     public abstract class MonoSingleton<T> : MonoBehaviour where T : class
     {

@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace TalkSystem
+namespace Talk
 {
     /// <summary>Container for all the talks inside the game.</summary>
     [Serializable]

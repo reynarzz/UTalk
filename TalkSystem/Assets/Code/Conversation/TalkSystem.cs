@@ -27,9 +27,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace TalkSystem
+namespace Talk
 {
-    public class TalkSystemManager : MonoSingleton<TalkSystemManager>
+    public class TalkSystem : MonoSingleton<TalkSystem>
     {
         [SerializeField] private TalkCloud _talkCloud;
         [SerializeField] private TalkMaster _master;
@@ -126,6 +126,8 @@ namespace TalkSystem
             }
             else
             {
+                _currentWriter.Clear(_talkCloud.TextControl);
+
                 _talkCloud.CloseCloud();
             }
         }
