@@ -97,28 +97,35 @@ namespace Talk
 
         public void NextPage()
         {
-            if (!_isLastPage)
+            if (_talkStarted)
             {
-                if (_canShowNextPage)
+                if (!_isLastPage)
                 {
-                    _canShowNextPage = false;
+                    if (_canShowNextPage)
+                    {
+                        _canShowNextPage = false;
 
-                    _currentPage++;
+                        _currentPage++;
 
-                    OnPageChanged?.Invoke(_currentPage);
+                        OnPageChanged?.Invoke(_currentPage);
 
-                    _currentWriter.Write(_talkCloud.TextControl, _talkAsset.GetPage(_currentPage));
+                        _currentWriter.Write(_talkCloud.TextControl, _talkAsset.GetPage(_currentPage));
+                    }
+                    else
+                    {
+                        //Do something random.
+                    }
                 }
                 else
                 {
-                    //Do something random.
+                    _currentWriter.Clear(_talkCloud.TextControl);
+
+                    _talkCloud.CloseCloud();
                 }
             }
             else
             {
-                _currentWriter.Clear(_talkCloud.TextControl);
-
-                _talkCloud.CloseCloud();
+                Debug.LogError("Trying to advance to a next page without starting the conversation.");
             }
         }
 

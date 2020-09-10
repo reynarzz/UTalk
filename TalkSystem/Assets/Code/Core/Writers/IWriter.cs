@@ -31,13 +31,14 @@ namespace Talk
 {
     public interface IWriter
     {
+        event Action OnPageWriten;
+
         /// <summary>
-        /// Write in the target conversation cloud
+        /// Write in the target talk cloud.
         /// </summary>
         /// <param name="target">Controls how the text will be displayed</param>
         /// <param name="page">Current page with the text and information to write.</param>
         void Write(TextControl control, TextPage page);
         void Clear(TextControl control);
-        event Action OnPageWriten;
     }
 }

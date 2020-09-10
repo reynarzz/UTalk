@@ -75,43 +75,6 @@ namespace Talk
             //TODO: update mesh.
         }
 
-        public void HighlightWords(string[] words, Highlight[] hightlight)
-        {
-            var textInfo = _text.textInfo;
-
-            var colors = _text.mesh.colors;
-
-            int wordCount = textInfo.wordCount;
-
-            for (int i = 0; i < _text.text.Length; i++)
-            {
-                var wordInfo = textInfo.wordInfo[i];
-
-                if (Array.Exists(hightlight, x => x.Word == words[i]))
-                {
-                    for (int j = 0; j < words[i].Length; j++)
-                    {
-                        var character = textInfo.characterInfo[wordInfo.firstCharacterIndex];
-
-                        int vertIndex = character.vertexIndex;
-
-                        int quadIndex = j * _quadPoints;
-
-                        var color = hightlight[i].Color;
-
-                        colors[vertIndex + 0 + quadIndex] = color;
-                        colors[vertIndex + 1 + quadIndex] = color;
-                        colors[vertIndex + 2 + quadIndex] = color;
-                        colors[vertIndex + 3 + quadIndex] = color;
-                    }
-                }
-            }
-
-            _text.mesh.SetColors(colors);
-
-            _text.canvasRenderer.SetMesh(_text.mesh);
-        }
-
         public void ShowChar(int wordIndex, int charIndex, Highlight hightlight)
         {
             var textInfo = _text.textInfo;
