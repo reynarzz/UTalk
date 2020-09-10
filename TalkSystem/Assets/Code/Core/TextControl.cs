@@ -45,7 +45,7 @@ namespace Talk
             _text.OnPreRenderText += UpdateHightlight;
         }
 
-        public void SetText(string text, bool transparent = false)
+        public void SetText(string text)
         {
             ClearColors();
 
@@ -72,7 +72,7 @@ namespace Talk
 
         private void UpdateHightlight(TMP_TextInfo textInfo)
         {
-            //Debug.Log("Render again");
+            //TODO: update mesh.
         }
 
         public void HighlightWords(string[] words, Highlight[] hightlight)

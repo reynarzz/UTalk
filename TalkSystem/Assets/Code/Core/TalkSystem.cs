@@ -37,6 +37,7 @@ namespace Talk
         //testing
         [SerializeField] private TalkAsset _talkAsset;
 
+        private const int _firstPage = 0;
         private bool _isLastPage;
         private int _currentPage;
 
@@ -58,7 +59,7 @@ namespace Talk
         private IWriter _currentWriter;
 
         #region Writers
-        private CharByCharWriteStyle _charByCharWriter;
+        private CharByCharWriter _charByCharWriter;
         #endregion
 
         protected override void Awake()
@@ -67,7 +68,7 @@ namespace Talk
 
             _talkCloud.Init();
 
-            _charByCharWriter = new CharByCharWriteStyle(this);
+            _charByCharWriter = new CharByCharWriter(this);
 
             _charByCharWriter.OnPageWriten += OnPageWriten;
 
@@ -75,19 +76,6 @@ namespace Talk
 
             _talkCloud.OnCloudShown += OnCloudShown;
             _talkCloud.OnCloudHidden += OnCloudHidden;
-        }
-
-        private void OnCloudShown()
-        {
-            var firstPage = _talkAsset.GetPage(0);
-
-            _currentWriter.Write(_talkCloud.TextControl, firstPage);
-        }
-
-        private void OnCloudHidden()
-        {
-            _talkStarted = false;
-            OnTalkEnded?.Invoke();
         }
 
         public void StartTalk()
@@ -115,13 +103,15 @@ namespace Talk
                 {
                     _canShowNextPage = false;
 
+                    _currentPage++;
+
                     OnPageChanged?.Invoke(_currentPage);
 
-                    _currentWriter.Write(_talkCloud.TextControl, GetPage(_currentPage));
+                    _currentWriter.Write(_talkCloud.TextControl, _talkAsset.GetPage(_currentPage));
                 }
                 else
                 {
-
+                    //Do something random.
                 }
             }
             else
@@ -132,25 +122,24 @@ namespace Talk
             }
         }
 
-        private void OnPageWriten()
+        private void OnCloudShown()
         {
-            _currentPage++;
+            var startingPage = _talkAsset.GetPage(_firstPage);
 
-            _isLastPage = _currentPage == _talkAsset.PagesCount;
-
-            _canShowNextPage = true;
+            _currentWriter.Write(_talkCloud.TextControl, startingPage);
         }
 
-        private TextPage GetPage(int currentPage)
+        private void OnCloudHidden()
         {
-            if (currentPage < _talkAsset.PagesCount)
-            {
-                return _talkAsset.GetPage(currentPage);
-            }
-            else
-            {
-                return default;
-            }
+            _talkStarted = false;
+            OnTalkEnded?.Invoke();
+        }
+
+        private void OnPageWriten()
+        {
+            _isLastPage = _currentPage + 1 == _talkAsset.PagesCount;
+
+            _canShowNextPage = true;
         }
     }
 }

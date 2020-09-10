@@ -42,7 +42,7 @@ namespace Talk
         public float HighlightedWordSpeed => _highlightedWordSpeed;
     }
 
-    public class CharByCharWriteStyle : IWriter
+    public class CharByCharWriter : IWriter
     {
         private WaitForSeconds _normalSpeed;
         private WaitForSeconds _fastSpeed;
@@ -53,13 +53,15 @@ namespace Talk
 
         public event Action OnPageWriten;
 
-        public CharByCharWriteStyle(MonoBehaviour mono)
+        public CharByCharWriter(MonoBehaviour mono)
         {
             _mono = mono;
         }
 
         public void Write(TextControl control, TextPage page)
         {
+            control.SetText(page.Text);
+
             _normalSpeed = new WaitForSeconds(page.CharByCharInfo.NormalWriteSpeed);
             _fastSpeed = new WaitForSeconds(page.CharByCharInfo.FastWriteSpeed);
 
@@ -70,8 +72,6 @@ namespace Talk
 
         private IEnumerator WriteByChar(TextControl control, TextPage page)
         {
-            control.SetText(page.Text, transparent: true);
-
             //show chars in the next frame.
             yield return 0;
 

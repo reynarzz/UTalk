@@ -148,14 +148,7 @@ namespace Talk
 
         public TextPage GetPage(int pageIndex)
         {
-            var page = _pages.ElementAtOrDefault(pageIndex);
-
-            if(page == default)
-            {
-                page = TextPage.Error;
-            }
-
-            return page;
+            return _pages.ElementAtOrDefault(pageIndex);
         }
     }
 }

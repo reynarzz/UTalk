@@ -29,8 +29,20 @@ using UnityEngine;
 
 namespace Talk
 {
-    public interface ITextHighlighStyle 
+    [Serializable]
+    public struct TalksByLanguage
     {
-
+        [SerializeField] private Language _language;
+        [SerializeField] private TalkAsset[] _talks;
     }
+
+    /// <summary>Container for all the talks inside the game.</summary>
+    [CreateAssetMenu]
+    public class TalkMaster : ScriptableObject
+    {
+        [SerializeField] private TalksByLanguage[] _talks;
+
+        public TalksByLanguage[] Talks => _talks;
+    }
+
 }
