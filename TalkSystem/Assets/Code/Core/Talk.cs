@@ -27,15 +27,14 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Talk
+namespace TalkSystem
 {
-    public class TalkSystem : MonoSingleton<TalkSystem>
+    public class Talk : MonoSingleton<Talk>
     {
-        [SerializeField] private TalkCloud _talkCloud;
         [SerializeField] private TalkMaster _master;
+        [SerializeField] private TalkCloud _talkCloud;
 
-        //testing
-        [SerializeField] private TalkAsset _talkAsset;
+        private TalkAsset _talkAsset;
 
         private const int _firstPage = 0;
         private bool _isLastPage;
@@ -54,13 +53,29 @@ namespace Talk
         private bool _canShowNextPage;
         private bool _talkStarted;
 
-        public bool TalkStarted => _talkStarted;
+        public bool IsTalkStarted => _talkStarted;
 
         private IWriter _currentWriter;
 
         #region Writers
         private CharByCharWriter _charByCharWriter;
         #endregion
+
+        private Language _language = Language.English;
+        /// <summary>Sets the language target language (English default). If the player change it when the text is being displayed, all the text will be updated to the selected language.</summary>
+        public Language Language
+        {
+            get => _language;
+            set
+            {
+                _language = value;
+
+                if (_talkAsset)
+                {
+                    _currentWriter.OnLanguageChanged(_talkAsset.GetPage(_currentPage));
+                }
+            }
+        }
 
         protected override void Awake()
         {
@@ -78,20 +93,30 @@ namespace Talk
             _talkCloud.OnCloudHidden += OnCloudHidden;
         }
 
-        public void StartTalk()
+        public void StartTalk(string talkName)
         {
             if (!_talkStarted)
             {
-                _talkStarted = true;
+                _talkAsset = _master.GetTalkAsset(_language, talkName);
 
-                _currentPage = default;
-                _isLastPage = default;
-                _canShowNextPage = default;
+                if (_talkAsset)
+                {
+                    _talkStarted = true;
 
-                _currentWriter.Clear(_talkCloud.TextControl);
+                    _currentPage = default;
+                    _isLastPage = default;
+                    _canShowNextPage = default;
 
-                _talkCloud.ShowCloud();
-                OnTalkBegan?.Invoke();
+
+                    _currentWriter.Clear(_talkCloud.TextControl);
+
+                    _talkCloud.ShowCloud();
+                    OnTalkBegan?.Invoke();
+                }
+                else
+                {
+                    Debug.LogError($"Talk Asset \"{talkName}\" wasn't found");
+                }
             }
         }
 
@@ -139,6 +164,8 @@ namespace Talk
         private void OnCloudHidden()
         {
             _talkStarted = false;
+            _talkAsset = null;
+
             OnTalkEnded?.Invoke();
         }
 

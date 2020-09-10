@@ -28,7 +28,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Talk
+namespace TalkSystem
 {
     [Serializable]
     public struct CharByCharInfo
@@ -72,17 +72,15 @@ namespace Talk
 
         private IEnumerator WriteByChar(TextControl control, TextPage page)
         {
+            var words = Regex.Split(page.Text, " |\n");
+
             //show chars in the next frame.
             yield return 0;
 
-            var words = Regex.Split(page.Text, " |\n");
-
             for (int i = 0; i < words.Length; i++)
             {
-                var word = words[i];
-
                 //not linq use here
-                var hightLight = GetHightlight(page.Highlight, word);
+                var hightLight = GetHightlight(page.Highlight, i);
 
                 for (int j = 0; j < words[i].Length; j++)
                 {
@@ -95,11 +93,11 @@ namespace Talk
             OnPageWriten?.Invoke();
         }
 
-        private Highlight GetHightlight(Highlight[] hightlights, string word)
+        private Highlight GetHightlight(Highlight[] hightlights, int wordIndex)
         {
             for (int i = 0; i < hightlights.Length; i++)
             {
-                if (hightlights[i].Word.ToLower() == word.ToLower())
+                if (hightlights[i].WordIndex == wordIndex)
                 {
                     return hightlights[i];
                 }
@@ -108,9 +106,16 @@ namespace Talk
             return default;
         }
 
+        public void OnLanguageChanged(TextPage textPage)
+        {
+
+        }
+
         public void Clear(TextControl control)
         {
             control.ClearColors();
         }
+
+        
     }
 }

@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Talk
+namespace TalkSystem
 {
     public class Example : MonoBehaviour
     {
@@ -35,13 +35,15 @@ namespace Talk
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (!TalkSystem.Inst.TalkStarted)
+                Talk.Inst.Language = Language.English;
+
+                if (!Talk.Inst.IsTalkStarted)
                 {
-                    TalkSystem.Inst.StartTalk();
+                    Talk.Inst.StartTalk("TalkTest");
                 }
                 else
                 {
-                    TalkSystem.Inst.NextPage();
+                    Talk.Inst.NextPage();
                 }
             }
         }

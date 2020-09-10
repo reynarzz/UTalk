@@ -13,6 +13,11 @@ MonoBehaviour:
   m_Name: Master
   m_EditorClassIdentifier: 
   _talks:
-  - _language: 0
-    _talks:
-    - {fileID: 11400000, guid: 26f325aa6f24b1c4dac4de519c30c162, type: 2}
+    _keys: 00000000
+    _values:
+    - _language: 0
+      _talks:
+        _keys:
+        - TalkTest
+        _values:
+        - {fileID: 11400000, guid: 26f325aa6f24b1c4dac4de519c30c162, type: 2}

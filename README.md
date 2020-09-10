@@ -36,6 +36,6 @@ namespace MyProject
 ## But, that's it?
 This is just starting, These are some of the features that will be added soon.
 
-- [ ] Animations to the highlighted words.
+- [x] Localization Support
 - [ ] A Robust Editor to write all your text and hightlight the most important words.
-- [ ] Localization Support
+- [ ] Animations to the highlighted words.

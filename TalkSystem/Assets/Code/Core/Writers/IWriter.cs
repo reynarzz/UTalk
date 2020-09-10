@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Talk
+namespace TalkSystem
 {
     public interface IWriter
     {
@@ -40,5 +40,6 @@ namespace Talk
         /// <param name="page">Current page with the text and information to write.</param>
         void Write(TextControl control, TextPage page);
         void Clear(TextControl control);
+        void OnLanguageChanged(TextPage textPage);
     }
 }

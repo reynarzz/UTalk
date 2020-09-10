@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using TMPro;
 
-namespace Talk
+namespace TalkSystem
 {
     public class TalkCloud : MonoBehaviour
     {

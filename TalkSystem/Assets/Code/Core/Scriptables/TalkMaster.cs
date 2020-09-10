@@ -27,22 +27,53 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Talk
+namespace TalkSystem
 {
     [Serializable]
     public struct TalksByLanguage
     {
+        [Serializable]
+        public class TalksDictionary : SDictionary<string, TalkAsset> { }
+
         [SerializeField] private Language _language;
-        [SerializeField] private TalkAsset[] _talks;
+        [SerializeField] private TalksDictionary _talks;
+
+        public Language Language => _language;
+        public TalksDictionary Talks => _talks;
     }
 
     /// <summary>Container for all the talks inside the game.</summary>
     [CreateAssetMenu]
     public class TalkMaster : ScriptableObject
     {
-        [SerializeField] private TalksByLanguage[] _talks;
+        [Serializable]
+        private class TalksByLanguageDictionary : SDictionary<Language, TalksByLanguage> { }
 
-        public TalksByLanguage[] Talks => _talks;
+        [SerializeField] private TalksByLanguageDictionary _talks;
+
+        public TalkAsset GetTalkAsset(Language language, string talkName)
+        {
+            if (ContainsTalk(language, talkName))
+            {
+                return _talks[language].Talks[talkName];
+            }
+
+            return null;
+        }
+
+        public bool ContainsLanguage(Language language)
+        {
+            return _talks.ContainsKey(language);
+        }
+
+        public bool ContainsTalk(Language language, string talkName)
+        {
+            if (ContainsLanguage(language))
+            {
+                return _talks[language].Talks.ContainsKey(talkName);
+            }
+
+            return false;
+        }
     }
-
 }

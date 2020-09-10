@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Talk
+namespace TalkSystem
 {
     public enum WriteType
     {
@@ -36,10 +36,10 @@ namespace Talk
         CharByCharAnimated
     }
 
-    public enum HighlightType
+    public enum HighlightAnimation
     {
         None,
-        VerticalShake
+        Sine
     }
 
     public enum Language 
@@ -53,12 +53,12 @@ namespace Talk
     [Serializable]
     public struct WordEvent
     {
-        [SerializeField] private string _word;
-        public string Word => _word;
+        [SerializeField] private int _wordIndex;
+        public int WordIndex => _wordIndex;
 
-        public WordEvent(string word)
+        public WordEvent(int wordIndex)
         {
-            _word = word;
+            _wordIndex = wordIndex;
         }
     }
 
@@ -77,8 +77,6 @@ namespace Talk
         public Sprite Sprite => _sprite;
         public Highlight[] Highlight => _highlight;
         public WordEvent Event => _wordEvent;
-
-        public static TextPage Error => new TextPage("Invalid Page", null, default, Talk.Highlight.Error);
 
         #region WriteStyleInfo
         public CharByCharInfo CharByCharInfo => _charByChar;
@@ -109,37 +107,38 @@ namespace Talk
     [Serializable]
     public struct Highlight
     {
-        [SerializeField] private string _words;
+        [SerializeField] private int _wordIndex;
+
         [SerializeField] private Color32 _color;
-        [SerializeField] private HighlightType _type;
+        [SerializeField] private HighlightAnimation _type;
 
-        public string Word => _words;
+        public int WordIndex => _wordIndex;
         public Color32 Color => _color;
-        public HighlightType Type => _type;
+        public HighlightAnimation Type => _type;
 
-        public Highlight(string words, Color32 color, HighlightType type)
+        public Highlight(int wordIndex, Color32 color, HighlightAnimation type)
         {
-            _words = words;
+            _wordIndex = wordIndex;
             _color = color;
             _type = type;
         }
 
-        public static Highlight Error => new Highlight("Invalid Page", new Color32(255, 0, 0, 1), HighlightType.VerticalShake);
-
         public static bool operator==(Highlight a, Highlight b)
         {
-            return a.Word == b.Word && a.Type == b.Type;
+            return a.WordIndex == b.WordIndex && a.Type == b.Type;
         }
 
         public static bool operator !=(Highlight a, Highlight b)
         {
-            return a.Word != b.Word || a.Type != b.Type;
+            return a.WordIndex != b.WordIndex || a.Type != b.Type;
         }
     }
 
     [CreateAssetMenu]
     public class TalkAsset : ScriptableObject
     {
+        [SerializeField] private string _talkName;
+
         [SerializeField, HideInInspector] private Language _language;
         [SerializeField] private TextPage[] _pages;
 
