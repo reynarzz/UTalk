@@ -30,30 +30,20 @@ using TMPro;
 
 namespace TalkSystem
 {
-    public class TalkCloud : MonoBehaviour
+    public class TalkCloud : TalkCloudBase
     {
-        [SerializeField] private TextMeshProUGUI _text;
-
-        public event Action OnCloudShown;
-        public event Action OnCloudHidden;
+        public override event Action OnCloudShown;
+        public override event Action OnCloudHidden;
 
         //Use tween instead for more performance.
         [SerializeField] private Animator _animator;
 
-        private TextControl _textControl;
-        public TextControl TextControl => _textControl;
-
-        public void Init()
-        {
-            _textControl = new TextControl(_text);
-        }
-
-        public void ShowCloud()
+        public override void ShowCloud()
         {
             _animator.Play("Show");
         }
-
-        public void CloseCloud()
+         
+        public override void CloseCloud()
         {
             _animator.Play("Hide");
         }

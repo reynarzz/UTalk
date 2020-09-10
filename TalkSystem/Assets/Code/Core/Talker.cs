@@ -29,7 +29,15 @@ using UnityEngine;
 
 namespace TalkSystem
 {
-    public class Talk : MonoSingleton<Talk>
+    public enum TalkEvent
+    {
+        Started,
+        Finished,
+        PageChanged
+    }
+
+    /// <summary>Entry point to control the talk system.</summary>
+    public class Talker : MonoSingleton<Talker>
     {
         [SerializeField] private TalkMaster _master;
         [SerializeField] private TalkCloud _talkCloud;
@@ -40,20 +48,16 @@ namespace TalkSystem
         private bool _isLastPage;
         private int _currentPage;
 
-        public event Action<string> OnWordEventTriggered;
-
-        public event Action OnTalkBegan;
-        public event Action OnTalkEnded;
-
-        public event Action<int> OnPageChanged;
-
         public int CurrentPage => _currentPage;
         public bool IsLastPage => _isLastPage;
 
         private bool _canShowNextPage;
-        private bool _talkStarted;
+        private bool _isTalking;
 
-        public bool IsTalkStarted => _talkStarted;
+        private Action<TalkEvent> _talkCallback;
+        private Action<string> _onWordEventCallBack;
+
+        public bool IsTalking => _isTalking;
 
         private IWriter _currentWriter;
 
@@ -61,14 +65,13 @@ namespace TalkSystem
         private CharByCharWriter _charByCharWriter;
         #endregion
 
-        private Language _language = Language.English;
-        /// <summary>Sets the language target language (English default). If the player change it when the text is being displayed, all the text will be updated to the selected language.</summary>
+        /// <summary>Sets the target language (English default). If the player change it when the text is being displayed, all the text will be updated to the selected language.</summary>
         public Language Language
         {
-            get => _language;
+            get => _master.Language;
             set
             {
-                _language = value;
+                _master.Language = value;
 
                 if (_talkAsset)
                 {
@@ -95,23 +98,22 @@ namespace TalkSystem
 
         public void StartTalk(string talkName)
         {
-            if (!_talkStarted)
+            if (!_isTalking)
             {
-                _talkAsset = _master.GetTalkAsset(_language, talkName);
+                _talkAsset = _master.GetTalkAsset(talkName);
 
                 if (_talkAsset)
                 {
-                    _talkStarted = true;
+                    _isTalking = true;
 
                     _currentPage = default;
                     _isLastPage = default;
                     _canShowNextPage = default;
 
-
                     _currentWriter.Clear(_talkCloud.TextControl);
 
                     _talkCloud.ShowCloud();
-                    OnTalkBegan?.Invoke();
+                    _talkCallback?.Invoke(TalkEvent.Started);
                 }
                 else
                 {
@@ -120,9 +122,30 @@ namespace TalkSystem
             }
         }
 
+        public void StartTalk(string talkName, Action<TalkEvent> talkCallback)
+        {
+            _talkCallback = talkCallback;
+
+            StartTalk(talkName);
+        }
+
+        public void StartTalk(string talkName, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
+        {
+            _onWordEventCallBack = wordEventCallback;
+
+            StartTalk(talkName, talkCallback);
+        }
+
+        public void StartTalk(string talkName, Action<string> wordEventCallback)
+        {
+            _onWordEventCallBack = wordEventCallback;
+
+            StartTalk(talkName);
+        }
+
         public void NextPage()
         {
-            if (_talkStarted)
+            if (_isTalking)
             {
                 if (!_isLastPage)
                 {
@@ -132,7 +155,7 @@ namespace TalkSystem
 
                         _currentPage++;
 
-                        OnPageChanged?.Invoke(_currentPage);
+                        _talkCallback?.Invoke(TalkEvent.PageChanged);
 
                         _currentWriter.Write(_talkCloud.TextControl, _talkAsset.GetPage(_currentPage));
                     }
@@ -163,10 +186,12 @@ namespace TalkSystem
 
         private void OnCloudHidden()
         {
-            _talkStarted = false;
+            _isTalking = false;
             _talkAsset = null;
 
-            OnTalkEnded?.Invoke();
+            _talkCallback?.Invoke(TalkEvent.Finished);
+
+            _talkCallback = null;
         }
 
         private void OnPageWriten()

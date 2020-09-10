@@ -37,6 +37,7 @@ namespace TalkSystem
         private const int _quadPoints = 4;
         private Color32 _startColor;
 
+        //refactor this.
         public TextControl(TextMeshProUGUI text)
         {
             _text = text;
@@ -55,7 +56,7 @@ namespace TalkSystem
         public void ClearColors()
         {
             var colors = new List<Color32>();
-            
+
             _text.mesh.GetColors(colors);
 
             for (int i = 0; i < colors.Count; i++)

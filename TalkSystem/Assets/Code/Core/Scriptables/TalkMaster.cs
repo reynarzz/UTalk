@@ -46,16 +46,20 @@ namespace TalkSystem
     [CreateAssetMenu]
     public class TalkMaster : ScriptableObject
     {
+        [SerializeField, HideInInspector] private Language _language;
+
+        public Language Language { get => _language; set => _language = value; }
+
         [Serializable]
         private class TalksByLanguageDictionary : SDictionary<Language, TalksByLanguage> { }
 
         [SerializeField] private TalksByLanguageDictionary _talks;
 
-        public TalkAsset GetTalkAsset(Language language, string talkName)
+        public TalkAsset GetTalkAsset(string talkName)
         {
-            if (ContainsTalk(language, talkName))
+            if (ContainsTalk(_language, talkName))
             {
-                return _talks[language].Talks[talkName];
+                return _talks[_language].Talks[talkName];
             }
 
             return null;

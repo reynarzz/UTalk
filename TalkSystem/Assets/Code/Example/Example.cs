@@ -25,26 +25,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 
 namespace TalkSystem
 {
     public class Example : MonoBehaviour
     {
+        [SerializeField] private TextMeshProUGUI _spaceText;
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Talk.Inst.Language = Language.English;
+                Talker.Inst.Language = Language.English;
 
-                if (!Talk.Inst.IsTalkStarted)
+                if (!Talker.Inst.IsTalking)
                 {
-                    Talk.Inst.StartTalk("TalkTest");
+                    Talker.Inst.StartTalk("TalkTest", Events);
                 }
                 else
                 {
-                    Talk.Inst.NextPage();
+                    Talker.Inst.NextPage();
                 }
+            }
+        }
+
+        private void Events(TalkEvent talkEvent)
+        {
+            switch (talkEvent)
+            {
+                case TalkEvent.Started:
+                    _spaceText.enabled = false;
+                    break;
+                case TalkEvent.Finished:
+                    _spaceText.enabled = true;
+                    break;
+                case TalkEvent.PageChanged:
+                    break;
             }
         }
     }
