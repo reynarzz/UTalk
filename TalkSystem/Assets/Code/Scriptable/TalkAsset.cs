@@ -65,7 +65,7 @@ namespace TalkSystem
     [Serializable]
     public struct TextPage
     {
-        [SerializeField] private string _pageText;
+        [SerializeField, TextArea] private string _pageText;
         [SerializeField] private Sprite _sprite;
         [SerializeField] private Highlight[] _highlight;
         [SerializeField] private WordEvent _wordEvent;
@@ -105,6 +105,7 @@ namespace TalkSystem
         }
     }
 
+    //TODO:Save highlighted words by index
     [Serializable]
     public struct Highlight
     {

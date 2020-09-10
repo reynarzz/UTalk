@@ -29,8 +29,19 @@ using UnityEngine;
 
 namespace TalkSystem
 {
-    public class TextStyleControl : MonoBehaviour
+    public abstract class MonoSingleton<T> : MonoBehaviour where T : class
     {
+        private static T _inst;
+        public static T Inst => _inst;
 
+        protected virtual void Awake()
+        {
+            _inst = this as T;
+        }
+
+        private void OnDestroy()
+        {
+            _inst = null;
+        }
     }
 }

@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _language: 0
   _pages:
-  - _pageText: God Is Love!
+  - _pageText: This is a highlighted text.
     _sprite: {fileID: 0}
     _highlight:
-    - _words: Love!
+    - _words: highlighted
       _color:
         serializedVersion: 2
         rgba: 4278216959
@@ -25,6 +25,56 @@ MonoBehaviour:
     _wordEvent:
       _word: 
     _charByChar:
-      _normalWriteSpeed: 0.01
+      _normalWriteSpeed: 0.025
+      _fastWriteSpeed: 0
+      _highlightedWordSpeed: 0
+  - _pageText: Highlighted too, but with more words!
+    _sprite: {fileID: 0}
+    _highlight:
+    - _words: highlighted
+      _color:
+        serializedVersion: 2
+        rgba: 4278216959
+      _type: 1
+    - _words: more
+      _color:
+        serializedVersion: 2
+        rgba: 4294930259
+      _type: 1
+    - _words: but
+      _color:
+        serializedVersion: 2
+        rgba: 4282493756
+      _type: 1
+    _wordEvent:
+      _word: 
+    _charByChar:
+      _normalWriteSpeed: 0.025
+      _fastWriteSpeed: 0
+      _highlightedWordSpeed: 0
+  - _pageText: 'This is the first line..
+
+      This is the second and last line.'
+    _sprite: {fileID: 0}
+    _highlight:
+    - _words: first
+      _color:
+        serializedVersion: 2
+        rgba: 4283629823
+      _type: 1
+    - _words: second
+      _color:
+        serializedVersion: 2
+        rgba: 4281965119
+      _type: 1
+    - _words: last
+      _color:
+        serializedVersion: 2
+        rgba: 4290986559
+      _type: 1
+    _wordEvent:
+      _word: 
+    _charByChar:
+      _normalWriteSpeed: 0.025
       _fastWriteSpeed: 0
       _highlightedWordSpeed: 0

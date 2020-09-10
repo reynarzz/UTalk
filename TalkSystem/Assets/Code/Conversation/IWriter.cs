@@ -29,13 +29,15 @@ using UnityEngine;
 
 namespace TalkSystem
 {
-    public interface IWriteStyle
+    public interface IWriter
     {
         /// <summary>
         /// Write in the target conversation cloud
         /// </summary>
         /// <param name="target">Controls how the text will be displayed</param>
         /// <param name="page">Current page with the text and information to write.</param>
-        void Write(MonoBehaviour mono, TextMeshControl cloud, TextPage page);
+        void Write(TextControl control, TextPage page);
+        void Clear(TextControl control);
+        event Action OnPageWriten;
     }
 }

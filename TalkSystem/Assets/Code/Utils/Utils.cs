@@ -26,48 +26,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using TMPro;
 
 namespace TalkSystem
 {
-    public class TalkCloud : MonoBehaviour
+    public static class Utils
     {
-        [SerializeField] private TextMeshProUGUI _text;
-
-        public event Action OnCloudShown;
-        public event Action OnCloudHidden;
-
-        //Use tween instead for more performance.
-        [SerializeField] private Animator _animator;
-
-        private TextControl _textControl;
-        public TextControl TextControl => _textControl;
-
-        public void Init()
+        public static bool HaveSpecialChars(this string text)
         {
-            _textControl = new TextControl(_text);
-        }
+            var specialChars = "!@#$%^&*(),".ToCharArray();
 
-        public void ShowCloud()
-        {
-            _animator.Play("Show");
-        }
+            int indexOf = text.IndexOfAny(specialChars);
 
-        public void CloseCloud()
-        {
-            _animator.Play("Hide");
-        }
-
-        //A = Animation
-        private void A_OnCloudShown()
-        {
-            OnCloudShown?.Invoke();
-        }
-
-        //A = Animation
-        private void A_OnCloudHidden()
-        {
-            OnCloudHidden?.Invoke();
+            return indexOf == 1;
         }
     }
 }

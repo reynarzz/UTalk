@@ -31,78 +31,85 @@ using UnityEngine;
 
 namespace TalkSystem
 {
-    public class TextMeshControl
+    public class TextControl
     {
         private readonly TextMeshProUGUI _text;
         private const int _quadPoints = 4;
         private Color32 _startColor;
 
-        public TextMeshControl(TextMeshProUGUI text)
+        public TextControl(TextMeshProUGUI text)
         {
             _text = text;
+            _startColor = _text.color;
+
+            _text.OnPreRenderText += UpdateHightlight;
         }
 
-        public void SetText(string text, params Highlight[] highlights)
+        public void SetText(string text, bool transparent = false)
         {
+            ClearColors();
+
             _text.text = text;
-            _startColor = _text.color;
+        }
+
+        public void ClearColors()
+        {
+            var colors = new List<Color32>();
+            
+            _text.mesh.GetColors(colors);
+
+            for (int i = 0; i < colors.Count; i++)
+            {
+                colors[i] = Color.clear;
+            }
+
+            _text.mesh.SetColors(colors);
+
+            _text.canvasRenderer.SetMesh(_text.mesh);
+
             _text.color = Color.clear;
         }
 
-        private IEnumerator Start(string[] words, Highlight[] hightlight)
+        private void UpdateHightlight(TMP_TextInfo textInfo)
         {
-            //var words = Regex.Split(text, " ");
+            //Debug.Log("Render again");
+        }
 
-            //_text.StartCoroutine(Start(words, highlights));
-
+        public void HighlightWords(string[] words, Highlight[] hightlight)
+        {
             var textInfo = _text.textInfo;
 
             var colors = _text.mesh.colors;
 
-            while (true)
+            int wordCount = textInfo.wordCount;
+
+            for (int i = 0; i < _text.text.Length; i++)
             {
-                if (_text.havePropertiesChanged)
-                    _text.ForceMeshUpdate();
+                var wordInfo = textInfo.wordInfo[i];
 
-                // Get # of Words in text object
-                int wordCount = textInfo.wordCount;
-
-                if (wordCount == 0)
+                if (Array.Exists(hightlight, x => x.Word == words[i]))
                 {
-                    yield return null;
-                    continue;
-                }
-
-                for (int i = 0; i < _text.text.Length; i++)
-                {
-                    var wordInfo = textInfo.wordInfo[i];
-
-                    if (Array.Exists(hightlight, x => x.Word == words[i]))
+                    for (int j = 0; j < words[i].Length; j++)
                     {
-                        for (int j = 0; j < words[i].Length; j++)
-                        {
-                            var character = textInfo.characterInfo[wordInfo.firstCharacterIndex];
+                        var character = textInfo.characterInfo[wordInfo.firstCharacterIndex];
 
-                            int vertIndex = character.vertexIndex;
+                        int vertIndex = character.vertexIndex;
 
-                            int quadIndex = j * _quadPoints;
+                        int quadIndex = j * _quadPoints;
 
-                            var color = hightlight[i].Color;
+                        var color = hightlight[i].Color;
 
-                            colors[vertIndex + 0 + quadIndex] = color;
-                            colors[vertIndex + 1 + quadIndex] = color;
-                            colors[vertIndex + 2 + quadIndex] = color;
-                            colors[vertIndex + 3 + quadIndex] = color;
-                        }
+                        colors[vertIndex + 0 + quadIndex] = color;
+                        colors[vertIndex + 1 + quadIndex] = color;
+                        colors[vertIndex + 2 + quadIndex] = color;
+                        colors[vertIndex + 3 + quadIndex] = color;
                     }
                 }
-
-                _text.mesh.SetColors(colors);
-
-                _text.canvasRenderer.SetMesh(_text.mesh);
-
-                yield return null;
             }
+
+            _text.mesh.SetColors(colors);
+
+            _text.canvasRenderer.SetMesh(_text.mesh);
         }
 
         public void ShowChar(int wordIndex, int charIndex, Highlight hightlight)
@@ -115,16 +122,16 @@ namespace TalkSystem
 
             var character = textInfo.characterInfo[wordInfo.firstCharacterIndex];
 
-            int vertIndex = character.vertexIndex;
+            int vIndex = character.vertexIndex;
 
             int quadIndex = charIndex * _quadPoints;
 
             var color = hightlight != default ? hightlight.Color : _startColor;
 
-            colors[vertIndex + 0 + quadIndex] = color;
-            colors[vertIndex + 1 + quadIndex] = color;
-            colors[vertIndex + 2 + quadIndex] = color;
-            colors[vertIndex + 3 + quadIndex] = color;
+            colors[vIndex + 0 + quadIndex] = color;
+            colors[vIndex + 1 + quadIndex] = color;
+            colors[vIndex + 2 + quadIndex] = color;
+            colors[vIndex + 3 + quadIndex] = color;
 
             _text.mesh.SetColors(colors);
 

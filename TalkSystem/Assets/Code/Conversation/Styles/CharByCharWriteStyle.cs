@@ -42,38 +42,48 @@ namespace TalkSystem
         public float HighlightedWordSpeed => _highlightedWordSpeed;
     }
 
-    public class CharByCharWriteStyle : IWriteStyle
+    public class CharByCharWriteStyle : IWriter
     {
         private WaitForSeconds _normalSpeed;
         private WaitForSeconds _fastSpeed;
 
         private WaitForSeconds _writeSpeed;
 
-        private bool _canWrite = false;
+        private Coroutine _coroutine;
+        private readonly MonoBehaviour _mono;
 
-        public void Write(MonoBehaviour mono, TextMeshControl control, TextPage page)
+        public event Action OnPageWriten;
+
+        public CharByCharWriteStyle(MonoBehaviour mono)
+        {
+            _mono = mono;
+        }
+
+        public void Write(TextControl control, TextPage page)
         {
             _normalSpeed = new WaitForSeconds(page.CharByCharInfo.NormalWriteSpeed);
             _fastSpeed = new WaitForSeconds(page.CharByCharInfo.FastWriteSpeed);
 
             _writeSpeed = _normalSpeed;
-            _canWrite = true;
 
-            var coroutine = mono.StartCoroutine(WriteByChar(control, page));
+            _coroutine = _mono.StartCoroutine(WriteByChar(control, page));
         }
 
-        private IEnumerator WriteByChar(TextMeshControl control, TextPage page)
+        private IEnumerator WriteByChar(TextControl control, TextPage page)
         {
-            control.SetText(page.Text);
+            control.SetText(page.Text, transparent: true);
 
-            //write in the next frame.
+            //show chars in the next frame.
             yield return 0;
 
-            var words = Regex.Split(page.Text, " ");
+            var words = Regex.Split(page.Text, " |\n");
 
             for (int i = 0; i < words.Length; i++)
             {
-                var hightLight = page.Highlight.FirstOrDefault(x => x.Word.ToLower() == words[i].ToLower());
+                var word = words[i];
+
+                //not linq use here
+                var hightLight = GetHightlight(page.Highlight, word);
 
                 for (int j = 0; j < words[i].Length; j++)
                 {
@@ -82,6 +92,26 @@ namespace TalkSystem
                     yield return _writeSpeed;
                 }
             }
+
+            OnPageWriten?.Invoke();
+        }
+
+        private Highlight GetHightlight(Highlight[] hightlights, string word)
+        {
+            for (int i = 0; i < hightlights.Length; i++)
+            {
+                if(hightlights[i].Word.ToLower() == word.ToLower())
+                {
+                    return hightlights[i];
+                }
+            }
+
+            return default;
+        }
+
+        public void Clear(TextControl control)
+        {
+            control.ClearColors();
         }
     }
 }

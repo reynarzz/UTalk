@@ -26,48 +26,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using TMPro;
 
 namespace TalkSystem
 {
-    public class TalkCloud : MonoBehaviour
+    public class Example : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI _text;
-
-        public event Action OnCloudShown;
-        public event Action OnCloudHidden;
-
-        //Use tween instead for more performance.
-        [SerializeField] private Animator _animator;
-
-        private TextControl _textControl;
-        public TextControl TextControl => _textControl;
-
-        public void Init()
+        private void Update()
         {
-            _textControl = new TextControl(_text);
-        }
-
-        public void ShowCloud()
-        {
-            _animator.Play("Show");
-        }
-
-        public void CloseCloud()
-        {
-            _animator.Play("Hide");
-        }
-
-        //A = Animation
-        private void A_OnCloudShown()
-        {
-            OnCloudShown?.Invoke();
-        }
-
-        //A = Animation
-        private void A_OnCloudHidden()
-        {
-            OnCloudHidden?.Invoke();
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                if (!TalkSystemManager.Inst.TalkStarted)
+                {
+                    TalkSystemManager.Inst.StartTalk();
+                }
+                else
+                {
+                    TalkSystemManager.Inst.NextPage();
+                }
+            }
         }
     }
 }

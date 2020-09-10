@@ -29,8 +29,126 @@ using UnityEngine;
 
 namespace TalkSystem
 {
-    public class TalkSystemManager : MonoBehaviour
+    public class TalkSystemManager : MonoSingleton<TalkSystemManager>
     {
+        [SerializeField] private TalkCloud _talkCloud;
         [SerializeField] private TalkMaster _master;
+
+        //testing
+        [SerializeField] private TalkAsset _talkAsset;
+
+        private bool _isLastPage;
+        private int _currentPage;
+
+        public event Action<string> OnWordEventTriggered;
+
+        public event Action OnTalkBegan;
+        public event Action OnTalkEnded;
+
+        public event Action<int> OnPageChanged;
+
+        public int CurrentPage => _currentPage;
+        public bool IsLastPage => _isLastPage;
+
+        private bool _canShowNextPage;
+        private bool _talkStarted;
+
+        public bool TalkStarted => _talkStarted;
+
+        private IWriter _currentWriter;
+
+        #region Writers
+        private CharByCharWriteStyle _charByCharWriter;
+        #endregion
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            _talkCloud.Init();
+
+            _charByCharWriter = new CharByCharWriteStyle(this);
+
+            _charByCharWriter.OnPageWriten += OnPageWriten;
+
+            _currentWriter = _charByCharWriter;
+
+            _talkCloud.OnCloudShown += OnCloudShown;
+            _talkCloud.OnCloudHidden += OnCloudHidden;
+        }
+
+        private void OnCloudShown()
+        {
+            var firstPage = _talkAsset.GetPage(0);
+
+            _currentWriter.Write(_talkCloud.TextControl, firstPage);
+        }
+
+        private void OnCloudHidden()
+        {
+            _talkStarted = false;
+            OnTalkEnded?.Invoke();
+        }
+
+        public void StartTalk()
+        {
+            if (!_talkStarted)
+            {
+                _talkStarted = true;
+
+                _currentPage = default;
+                _isLastPage = default;
+                _canShowNextPage = default;
+
+                _currentWriter.Clear(_talkCloud.TextControl);
+
+                _talkCloud.ShowCloud();
+                OnTalkBegan?.Invoke();
+            }
+        }
+
+        public void NextPage()
+        {
+            if (!_isLastPage)
+            {
+                if (_canShowNextPage)
+                {
+                    _canShowNextPage = false;
+
+                    OnPageChanged?.Invoke(_currentPage);
+
+                    _currentWriter.Write(_talkCloud.TextControl, GetPage(_currentPage));
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+                _talkCloud.CloseCloud();
+            }
+        }
+
+        private void OnPageWriten()
+        {
+            _currentPage++;
+
+            _isLastPage = _currentPage == _talkAsset.PagesCount;
+
+            _canShowNextPage = true;
+        }
+
+        private TextPage GetPage(int currentPage)
+        {
+            if (currentPage < _talkAsset.PagesCount)
+            {
+                return _talkAsset.GetPage(currentPage);
+            }
+            else
+            {
+                return default;
+            }
+        }
     }
 }

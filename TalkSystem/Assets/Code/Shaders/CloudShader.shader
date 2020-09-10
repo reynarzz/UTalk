@@ -3,7 +3,6 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _Color("Color", COLOR) = (1,1,1,1)
         _DistorsionTex("DistorsionTex", 2D) = "white" {}
     }
     SubShader
@@ -50,7 +49,7 @@
                  
                 fixed4 col = tex2D(_MainTex, o.uv);
 
-                return col;
+                return col * o.color;
             }
             ENDCG
         }
