@@ -160,18 +160,18 @@ namespace TalkSystem
             StartTalk(talkName);
         }
 
-        public void StartTalk(string talkName, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
-        {
-            _onWordEventCallBack = wordEventCallback;
-
-            StartTalk(talkName, talkCallback);
-        }
-
         public void StartTalk(string talkName, Action<string> wordEventCallback)
         {
             _onWordEventCallBack = wordEventCallback;
 
             StartTalk(talkName);
+        }
+
+        public void StartTalk(string talkName, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
+        {
+            _onWordEventCallBack = wordEventCallback;
+
+            StartTalk(talkName, talkCallback);
         }
 
         public void NextPage()

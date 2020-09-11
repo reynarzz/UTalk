@@ -32,16 +32,13 @@ namespace TalkSystem
     [Serializable]
     public struct TalksByLanguage
     {
-        [Serializable]
-        public class TalksDictionary : SDictionary<string, TalkData> { }
-
         [SerializeField] private Language _language;
-        [SerializeField] private TalksDictionary _talks;
+        [SerializeField] private SDictionary<string, TalkData> _talks;
 
         public Language Language => _language;
-        public TalksDictionary Talks => _talks;
+        public SDictionary<string, TalkData> Talks => _talks;
 
-        public TalksByLanguage(Language language, TalksDictionary talkDictionary)
+        public TalksByLanguage(Language language, SDictionary<string, TalkData> talkDictionary)
         {
             _language = language;
             _talks = talkDictionary;
@@ -50,20 +47,17 @@ namespace TalkSystem
 
     /// <summary>Container for all the talks inside the game.</summary>
     [Serializable]
-    public class TalkDataContainer 
+    public class TalkDataContainer
     {
         [SerializeField, HideInInspector] private Language _language;
 
         public Language Language { get => _language; set => _language = value; }
 
-        [Serializable]
-        public class TalksByLanguageDictionary : SDictionary<Language, TalksByLanguage> { }
-
-        [SerializeField] private TalksByLanguageDictionary _talks;
+        [SerializeField] private SDictionary<Language, TalksByLanguage> _talks;
 
         public TalkDataContainer()
         {
-            _talks = new TalksByLanguageDictionary();
+            _talks = new SDictionary<Language, TalksByLanguage>();
         }
 
         public TalkData GetTalkAsset(string talkName)
@@ -95,7 +89,7 @@ namespace TalkSystem
         {
             if (!_talks.ContainsKey(talkAsset.Language))
             {
-                _talks.Add(talkAsset.Language, new TalksByLanguage(talkAsset.Language, new TalksByLanguage.TalksDictionary()));
+                _talks.Add(talkAsset.Language, new TalksByLanguage(talkAsset.Language, new SDictionary<string, TalkData>()));
             }
 
             var dict = _talks[talkAsset.Language];
