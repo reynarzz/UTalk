@@ -25,13 +25,13 @@ MonoBehaviour:
           - _talkName: 
             _language: 0
             _pages:
-            - _pageText: This text is in disk right now.
+            - _pageText: This text is highlighted right now.
               _sprite: {fileID: 0}
               _highlight:
-              - _wordIndex: 4
+              - _wordIndex: 3
                 _color:
                   serializedVersion: 2
-                  rgba: 4280911668
+                  rgba: 4278217664
                 _type: 0
               _wordEvent:
                 _wordIndex: 0
