@@ -39,16 +39,16 @@ namespace TalkSystem
     /// <summary>Entry point to control the talk system.</summary>
     public class Talker : MonoSingleton<Talker>
     {
-        [SerializeField] private TalkMaster _master;
+        [SerializeField] private TalkDataContainerScriptable _scriptableContainer;
         [SerializeField] private TalkCloud _talkCloud;
 
-        private TalkAsset _talkAsset;
+        private TalkData _talkData;
 
         private const int _firstPage = 0;
         private bool _isLastPage;
-        private int _currentPage;
+        private int _pageIndex;
 
-        public int CurrentPage => _currentPage;
+        public int PageIndex => _pageIndex;
         public bool IsLastPage => _isLastPage;
 
         private bool _canShowNextPage;
@@ -65,25 +65,26 @@ namespace TalkSystem
         private CharByCharWriter _charByCharWriter;
         #endregion
 
+        private TextPage _currentPage;
+
         /// <summary>Sets the target language (English default). If the player change it when the text is being displayed, all the text will be updated to the selected language.</summary>
         public Language Language
         {
-            get => _master.Language;
+            get => _scriptableContainer.Container.Language;
+
             set
             {
-                _master.Language = value;
+                _scriptableContainer.Container.Language = value;
 
-                if (_talkAsset)
+                if (_talkData)
                 {
-                    _currentWriter.OnLanguageChanged(_talkAsset.GetPage(_currentPage));
+                    _currentWriter.OnLanguageChanged(_currentPage);
                 }
             }
         }
 
         protected override void Awake()
         {
-            base.Awake();
-
             _talkCloud.Init();
 
             _charByCharWriter = new CharByCharWriter(this);
@@ -94,19 +95,21 @@ namespace TalkSystem
 
             _talkCloud.OnCloudShown += OnCloudShown;
             _talkCloud.OnCloudHidden += OnCloudHidden;
+
+            base.Awake();
         }
 
-        public void StartTalk(string talkName)
+        public void StartTalk(TalkData talkData)
         {
             if (!_isTalking)
             {
-                _talkAsset = _master.GetTalkAsset(talkName);
+                _talkData = talkData;
 
-                if (_talkAsset)
+                if (_talkData)
                 {
                     _isTalking = true;
 
-                    _currentPage = default;
+                    _pageIndex = default;
                     _isLastPage = default;
                     _canShowNextPage = default;
 
@@ -117,9 +120,37 @@ namespace TalkSystem
                 }
                 else
                 {
-                    Debug.LogError($"Talk Asset \"{talkName}\" wasn't found");
+                    Debug.LogError($"Talk Data is null");
                 }
             }
+        }
+
+        public void StartTalk(TalkData talkData, Action<TalkEvent> talkCallback)
+        {
+            _talkCallback = talkCallback;
+
+            StartTalk(talkData);
+        }
+
+        public void StartTalk(TalkData talkData, Action<string> wordEventCallback)
+        {
+            _onWordEventCallBack = wordEventCallback;
+
+            StartTalk(talkData);
+        }
+
+        public void StartTalk(TalkData talkData, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
+        {
+            _onWordEventCallBack = wordEventCallback;
+
+            StartTalk(talkData, talkCallback);
+        }
+
+        public void StartTalk(string talkDataName)
+        {
+            _talkData = _scriptableContainer.Container.GetTalkAsset(talkDataName);
+
+            StartTalk(_talkData);
         }
 
         public void StartTalk(string talkName, Action<TalkEvent> talkCallback)
@@ -153,11 +184,13 @@ namespace TalkSystem
                     {
                         _canShowNextPage = false;
 
-                        _currentPage++;
+                        _pageIndex++;
 
                         _talkCallback?.Invoke(TalkEvent.PageChanged);
 
-                        _currentWriter.Write(_talkCloud.TextControl, _talkAsset.GetPage(_currentPage));
+                        _currentPage = _talkData.GetPage(_pageIndex);
+
+                        _currentWriter.Write(_talkCloud.TextControl, _currentPage);
                     }
                     else
                     {
@@ -179,15 +212,15 @@ namespace TalkSystem
 
         private void OnCloudShown()
         {
-            var startingPage = _talkAsset.GetPage(_firstPage);
+            _currentPage = _talkData.GetPage(_firstPage);
 
-            _currentWriter.Write(_talkCloud.TextControl, startingPage);
+            _currentWriter.Write(_talkCloud.TextControl, _currentPage);
         }
 
         private void OnCloudHidden()
         {
             _isTalking = false;
-            _talkAsset = null;
+            _talkData = null;
 
             _talkCallback?.Invoke(TalkEvent.Finished);
 
@@ -196,7 +229,7 @@ namespace TalkSystem
 
         private void OnPageWriten()
         {
-            _isLastPage = _currentPage + 1 == _talkAsset.PagesCount;
+            _isLastPage = _pageIndex + 1 == _talkData.PagesCount;
 
             _canShowNextPage = true;
         }

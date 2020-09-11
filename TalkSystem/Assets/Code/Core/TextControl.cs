@@ -116,7 +116,6 @@ namespace TalkSystem
         public void ShowChar(int wordIndex, int charIndex, Highlight hightlight)
         {
             var textInfo = _text.textInfo;
-
             var colors = _text.mesh.colors;
 
             var wordInfo = textInfo.wordInfo[wordIndex];
@@ -128,6 +127,8 @@ namespace TalkSystem
             int quadIndex = charIndex * _quadPoints;
 
             var color = hightlight != default ? hightlight.Color : _startColor;
+
+            //If the text is not enabled, this will throw an error.
 
             colors[vIndex + 0 + quadIndex] = color;
             colors[vIndex + 1 + quadIndex] = color;

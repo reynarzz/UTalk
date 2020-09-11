@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 889386e2f5833b4449208388decef8cd, type: 3}
+  m_Name: TalkContainer
+  m_EditorClassIdentifier: 
+  _talkDataContainer:
+    _language: 0
+    _talks:
+      _keys: 00000000
+      _values:
+      - _language: 0
+        _talks:
+          _keys:
+          - TalkTest
+          _values:
+          - _talkName: 
+            _language: 0
+            _pages:
+            - _pageText: This text is in disk right now.
+              _sprite: {fileID: 0}
+              _highlight:
+              - _wordIndex: 4
+                _color:
+                  serializedVersion: 2
+                  rgba: 4280911668
+                _type: 0
+              _wordEvent:
+                _wordIndex: 0
+              _charByChar:
+                _normalWriteSpeed: 0.03
+                _fastWriteSpeed: 1
+                _highlightedWordSpeed: 0

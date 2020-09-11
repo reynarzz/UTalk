@@ -66,7 +66,7 @@ namespace TalkSystem
     public struct TextPage
     {
         [SerializeField, TextArea] private string _pageText;
-        [SerializeField] private Sprite _sprite;
+        [SerializeField, HideInInspector] private Sprite _sprite; //later
         [SerializeField] private Highlight[] _highlight;
         [SerializeField] private WordEvent _wordEvent;
 
@@ -134,20 +134,41 @@ namespace TalkSystem
         }
     }
 
-    [CreateAssetMenu]
-    public class TalkAsset : ScriptableObject
+    [Serializable]
+    public class TalkData 
     {
-        [SerializeField] private string _talkName;
+        [SerializeField, HideInInspector] private string _talkName;
 
         [SerializeField, HideInInspector] private Language _language;
-        [SerializeField] private TextPage[] _pages;
+        [SerializeField] private List<TextPage> _pages;
 
-        public Language Language => _language;
-        public int PagesCount => _pages.Length;
+        public string TalkName { get => _talkName; set => _talkName = value; }
+        public Language Language { get => _language; set => _language = value; }
+        public int PagesCount => _pages.Count;
+
+        public TalkData(List<TextPage> pages)
+        {
+            _pages = pages;
+        }
+
+        public TalkData() 
+        {
+            _pages = new List<TextPage>();
+        }
 
         public TextPage GetPage(int pageIndex)
         {
             return _pages.ElementAtOrDefault(pageIndex);
         }
+
+        public void AddPage(TextPage page)
+        {
+            _pages.Add(page);
+        }
+
+        public static implicit operator bool(TalkData a)
+        {
+            return a != null;
+        } 
     }
 }

@@ -33,29 +33,40 @@ namespace TalkSystem
     public struct TalksByLanguage
     {
         [Serializable]
-        public class TalksDictionary : SDictionary<string, TalkAsset> { }
+        public class TalksDictionary : SDictionary<string, TalkData> { }
 
         [SerializeField] private Language _language;
         [SerializeField] private TalksDictionary _talks;
 
         public Language Language => _language;
         public TalksDictionary Talks => _talks;
+
+        public TalksByLanguage(Language language, TalksDictionary talkDictionary)
+        {
+            _language = language;
+            _talks = talkDictionary;
+        }
     }
 
     /// <summary>Container for all the talks inside the game.</summary>
-    [CreateAssetMenu]
-    public class TalkMaster : ScriptableObject
+    [Serializable]
+    public class TalkDataContainer 
     {
         [SerializeField, HideInInspector] private Language _language;
 
         public Language Language { get => _language; set => _language = value; }
 
         [Serializable]
-        private class TalksByLanguageDictionary : SDictionary<Language, TalksByLanguage> { }
+        public class TalksByLanguageDictionary : SDictionary<Language, TalksByLanguage> { }
 
         [SerializeField] private TalksByLanguageDictionary _talks;
 
-        public TalkAsset GetTalkAsset(string talkName)
+        public TalkDataContainer()
+        {
+            _talks = new TalksByLanguageDictionary();
+        }
+
+        public TalkData GetTalkAsset(string talkName)
         {
             if (ContainsTalk(_language, talkName))
             {
@@ -78,6 +89,28 @@ namespace TalkSystem
             }
 
             return false;
+        }
+
+        public void AddTalkData(TalkData talkAsset)
+        {
+            if (!_talks.ContainsKey(talkAsset.Language))
+            {
+                _talks.Add(talkAsset.Language, new TalksByLanguage(talkAsset.Language, new TalksByLanguage.TalksDictionary()));
+            }
+
+            var dict = _talks[talkAsset.Language];
+
+            if (!dict.Talks.ContainsKey(talkAsset.TalkName))
+            {
+                dict.Talks.Add(talkAsset.TalkName, talkAsset);
+
+                Debug.Log("Added");
+            }
+            else
+            {
+                Debug.Log(talkAsset);
+                dict.Talks[talkAsset.TalkName] = talkAsset;
+            }
         }
     }
 }
