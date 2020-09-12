@@ -12,9 +12,10 @@ public class TalkDataContainerScriptableEditor : EditorWindow
 {
     private string _text;
     private int _currentCursor;
-    private string _selectedWord;
+    private (string, int) _selectedWord;
 
     private bool _showWordOptions = false;
+    private GUIStyle _labelStyle;
 
     private void OnEnable()
     {
@@ -34,11 +35,11 @@ public class TalkDataContainerScriptableEditor : EditorWindow
 
     public void OnGUI()
     {
+        Init();
+
         GUILayout.Space(10);
 
         var textEditor = GUIUtils.TextArea(ref _text);
-
-        var textEditor2 = GUIUtils.TextArea(ref _text2);
 
         if (_currentCursor != textEditor.cursorIndex)
         {
@@ -46,7 +47,7 @@ public class TalkDataContainerScriptableEditor : EditorWindow
 
             var word = GetSelectedWord(_text, textEditor.cursorIndex);
 
-            if (!string.IsNullOrEmpty(word))
+            if (!string.IsNullOrEmpty(word.Item1))
             {
                 _selectedWord = word;
 
@@ -55,9 +56,13 @@ public class TalkDataContainerScriptableEditor : EditorWindow
             }
         }
 
-        if (!string.IsNullOrEmpty(_selectedWord))
+        GUILayout.Space(5);
+
+        var page = default(TextPage);
+
+        if (!string.IsNullOrEmpty(_selectedWord.Item1))
         {
-            if (GUILayout.Button(_selectedWord))
+            if (GUILayout.Button(_selectedWord.Item1 + $" ({_selectedWord.Item2})"))
             {
                 _showWordOptions = true;
             }
@@ -65,17 +70,92 @@ public class TalkDataContainerScriptableEditor : EditorWindow
             if (_showWordOptions)
             {
                 _hightlightColor = EditorGUILayout.ColorField("Hightlight", _hightlightColor);
+
+                page = new TextPage(_text, new Highlight(_selectedWord.Item2, _hightlightColor, HighlightAnimation.None));
+
+                //Debug.Log(hex);
             }
+        }
+
+        var hightligted = HighlightText(page, _text);
+
+        GUILayout.Space(5);
+        TextPreview(hightligted);
+    }
+
+    private void Init()
+    {
+        if (_labelStyle == null)
+        {
+            _labelStyle = new GUIStyle(GUI.skin.label);
+            _labelStyle.active.textColor = Color.white;
+            _labelStyle.normal.textColor = Color.white;
+            _labelStyle.richText = true;
         }
     }
 
-    private void TextPreview(TextPage page)
-    {
 
+    private void TextPreview(string text)
+    {
+        GUILayout.Label("Preview");
+
+        var color = GUI.color;
+        GUI.color = Color.white;
+        GUILayout.BeginVertical(EditorStyles.helpBox);
+        GUI.color = color;
+
+        GUILayout.Label(text, _labelStyle);
+        GUILayout.EndVertical();
+    }
+
+    private string HighlightText(TextPage page, string defaultText)
+    {
+        if (page.Highlight != null)
+        {
+            var modifiedText = page.Text;
+            var splited = Regex.Split(page.Text, " |\n");
+
+            for (int i = 0; i < page.Highlight.Length; i++)
+            {
+                var highlight = page.Highlight[i];
+
+                var wordIndex = GetWordFullIndex(splited, highlight.WordIndex);
+
+                var hex = ColorUtility.ToHtmlStringRGBA(highlight.Color);
+
+                var insertColor = $"<color=#{hex}>";
+
+                modifiedText = modifiedText.Insert(wordIndex, insertColor);
+                modifiedText = modifiedText.Insert(wordIndex + splited[highlight.WordIndex].Length + insertColor.Length, $"</color>");
+            }
+
+            //Debug.Log(modifiedText);
+
+            return modifiedText;
+        }
+
+        return defaultText;
+    }
+
+    private int GetWordFullIndex(string[] words, int index)
+    {
+        var charCount = 0;
+
+        for (int i = 0; i < words.Length; i++)
+        {
+            if (words[index] == words[i])
+            {
+                return charCount;
+            }
+
+            charCount += words[i].Length + 1;
+        }
+
+        return charCount;
     }
 
     //very inefficient
-    private string GetSelectedWord(string text, int cursor)
+    private (string, int) GetSelectedWord(string text, int cursor)
     {
         var explit = Regex.Split(text, " |\n");
         var charCount = 0;
@@ -88,7 +168,7 @@ public class TalkDataContainerScriptableEditor : EditorWindow
             {
                 if (charCount == cursor)
                 {
-                    return explit[i];
+                    return (explit[i], i);
                 }
 
                 charCount++;
@@ -97,6 +177,6 @@ public class TalkDataContainerScriptableEditor : EditorWindow
             charCount++;
         }
 
-        return word;
+        return (word, 0);
     }
 }

@@ -92,6 +92,16 @@ namespace TalkSystem
             _charByChar = default;
         }
 
+        public TextPage(string text, params Highlight[] highlights)
+        {
+            _pageText = text;
+            _sprite = default;
+            _wordEvent = default;
+            _highlight = highlights;
+
+            _charByChar = default;
+        }
+
         public static bool operator ==(TextPage a, TextPage b)
         {
             return a.Text == b.Text && a.Highlight == b.Highlight && a.Sprite == b.Sprite;
