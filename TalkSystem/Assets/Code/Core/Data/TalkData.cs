@@ -42,7 +42,7 @@ namespace TalkSystem
         Sine
     }
 
-    public enum Language 
+    public enum Language
     {
         English,
         French,
@@ -118,22 +118,33 @@ namespace TalkSystem
     public struct Highlight
     {
         [SerializeField] private int _wordIndex;
+        [SerializeField] private string _word;
 
         [SerializeField] private Color32 _color;
-        [SerializeField] private HighlightAnimation _type;
+        [SerializeField] private HighlightAnimation _animationType;
 
         public int WordIndex => _wordIndex;
+        public string Word => _word;
         public Color32 Color => _color;
-        public HighlightAnimation Type => _type;
+        public HighlightAnimation Type => _animationType;
 
-        public Highlight(int wordIndex, Color32 color, HighlightAnimation type)
+        public Highlight(int wordIndex, string word, Color32 color)
         {
             _wordIndex = wordIndex;
+            _word = word;
             _color = color;
-            _type = type;
+            _animationType = HighlightAnimation.None;
         }
 
-        public static bool operator==(Highlight a, Highlight b)
+        public Highlight(int wordIndex, string word, Color32 color, HighlightAnimation type)
+        {
+            _wordIndex = wordIndex;
+            _word = word;
+            _color = color;
+            _animationType = type;
+        }
+
+        public static bool operator ==(Highlight a, Highlight b)
         {
             return a.WordIndex == b.WordIndex && a.Type == b.Type;
         }
@@ -145,7 +156,7 @@ namespace TalkSystem
     }
 
     [Serializable]
-    public class TalkData 
+    public class TalkData
     {
         [SerializeField, HideInInspector] private string _talkName;
 
@@ -161,7 +172,7 @@ namespace TalkSystem
             _pages = pages;
         }
 
-        public TalkData() 
+        public TalkData()
         {
             _pages = new List<TextPage>();
         }
@@ -179,6 +190,6 @@ namespace TalkSystem
         public static implicit operator bool(TalkData a)
         {
             return a != null;
-        } 
+        }
     }
 }
