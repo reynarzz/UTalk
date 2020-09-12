@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <ui:VisualElement style="justify-content: flex-start; align-items: stretch; flex-direction: row; flex-shrink: initial; flex-grow: initial; flex-wrap: wrap-reverse;">
+        <ui:Button text="Back" display-tooltip-when-elided="True" />
+        <ui:Label text="TalkName" display-tooltip-when-elided="True" style="-unity-text-align: middle-left; width: 69%; border-left-color: rgb(36, 36, 36); border-right-color: rgb(36, 36, 36); border-top-color: rgb(36, 36, 36); border-bottom-color: rgb(36, 36, 36); border-left-width: 0; border-right-width: 0; border-top-width: 0; border-bottom-width: 0; -unity-slice-left: 1; -unity-slice-top: 1; -unity-slice-right: 1; -unity-slice-bottom: 1; background-color: rgb(43, 43, 43); padding-left: 7px;" />
+        <ui:Button text="Button" display-tooltip-when-elided="True" />
+    </ui:VisualElement>
+    <ui:VisualElement>
+        <ui:TextField picking-mode="Ignore" value="filler text" text="filler text" multiline="true" />
+    </ui:VisualElement>
+</ui:UXML>
