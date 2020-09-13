@@ -84,33 +84,33 @@ namespace TalkSystem
 
             int wordCount = textInfo.wordCount;
 
-            for (int i = 0; i < _text.text.Length; i++)
-            {
-                var wordInfo = textInfo.wordInfo[i];
+            //for (int i = 0; i < _text.text.Length; i++)
+            //{
+            //    var wordInfo = textInfo.wordInfo[i];
 
-                if (Array.Exists(hightlight, x => x.WordIndex == i))
-                {
-                    for (int j = 0; j < words[i].Length; j++)
-                    {
-                        var character = textInfo.characterInfo[wordInfo.firstCharacterIndex];
+            //    if (Array.Exists(hightlight, x => x.WordIndex == i))
+            //    {
+            //        for (int j = 0; j < words[i].Length; j++)
+            //        {
+            //            var character = textInfo.characterInfo[wordInfo.firstCharacterIndex];
 
-                        int vertIndex = character.vertexIndex;
+            //            int vertIndex = character.vertexIndex;
 
-                        int quadIndex = j * _quadPoints;
+            //            int quadIndex = j * _quadPoints;
 
-                        var color = hightlight[i].Color;
+            //            var color = hightlight[i].Color;
 
-                        colors[vertIndex + 0 + quadIndex] = color;
-                        colors[vertIndex + 1 + quadIndex] = color;
-                        colors[vertIndex + 2 + quadIndex] = color;
-                        colors[vertIndex + 3 + quadIndex] = color;
-                    }
-                }
-            }
+            //            colors[vertIndex + 0 + quadIndex] = color;
+            //            colors[vertIndex + 1 + quadIndex] = color;
+            //            colors[vertIndex + 2 + quadIndex] = color;
+            //            colors[vertIndex + 3 + quadIndex] = color;
+            //        }
+            //    }
+            //}
 
-            _text.mesh.SetColors(colors);
+            //_text.mesh.SetColors(colors);
 
-            _text.canvasRenderer.SetMesh(_text.mesh);
+            //_text.canvasRenderer.SetMesh(_text.mesh);
         }
 
         public void ShowChar(int wordIndex, int charIndex, Highlight hightlight)
@@ -138,6 +138,32 @@ namespace TalkSystem
             _text.mesh.SetColors(colors);
 
             _text.canvasRenderer.SetMesh(_text.mesh);
+        }
+
+        public void ShowChar(int charIndex)
+        {
+            ShowChar(charIndex, _startColor);
+        }
+
+        public void ShowChar(int charIndex, Color32 color)
+        {
+            var colors = _text.mesh.colors;
+
+            var charInfo = _text.textInfo.characterInfo[charIndex];
+
+            if (!char.IsWhiteSpace(charInfo.character))
+            {
+                //If the text is not enabled, this will throw an error.
+                colors[charInfo.vertexIndex + 0] = color;
+                colors[charInfo.vertexIndex + 1] = color;
+                colors[charInfo.vertexIndex + 2] = color;
+                colors[charInfo.vertexIndex + 3] = color;
+
+                _text.mesh.SetColors(colors);
+
+                _text.canvasRenderer.SetMesh(_text.mesh);
+            }
+            
         }
     }
 }

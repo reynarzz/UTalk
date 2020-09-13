@@ -53,7 +53,7 @@ public class TalkEditorWindow : EditorWindow
             _pageSet = false;
             var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius ligula ac dui \nermentum, sed finibus tortor aliquam.ni";
 
-            _test.AddPage(new TextPage(text, new List<Highlight> { new Highlight(4, "amet,", Color.green) }));
+            _test.AddPage(new TextPage(text, new SDictionary<int, Highlight> { { Highlight.GetStartingCharIndex(text, 4), new Highlight(4, "amet,", Color.green) } }));
 
             _editPageText = new EditPageText();
 

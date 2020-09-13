@@ -72,38 +72,52 @@ namespace TalkSystem
 
         private IEnumerator WriteByChar(TextControl control, TextPage page)
         {
-            var words = Regex.Split(page.Text, " |\n");
+            //var words = Regex.Split(page.Text, " |\n");
 
             //show chars in the next frame.
             yield return 0;
 
-            for (int i = 0; i < words.Length; i++)
+            var i = 0;
+
+            var applyColor = false;
+            var highlightIndex = 0;
+            var coloredCharCount = 0;
+
+            while (i < page.Text.Length)
             {
-                //not linq use here
-                var hightLight = GetHightlight(page.Highlight, i);
-
-                for (int j = 0; j < words[i].Length; j++)
+                if (page.Highlight.ContainsKey(i))
                 {
-                    control.ShowChar(i, j, hightLight);
-
-                    yield return _writeSpeed;
+                    applyColor = true;
+                    highlightIndex = i;
+                    coloredCharCount = 0;
                 }
+
+                if (applyColor)
+                {
+                    var highlight = page.Highlight[highlightIndex];
+
+                    applyColor = coloredCharCount++ < highlight.WordLength;
+
+                    if (applyColor)
+                    {
+                        control.ShowChar(i, highlight.Color);
+                    }
+                    else
+                    {
+                        control.ShowChar(i);
+                    }
+                }
+                else
+                {
+                    control.ShowChar(i);
+                }
+
+                i++;
+
+                yield return _writeSpeed;
             }
 
             OnPageWriten?.Invoke();
-        }
-
-        private Highlight GetHightlight(List<Highlight> hightlights, int wordIndex)
-        {
-            for (int i = 0; i < hightlights.Count; i++)
-            {
-                if (hightlights[i].WordIndex == wordIndex)
-                {
-                    return hightlights[i];
-                }
-            }
-
-            return default;
         }
 
         public void OnLanguageChanged(TextPage textPage)
@@ -116,6 +130,6 @@ namespace TalkSystem
             control.ClearColors();
         }
 
-        
+
     }
 }

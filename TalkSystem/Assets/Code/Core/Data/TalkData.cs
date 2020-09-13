@@ -67,7 +67,7 @@ namespace TalkSystem
     {
         [SerializeField, TextArea] private string _pageText;
         [SerializeField, HideInInspector] private Sprite _sprite; //later
-        [SerializeField] private List<Highlight> _highlight;
+        [SerializeField] private SDictionary<int, Highlight> _highlight;
         [SerializeField] private WordEvent _wordEvent;
 
         [Header("Write Styles")]
@@ -75,14 +75,14 @@ namespace TalkSystem
 
         public string Text => _pageText;
         public Sprite Sprite => _sprite;
-        public List<Highlight> Highlight => _highlight;
+        public SDictionary<int, Highlight> Highlight => _highlight;
         public WordEvent Event => _wordEvent;
 
         #region WriteStyleInfo
         public CharByCharInfo CharByCharInfo => _charByChar;
         #endregion
 
-        public TextPage(string text, Sprite sprite, WordEvent wEvent, List<Highlight> highlights)
+        public TextPage(string text, Sprite sprite, WordEvent wEvent, SDictionary<int, Highlight> highlights)
         {
             _pageText = text;
             _sprite = sprite;
@@ -92,7 +92,7 @@ namespace TalkSystem
             _charByChar = default;
         }
 
-        public TextPage(string text, List<Highlight> highlights)
+        public TextPage(string text, SDictionary<int, Highlight> highlights)
         {
             _pageText = text;
             _sprite = default;
@@ -118,40 +118,65 @@ namespace TalkSystem
     public struct Highlight
     {
         [SerializeField] private int _wordIndex;
-        [SerializeField] private string _word;
+        [SerializeField] private int _wordLength;
 
         [SerializeField] private Color32 _color;
         [SerializeField] private HighlightAnimation _animationType;
 
+        public int WordLength => _wordLength;
+
         public int WordIndex => _wordIndex;
-        public string Word => _word;
         public Color32 Color => _color;
         public HighlightAnimation Type => _animationType;
+
+        private const int _whiteSpace = 1;
 
         public Highlight(int wordIndex, string word, Color32 color)
         {
             _wordIndex = wordIndex;
-            _word = word;
             _color = color;
             _animationType = HighlightAnimation.None;
+
+            _wordLength = word.Length;
         }
 
         public Highlight(int wordIndex, string word, Color32 color, HighlightAnimation type)
         {
             _wordIndex = wordIndex;
-            _word = word;
+
             _color = color;
             _animationType = type;
+
+            _wordLength = word.Length;
         }
 
         public static bool operator ==(Highlight a, Highlight b)
         {
-            return a.WordIndex == b.WordIndex && a.Type == b.Type;
+            return a._wordLength == b._wordLength && a._animationType == b._animationType;
         }
 
         public static bool operator !=(Highlight a, Highlight b)
         {
-            return a.WordIndex != b.WordIndex || a.Type != b.Type;
+            return a._wordLength != b._wordLength || a._animationType != b._animationType;
+        }
+
+        /// <summary>Helper function to get the char index of a word in a text.</summary>
+        public static int GetStartingCharIndex(string text, int wordIndex)
+        {
+            var splited = System.Text.RegularExpressions.Regex.Split(text, " |\n");
+            var charIndex = 0;
+
+            for (int i = 0; i < splited.Length; i++)
+            {
+                if (splited[wordIndex] == splited[i])
+                {
+                    return charIndex;
+                }
+
+                charIndex += splited[i].Length + _whiteSpace;
+            }
+
+            return charIndex;
         }
     }
 

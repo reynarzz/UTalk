@@ -38,9 +38,21 @@ namespace TalkSystem
 
         private void Start()
         {
-            var page = new TextPage("Esta es la primera linea", new List<Highlight>() { new Highlight(3, "", Color.blue, HighlightAnimation.None) });
+            var text = "This is the first line.\nThis is the second and final.";
 
-            _data = new TalkData(new List<TextPage>() { page }) { Language = Language.Spanish, TalkName = "SpanishTalk" };
+            var page = new TextPage(text,
+                new SDictionary<int, Highlight>()
+                {
+                    { Highlight.GetStartingCharIndex(text, 0), new Highlight(0, "This", Color.blue) },
+                    { Highlight.GetStartingCharIndex(text, 3), new Highlight(3, "first", Color.red) },
+                    { Highlight.GetStartingCharIndex(text, 8), new Highlight(8, "second", Color.green) }
+                });
+
+            _data = new TalkData(new List<TextPage>() { page })
+            {
+                TalkName = "SpanishTalk",
+                Language = Language.Spanish
+            };
         }
 
         private void Update()

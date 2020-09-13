@@ -11,7 +11,7 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-[CustomEditor(typeof(TalkDataContainerScriptable))]
+//[CustomEditor(typeof(TalkDataContainerScriptable))]
 public class TalkDataContainerScriptableEditor_NewUI : Editor
 {
     private VisualElement _rootElement;

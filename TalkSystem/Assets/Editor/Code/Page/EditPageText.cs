@@ -68,43 +68,39 @@ namespace TalkSystem.Editor
 
                 if (!string.IsNullOrEmpty(_selectedWord.Item1))
                 {
+                    GUILayout.BeginHorizontal();
+                    EditorGUILayout.Toggle(false, GUILayout.MaxWidth(17));
+
                     GUILayout.Label($"Highlight Options ({_selectedWord.Item1})");
+
+                    GUILayout.EndHorizontal();
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
 
-                    var index = _currentTextPage.Highlight.FindIndex(x => x.WordIndex == _selectedWord.Item2);
+                    var startingCharIndex = Highlight.GetStartingCharIndex(_text, _selectedWord.Item2);
+
+                    var containsKey = _currentTextPage.Highlight.ContainsKey(startingCharIndex);
 
                     var highlight = default(Highlight);
 
-                    if (index >= 0)
+                    if (containsKey)
                     {
-                        highlight = _currentTextPage.Highlight[index];
+                        highlight = _currentTextPage.Highlight[startingCharIndex];
                     }
                     else
                     {
-                        _currentTextPage.Highlight.Add(highlight);
+                        _currentTextPage.Highlight.Add(startingCharIndex, highlight);
                     }
 
                     GUILayout.BeginHorizontal();
-                    EditorGUILayout.Toggle(false, GUILayout.MaxWidth(20));
                     GUILayout.Label("Color", GUILayout.MaxWidth(60));
                     var color = EditorGUILayout.ColorField(highlight.Color);
-
-                    GUILayout.EndHorizontal();
                     color.a = 1;
+                    GUILayout.EndHorizontal();
 
                     highlight = new Highlight(_selectedWord.Item2, _selectedWord.Item1, color, HighlightAnimation.None);
 
-                    if (index >= 0)
-                    {
-                        _currentTextPage.Highlight[index] = highlight;
-                    }
-                    else
-                    {
-                        index = _currentTextPage.Highlight.Count - 1;
-
-                        _currentTextPage.Highlight[index] = highlight;
-                    }
+                    _currentTextPage.Highlight[startingCharIndex] = highlight;
 
                     GUILayout.EndVertical();
                 }
@@ -116,11 +112,9 @@ namespace TalkSystem.Editor
                 GUILayout.Space(5);
                 TextPreview(hightligted);
             }
-
         }
 
         //private void
-
         private void Init()
         {
             if (_labelStyle == null)
@@ -129,8 +123,6 @@ namespace TalkSystem.Editor
                 _labelStyle.active.textColor = Color.white;
                 _labelStyle.normal.textColor = Color.white;
                 _labelStyle.richText = true;
-
-                ProcessWords(_talkData.GetPage(0));
             }
         }
 
@@ -171,11 +163,6 @@ namespace TalkSystem.Editor
             return (word, 0);
         }
 
-        private void ProcessWords(TextPage page)
-        {
-            HighlightText(page);
-        }
-
         public void SetTextPageIndex(int textPageIndex)
         {
             _textPageIndex = textPageIndex;
@@ -189,11 +176,34 @@ namespace TalkSystem.Editor
         //TODO: detect if a modified text index was changed.
         private void OnTextChangedHandler(string newText, int addedChars, int cursor)
         {
+            //basically a word have to be like a pointer, all the properties you put to a word can't be losed if a word chage it's index.
             var oldText = _currentTextPage.Text;
 
             var wasAdded = addedChars > 0;
 
-            Debug.Log("was added: " + wasAdded + ", how much: " + addedChars);
+            if (wasAdded)
+            {
+                if (cursor == newText.Length)
+                {
+                    Debug.Log("Added to end");
+                }
+                else
+                {
+                    var insertedIndex = cursor - addedChars;
+                    var textInserted = newText.Substring(cursor - addedChars, addedChars);
+
+                    if (_currentTextPage.Highlight.Count > 0)
+                    {
+                        //_currentTextPage.Highlight[];
+                    }
+
+                    Debug.Log($"Inserted \"{textInserted}\" in: " + insertedIndex);
+                }
+            }
+            else
+            {
+                Debug.Log("Was removed: " + addedChars);
+            }
 
             if (wasAdded)
             {
@@ -219,44 +229,31 @@ namespace TalkSystem.Editor
 
             for (int i = 0; i < page.Highlight.Count; i++)
             {
-                var highlight = page.Highlight[i];
+                var highlight = page.Highlight[page.Highlight.Keys.ElementAt(i)];
 
-                var wordIndex = GetWordFullIndex(splited, highlight.WordIndex);
+                var startIndex = Highlight.GetStartingCharIndex(modifiedText, highlight.WordIndex);
 
                 var hex = ColorUtility.ToHtmlStringRGBA(highlight.Color);
 
                 var insertColor = $"<color=#{hex}>";
 
-                var unmmodified = splited[highlight.WordIndex];
-
-                unmmodified = unmmodified.Insert(0, insertColor);
-                unmmodified = unmmodified.Insert(unmmodified.Length - 1, "</color>");
-
                 //this can be improve it
-                modifiedText = modifiedText.Insert(wordIndex, insertColor);
-                modifiedText = modifiedText.Insert(wordIndex + splited[highlight.WordIndex].Length + insertColor.Length, $"</color>");
+                modifiedText = modifiedText.Insert(startIndex, insertColor)
+                                           .Insert(startIndex + splited[highlight.WordIndex].Length + insertColor.Length, $"</color>");
 
-                splited[highlight.WordIndex] = unmmodified;
+                //var unmmodified = splited[highlight.WordIndex];
+
+                //unmmodified = unmmodified.Insert(0, insertColor);
+                //unmmodified = unmmodified.Insert(unmmodified.Length - 1, "</color>");
+
+                ////this can be improve it
+                //modifiedText = modifiedText.Insert(startIndex, insertColor);
+                //modifiedText = modifiedText.Insert(startIndex + splited[highlight.WordIndex].Length + insertColor.Length, $"</color>");
+
+                //splited[highlight.WordIndex] = unmmodified;
             }
 
             return modifiedText;
-        }
-
-        private int GetWordFullIndex(string[] words, int index)
-        {
-            var charCount = 0;
-
-            for (int i = 0; i < words.Length; i++)
-            {
-                if (words[index] == words[i])
-                {
-                    return charCount;
-                }
-
-                charCount += words[i].Length + 1;
-            }
-
-            return charCount;
         }
     }
 }
