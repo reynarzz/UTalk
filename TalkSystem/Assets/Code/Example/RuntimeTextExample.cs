@@ -38,7 +38,7 @@ namespace TalkSystem
 
         private void Start()
         {
-            var page = new TextPage("Esta es la primera linea", default, new Highlight(3, "", Color.blue, HighlightAnimation.None));
+            var page = new TextPage("Esta es la primera linea", new List<Highlight>() { new Highlight(3, "", Color.blue, HighlightAnimation.None) });
 
             _data = new TalkData(new List<TextPage>() { page }) { Language = Language.Spanish, TalkName = "SpanishTalk" };
         }

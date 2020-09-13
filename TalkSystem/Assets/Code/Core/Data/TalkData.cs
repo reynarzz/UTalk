@@ -67,7 +67,7 @@ namespace TalkSystem
     {
         [SerializeField, TextArea] private string _pageText;
         [SerializeField, HideInInspector] private Sprite _sprite; //later
-        [SerializeField] private Highlight[] _highlight;
+        [SerializeField] private List<Highlight> _highlight;
         [SerializeField] private WordEvent _wordEvent;
 
         [Header("Write Styles")]
@@ -75,14 +75,14 @@ namespace TalkSystem
 
         public string Text => _pageText;
         public Sprite Sprite => _sprite;
-        public Highlight[] Highlight => _highlight;
+        public List<Highlight> Highlight => _highlight;
         public WordEvent Event => _wordEvent;
 
         #region WriteStyleInfo
         public CharByCharInfo CharByCharInfo => _charByChar;
         #endregion
 
-        public TextPage(string text, Sprite sprite, WordEvent wEvent, params Highlight[] highlights)
+        public TextPage(string text, Sprite sprite, WordEvent wEvent, List<Highlight> highlights)
         {
             _pageText = text;
             _sprite = sprite;
@@ -92,7 +92,7 @@ namespace TalkSystem
             _charByChar = default;
         }
 
-        public TextPage(string text, params Highlight[] highlights)
+        public TextPage(string text, List<Highlight> highlights)
         {
             _pageText = text;
             _sprite = default;

@@ -41,24 +41,24 @@ namespace TalkSystem.Editor
         {
             private string _text;
 
-            private int _cursor;
-            private bool _length;
+            private int _cursorIndex;
+            private bool _lengthChanged;
             private int _addedChars;
 
-            public int CursorIndex => _cursor;
+            public int CursorIndex => _cursorIndex;
 
             public string Text => _text;
 
-            public bool TextLengthChanged => _length;
+            public bool TextLengthChanged => _lengthChanged;
             public int AddedChars => _addedChars;
 
-            public TextEditorInfo(string text, int cursor, int addedChars, bool textLengthChanged)
+            public TextEditorInfo(string text, int cursorIndex, int addedChars, bool textLengthChanged)
             {
                 _text = text;
-                _cursor = cursor;
+                _cursorIndex = cursorIndex;
                 _addedChars = addedChars;
 
-                _length = textLengthChanged;
+                _lengthChanged = textLengthChanged;
             }
         }
 

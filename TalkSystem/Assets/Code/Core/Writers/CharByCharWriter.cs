@@ -93,9 +93,9 @@ namespace TalkSystem
             OnPageWriten?.Invoke();
         }
 
-        private Highlight GetHightlight(Highlight[] hightlights, int wordIndex)
+        private Highlight GetHightlight(List<Highlight> hightlights, int wordIndex)
         {
-            for (int i = 0; i < hightlights.Length; i++)
+            for (int i = 0; i < hightlights.Count; i++)
             {
                 if (hightlights[i].WordIndex == wordIndex)
                 {

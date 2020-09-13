@@ -22,6 +22,8 @@ public class TalkEditorWindow : EditorWindow
         window.Show();
     }
 
+    private bool _pageSet = false;
+
     private void OnEnable()
     {
 
@@ -31,9 +33,16 @@ public class TalkEditorWindow : EditorWindow
     {
         Init();
 
+        
         _editPageText.OnGUI(_test);
+        if (!_pageSet)
+        {
+            _pageSet = true;
 
-        _editPageText.SetTextPageIndex(0);
+            _editPageText.SetTextPageIndex(0);
+        }
+
+
     }
 
     private void Init()
@@ -41,10 +50,10 @@ public class TalkEditorWindow : EditorWindow
         if (_editPageText == null)
         {
             _test = new TalkData();
-
+            _pageSet = false;
             var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius ligula ac dui \nermentum, sed finibus tortor aliquam.ni";
 
-            _test.AddPage(new TextPage(text, new Highlight(4, "amet,", Color.green)));
+            _test.AddPage(new TextPage(text, new List<Highlight> { new Highlight(4, "amet,", Color.green) }));
 
             _editPageText = new EditPageText();
 

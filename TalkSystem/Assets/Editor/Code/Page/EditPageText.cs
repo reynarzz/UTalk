@@ -12,20 +12,17 @@ namespace TalkSystem.Editor
 {
     public class EditPageText : IPage
     {
-        private Color32 _hightlightColor;
-
         public delegate void TextChanged(string text, int charsAdded, int cursor);
 
         private string _text;
         private int _oldCursorIndex;
         private (string, int) _selectedWord;
 
-        private bool _showWordOptions = false;
         private GUIStyle _labelStyle;
 
         private TalkData _talkData;
 
-        private int _textPageIndex = 0;
+        private int _textPageIndex = -1;
 
         public event TextChanged OnTextChanged;
 
@@ -40,58 +37,89 @@ namespace TalkSystem.Editor
         {
             _talkData = talkData;
 
-            Init();
-
-            GUILayout.Space(10);
-
-            var textEditor = GUIUtils.TextArea(ref _text);
-
-            if (textEditor.TextLengthChanged)
+            if (_textPageIndex >= 0)
             {
-                OnTextChanged(textEditor.Text, textEditor.AddedChars, textEditor.CursorIndex);
-            }
+                Init();
 
-            if (_oldCursorIndex != textEditor.CursorIndex)
-            {
-                _oldCursorIndex = textEditor.CursorIndex;
+                GUILayout.Space(10);
 
-                //var word = GetSelectedWord(_text, textEditor.cursorIndex);
+                var textEditor = GUIUtils.TextArea(ref _text);
 
-                //if (!string.IsNullOrEmpty(word.Item1))
-                //{
-                //    _selectedWord = word;
-
-                //    _showWordOptions = false;
-                //    //Debug.Log(word);
-                //}
-            }
-
-
-            GUILayout.Space(5);
-
-            var page = default(TextPage);
-
-            if (!string.IsNullOrEmpty(_selectedWord.Item1))
-            {
-                if (GUILayout.Button(_selectedWord.Item1 + $" ({_selectedWord.Item2})"))
+                if (textEditor.TextLengthChanged)
                 {
-                    _showWordOptions = true;
+                    OnTextChanged(textEditor.Text, textEditor.AddedChars, textEditor.CursorIndex);
                 }
 
-                if (_showWordOptions)
+                if (_oldCursorIndex != textEditor.CursorIndex)
                 {
-                    _hightlightColor = EditorGUILayout.ColorField("Hightlight", _hightlightColor);
+                    _oldCursorIndex = textEditor.CursorIndex;
 
-                    page = new TextPage(_text, new Highlight(_selectedWord.Item2, _selectedWord.Item1, _hightlightColor, HighlightAnimation.None));
+                    var word = GetSelectedWord(_text, textEditor.CursorIndex);
+
+                    if (!string.IsNullOrEmpty(word.Item1))
+                    {
+                        _selectedWord = word;
+
+                        //Debug.Log(word);
+                    }
                 }
+
+                GUILayout.Space(5);
+
+                if (!string.IsNullOrEmpty(_selectedWord.Item1))
+                {
+                    GUILayout.Label($"Highlight Options ({_selectedWord.Item1})");
+
+                    GUILayout.BeginVertical(EditorStyles.helpBox);
+
+                    var index = _currentTextPage.Highlight.FindIndex(x => x.WordIndex == _selectedWord.Item2);
+
+                    var highlight = default(Highlight);
+
+                    if (index >= 0)
+                    {
+                        highlight = _currentTextPage.Highlight[index];
+                    }
+                    else
+                    {
+                        _currentTextPage.Highlight.Add(highlight);
+                    }
+
+                    GUILayout.BeginHorizontal();
+                    EditorGUILayout.Toggle(false, GUILayout.MaxWidth(20));
+                    GUILayout.Label("Color", GUILayout.MaxWidth(60));
+                    var color = EditorGUILayout.ColorField(highlight.Color);
+
+                    GUILayout.EndHorizontal();
+                    color.a = 1;
+
+                    highlight = new Highlight(_selectedWord.Item2, _selectedWord.Item1, color, HighlightAnimation.None);
+
+                    if (index >= 0)
+                    {
+                        _currentTextPage.Highlight[index] = highlight;
+                    }
+                    else
+                    {
+                        index = _currentTextPage.Highlight.Count - 1;
+
+                        _currentTextPage.Highlight[index] = highlight;
+                    }
+
+                    GUILayout.EndVertical();
+                }
+
+                var page = new TextPage(_text, _currentTextPage.Sprite, _currentTextPage.Event, _currentTextPage.Highlight);
+
+                var hightligted = HighlightText(page);
+
+                GUILayout.Space(5);
+                TextPreview(hightligted);
             }
 
-            var hightligted = HighlightText(page);
-
-            GUILayout.Space(5);
-            TextPreview(hightligted);
         }
 
+        //private void
 
         private void Init()
         {
@@ -110,30 +138,11 @@ namespace TalkSystem.Editor
         {
             GUILayout.Label("Preview");
 
-            var color = GUI.color;
-            GUI.color = Color.white;
             GUILayout.BeginVertical(EditorStyles.helpBox);
-            GUI.color = color;
+
 
             GUILayout.Label(text, _labelStyle);
             GUILayout.EndVertical();
-        }
-
-        private int GetWordFullIndex(string[] words, int index)
-        {
-            var charCount = 0;
-
-            for (int i = 0; i < words.Length; i++)
-            {
-                if (words[index] == words[i])
-                {
-                    return charCount;
-                }
-
-                charCount += words[i].Length + 1;
-            }
-
-            return charCount;
         }
 
         //very inefficient
@@ -172,9 +181,11 @@ namespace TalkSystem.Editor
             _textPageIndex = textPageIndex;
 
             _currentTextPage = _talkData.GetPage(_textPageIndex);
+
+            _text = _currentTextPage.Text;
         }
 
-        //This is a text, 
+        //This is a text.
         //TODO: detect if a modified text index was changed.
         private void OnTextChangedHandler(string newText, int addedChars, int cursor)
         {
@@ -202,31 +213,50 @@ namespace TalkSystem.Editor
 
         private string HighlightText(TextPage page)
         {
-            if (page.Highlight != null)
+            var modifiedText = page.Text;
+
+            var splited = Regex.Split(modifiedText, " |\n");
+
+            for (int i = 0; i < page.Highlight.Count; i++)
             {
-                var modifiedText = page.Text;
-                var splited = Regex.Split(page.Text, " |\n");
+                var highlight = page.Highlight[i];
 
-                for (int i = 0; i < page.Highlight.Length; i++)
-                {
-                    var highlight = page.Highlight[i];
+                var wordIndex = GetWordFullIndex(splited, highlight.WordIndex);
 
-                    var wordIndex = GetWordFullIndex(splited, highlight.WordIndex);
+                var hex = ColorUtility.ToHtmlStringRGBA(highlight.Color);
 
-                    var hex = ColorUtility.ToHtmlStringRGBA(highlight.Color);
+                var insertColor = $"<color=#{hex}>";
 
-                    var insertColor = $"<color=#{hex}>";
+                var unmmodified = splited[highlight.WordIndex];
 
-                    modifiedText = modifiedText.Insert(wordIndex, insertColor);
-                    modifiedText = modifiedText.Insert(wordIndex + splited[highlight.WordIndex].Length + insertColor.Length, $"</color>");
-                }
+                unmmodified = unmmodified.Insert(0, insertColor);
+                unmmodified = unmmodified.Insert(unmmodified.Length - 1, "</color>");
 
-                //Debug.Log(modifiedText);
+                //this can be improve it
+                modifiedText = modifiedText.Insert(wordIndex, insertColor);
+                modifiedText = modifiedText.Insert(wordIndex + splited[highlight.WordIndex].Length + insertColor.Length, $"</color>");
 
-                return modifiedText;
+                splited[highlight.WordIndex] = unmmodified;
             }
 
-            return page.Text;
+            return modifiedText;
+        }
+
+        private int GetWordFullIndex(string[] words, int index)
+        {
+            var charCount = 0;
+
+            for (int i = 0; i < words.Length; i++)
+            {
+                if (words[index] == words[i])
+                {
+                    return charCount;
+                }
+
+                charCount += words[i].Length + 1;
+            }
+
+            return charCount;
         }
     }
 }
