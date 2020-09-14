@@ -40,7 +40,8 @@ namespace TalkSystem
     public class Talker : MonoSingleton<Talker>
     {
         [SerializeField] private TalkDataContainerScriptable _scriptableContainer;
-        [SerializeField] private TalkCloud _talkCloud;
+
+        private TalkCloudBase _talkCloud;
 
         private TalkData _talkData;
 
@@ -85,24 +86,26 @@ namespace TalkSystem
 
         protected override void Awake()
         {
-            _talkCloud.Init();
-
             _charByCharWriter = new CharByCharWriter(this);
 
             _charByCharWriter.OnPageWriten += OnPageWriten;
 
             _currentWriter = _charByCharWriter;
 
-            _talkCloud.OnCloudShown += OnCloudShown;
-            _talkCloud.OnCloudHidden += OnCloudHidden;
-
             base.Awake();
         }
 
-        public void StartTalk(TalkData talkData)
+        public void StartTalk(TalkCloudBase cloud, TalkData talkData)
         {
             if (!_isTalking)
             {
+                _talkCloud = cloud;
+
+                _talkCloud.Clear();
+
+                _talkCloud.OnCloudShown += OnCloudShown;
+                _talkCloud.OnCloudHidden += OnCloudHidden;
+
                 _talkData = talkData;
 
                 if (_talkData)
@@ -125,53 +128,53 @@ namespace TalkSystem
             }
         }
 
-        public void StartTalk(TalkData talkData, Action<TalkEvent> talkCallback)
+        public void StartTalk(TalkCloudBase cloud, TalkData talkData, Action<TalkEvent> talkCallback)
         {
             _talkCallback = talkCallback;
 
-            StartTalk(talkData);
+            StartTalk(cloud, talkData);
         }
 
-        public void StartTalk(TalkData talkData, Action<string> wordEventCallback)
+        public void StartTalk(TalkCloudBase cloud, TalkData talkData, Action<string> wordEventCallback)
         {
             _onWordEventCallBack = wordEventCallback;
 
-            StartTalk(talkData);
+            StartTalk(cloud, talkData);
         }
 
-        public void StartTalk(TalkData talkData, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
+        public void StartTalk(TalkCloudBase cloud, TalkData talkData, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
         {
             _onWordEventCallBack = wordEventCallback;
 
-            StartTalk(talkData, talkCallback);
+            StartTalk(cloud, talkData, talkCallback);
         }
 
-        public void StartTalk(string talkDataName)
+        public void StartTalk(TalkCloudBase cloud, string talkDataName)
         {
             _talkData = _scriptableContainer.Container.GetTalkAsset(talkDataName);
 
-            StartTalk(_talkData);
+            StartTalk(cloud, _talkData);
         }
 
-        public void StartTalk(string talkName, Action<TalkEvent> talkCallback)
+        public void StartTalk(TalkCloudBase cloud, string talkName, Action<TalkEvent> talkCallback)
         {
             _talkCallback = talkCallback;
 
-            StartTalk(talkName);
+            StartTalk(cloud, talkName);
         }
 
-        public void StartTalk(string talkName, Action<string> wordEventCallback)
+        public void StartTalk(TalkCloudBase cloud, string talkName, Action<string> wordEventCallback)
         {
             _onWordEventCallBack = wordEventCallback;
 
-            StartTalk(talkName);
+            StartTalk(cloud, talkName);
         }
 
-        public void StartTalk(string talkName, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
+        public void StartTalk(TalkCloudBase cloud, string talkName, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
         {
             _onWordEventCallBack = wordEventCallback;
 
-            StartTalk(talkName, talkCallback);
+            StartTalk(cloud, talkName, talkCallback);
         }
 
         public void NextPage()

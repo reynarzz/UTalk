@@ -59,5 +59,11 @@ namespace TalkSystem
         {
             OnCloudHidden?.Invoke();
         }
+
+        public override void Clear()
+        {
+            OnCloudShown = null;
+            OnCloudHidden = null;
+        }
     }
 }

@@ -340,6 +340,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spaceText: {fileID: 2069833959}
+  _talkCloud: {fileID: 60215773}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -470,7 +471,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scriptableContainer: {fileID: 11400000, guid: 4481bc2bd6485c347aeb4668517c476e,
     type: 2}
-  _talkCloud: {fileID: 60215773}
 --- !u!1 &1506204587
 GameObject:
   m_ObjectHideFlags: 0
@@ -650,6 +650,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spaceText: {fileID: 2069833959}
+  _talkCloud: {fileID: 60215773}
 --- !u!1 &1987416003
 GameObject:
   m_ObjectHideFlags: 0

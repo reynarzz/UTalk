@@ -63,7 +63,7 @@ namespace TalkSystem
     }
 
     [Serializable]
-    public struct TextPage
+    public class TextPage
     {
         [SerializeField, TextArea] private string _pageText;
         [SerializeField, HideInInspector] private Sprite _sprite; //later
@@ -81,6 +81,11 @@ namespace TalkSystem
         #region WriteStyleInfo
         public CharByCharInfo CharByCharInfo => _charByChar;
         #endregion
+
+        public TextPage(string text, Sprite sprite, WordEvent wEvent)
+        {
+            _highlight = new SDictionary<int, Highlight>();
+        }
 
         public TextPage(string text, Sprite sprite, WordEvent wEvent, SDictionary<int, Highlight> highlights)
         {

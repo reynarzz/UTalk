@@ -33,6 +33,7 @@ namespace TalkSystem
     public class Example : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _spaceText;
+        [SerializeField] private TalkCloudBase _talkCloud;
 
         private void Update()
         {
@@ -42,7 +43,7 @@ namespace TalkSystem
 
                 if (!Talker.Inst.IsTalking)
                 {
-                    Talker.Inst.StartTalk("TalkTest", Events);
+                    Talker.Inst.StartTalk(_talkCloud, "TalkTest", Events);
                 }
                 else
                 {
