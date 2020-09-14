@@ -26,7 +26,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using TMPro;
 
 namespace TalkSystem
 {
@@ -42,7 +41,7 @@ namespace TalkSystem
         {
             _animator.Play("Show");
         }
-         
+
         public override void CloseCloud()
         {
             _animator.Play("Hide");
@@ -60,7 +59,7 @@ namespace TalkSystem
             OnCloudHidden?.Invoke();
         }
 
-        public override void Clear()
+        protected override void Clear()
         {
             OnCloudShown = null;
             OnCloudHidden = null;

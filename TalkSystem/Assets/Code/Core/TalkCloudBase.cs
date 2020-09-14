@@ -19,14 +19,19 @@ namespace TalkSystem
         public abstract event Action OnCloudShown;
         public abstract event Action OnCloudHidden;
 
-        protected virtual void Awake()
+
+        public void Init()
         {
-            _texControl = new TextControl(_text);
+            if(_texControl == null)
+            {
+                _texControl = new TextControl(_text);
+            }
+
+            Clear();
         }
 
         public abstract void ShowCloud();
         public abstract void CloseCloud();
-
-        public abstract void Clear();
+        protected abstract void Clear();
     }
 }

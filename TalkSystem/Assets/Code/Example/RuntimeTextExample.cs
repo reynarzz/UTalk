@@ -62,7 +62,7 @@ namespace TalkSystem
             {
                 if (!Talker.Inst.IsTalking)
                 {
-                    Talker.Inst.StartTalk(_talkCloud, _data, Events);
+                    Talker.Inst.StartTalk(_talkCloud, _data, Handler);
                 }
                 else
                 {
@@ -71,7 +71,7 @@ namespace TalkSystem
             }
         }
 
-        private void Events(TalkEvent talkEvent)
+        private void Handler(TalkEvent talkEvent)
         {
             switch (talkEvent)
             {
@@ -82,6 +82,7 @@ namespace TalkSystem
                     _spaceText.enabled = true;
                     break;
                 case TalkEvent.PageChanged:
+                    var pageIndex = Talker.Inst.PageIndex;
                     break;
             }
         }

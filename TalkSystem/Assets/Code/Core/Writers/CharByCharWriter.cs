@@ -48,11 +48,9 @@ namespace TalkSystem
         private WaitForSeconds _fastSpeed;
 
         private WaitForSeconds _writeSpeed;
-
         private readonly MonoBehaviour _mono;
 
         public event Action OnPageWriten;
-
         public CharByCharWriter(MonoBehaviour mono)
         {
             _mono = mono;
@@ -129,7 +127,5 @@ namespace TalkSystem
         {
             control.ClearColors();
         }
-
-
     }
 }

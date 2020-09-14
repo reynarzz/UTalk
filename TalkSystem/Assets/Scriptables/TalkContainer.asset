@@ -30,8 +30,8 @@ MonoBehaviour:
               _highlight:
                 _keys: 0d000000
                 _values:
-                - _wordLength: 5
-                  _word: highlighted
+                - _wordIndex: 0
+                  _wordLength: 11
                   _color:
                     serializedVersion: 2
                     rgba: 4278230527

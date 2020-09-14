@@ -36,6 +36,7 @@ namespace TalkSystem
         PageChanged
     }
 
+
     /// <summary>Entry point to control the talk system.</summary>
     public class Talker : MonoSingleton<Talker>
     {
@@ -71,15 +72,34 @@ namespace TalkSystem
         /// <summary>Sets the target language (English default). If the player change it when the text is being displayed, all the text will be updated to the selected language.</summary>
         public Language Language
         {
-            get => _scriptableContainer.Container.Language;
+            get
+            {
+                if (_scriptableContainer)
+                {
+                    return _scriptableContainer.Container.Language;
+                }
+                else
+                {
+                    Debug.LogError("Container reference wasn't added.");
 
+                    return Language.English;
+                }
+            }
             set
             {
-                _scriptableContainer.Container.Language = value;
-
-                if (_talkData)
+                if (_scriptableContainer)
                 {
-                    _currentWriter.OnLanguageChanged(_currentPage);
+                    _scriptableContainer.Container.Language = value;
+
+                    if (_talkData)
+                    {
+                        _currentWriter.OnLanguageChanged(_currentPage);
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Container reference wasn't added.");
+
                 }
             }
         }
@@ -101,12 +121,14 @@ namespace TalkSystem
             {
                 _talkCloud = cloud;
 
-                _talkCloud.Clear();
+                _talkCloud.Init();
 
                 _talkCloud.OnCloudShown += OnCloudShown;
                 _talkCloud.OnCloudHidden += OnCloudHidden;
 
                 _talkData = talkData;
+
+                _currentPage = _talkData.GetPage(_firstPage);
 
                 if (_talkData)
                 {
@@ -130,51 +152,72 @@ namespace TalkSystem
 
         public void StartTalk(TalkCloudBase cloud, TalkData talkData, Action<TalkEvent> talkCallback)
         {
-            _talkCallback = talkCallback;
+            if (!_isTalking)
+            {
+                _talkCallback = talkCallback;
 
-            StartTalk(cloud, talkData);
+                StartTalk(cloud, talkData);
+            }
         }
 
         public void StartTalk(TalkCloudBase cloud, TalkData talkData, Action<string> wordEventCallback)
         {
-            _onWordEventCallBack = wordEventCallback;
+            if (!_isTalking)
+            {
+                _onWordEventCallBack = wordEventCallback;
 
-            StartTalk(cloud, talkData);
+                StartTalk(cloud, talkData);
+            }
         }
 
         public void StartTalk(TalkCloudBase cloud, TalkData talkData, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
         {
-            _onWordEventCallBack = wordEventCallback;
+            if (!_isTalking)
+            {
+                _onWordEventCallBack = wordEventCallback;
 
-            StartTalk(cloud, talkData, talkCallback);
+                StartTalk(cloud, talkData, talkCallback);
+            }
         }
 
         public void StartTalk(TalkCloudBase cloud, string talkDataName)
         {
-            _talkData = _scriptableContainer.Container.GetTalkAsset(talkDataName);
+            if (!_isTalking)
+            {
+                _talkData = _scriptableContainer.Container.GetTalkAsset(talkDataName);
 
-            StartTalk(cloud, _talkData);
+                StartTalk(cloud, _talkData);
+            }
         }
 
         public void StartTalk(TalkCloudBase cloud, string talkName, Action<TalkEvent> talkCallback)
         {
-            _talkCallback = talkCallback;
+            if (!_isTalking)
+            {
+                _talkCallback = talkCallback;
 
-            StartTalk(cloud, talkName);
+                StartTalk(cloud, talkName);
+            }
         }
 
         public void StartTalk(TalkCloudBase cloud, string talkName, Action<string> wordEventCallback)
         {
-            _onWordEventCallBack = wordEventCallback;
+            if (!_isTalking)
+            {
+                _onWordEventCallBack = wordEventCallback;
 
-            StartTalk(cloud, talkName);
+                StartTalk(cloud, talkName);
+            }
         }
 
         public void StartTalk(TalkCloudBase cloud, string talkName, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
         {
-            _onWordEventCallBack = wordEventCallback;
+            if (!_isTalking)
+            {
+                _onWordEventCallBack = wordEventCallback;
 
-            StartTalk(cloud, talkName, talkCallback);
+                StartTalk(cloud, talkName, talkCallback);
+            }
         }
 
         public void NextPage()
@@ -215,8 +258,6 @@ namespace TalkSystem
 
         private void OnCloudShown()
         {
-            _currentPage = _talkData.GetPage(_firstPage);
-
             _currentWriter.Write(_talkCloud.TextControl, _currentPage);
         }
 
@@ -228,6 +269,10 @@ namespace TalkSystem
             _talkCallback?.Invoke(TalkEvent.Finished);
 
             _talkCallback = null;
+            _onWordEventCallBack = null;
+
+            _talkCloud.OnCloudShown -= OnCloudShown;
+            _talkCloud.OnCloudHidden -= OnCloudHidden;
         }
 
         private void OnPageWriten()

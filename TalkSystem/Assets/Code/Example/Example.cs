@@ -32,18 +32,20 @@ namespace TalkSystem
 {
     public class Example : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI _spaceText;
         [SerializeField] private TalkCloudBase _talkCloud;
+
+        [SerializeField] private TextMeshProUGUI _spaceText;
+
 
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Talker.Inst.Language = Language.English;
-
+                
                 if (!Talker.Inst.IsTalking)
                 {
-                    Talker.Inst.StartTalk(_talkCloud, "TalkTest", Events);
+                    Talker.Inst.StartTalk(_talkCloud, "TalkTest", Handler);
                 }
                 else
                 {
@@ -52,7 +54,7 @@ namespace TalkSystem
             }
         }
 
-        private void Events(TalkEvent talkEvent)
+        private void Handler(TalkEvent talkEvent)
         {
             switch (talkEvent)
             {
@@ -63,6 +65,7 @@ namespace TalkSystem
                     _spaceText.enabled = true;
                     break;
                 case TalkEvent.PageChanged:
+                    var pageIndex = Talker.Inst.PageIndex;
                     break;
             }
         }
