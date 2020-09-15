@@ -44,9 +44,9 @@ namespace TalkSystem
             var page = new TextPage(text,
                 new SDictionary<int, Highlight>()
                 {
-                    { Highlight.GetStartingCharIndex(text, 0), new Highlight(0, "This", Color.blue) },
-                    { Highlight.GetStartingCharIndex(text, 3), new Highlight(3, "first", Color.red) },
-                    { Highlight.GetStartingCharIndex(text, 8), new Highlight(8, "second", Color.green) }
+                    { Highlight.GetStartingCharIndex(text, 0), new Highlight(0, "This".Length, Color.blue) },
+                    { Highlight.GetStartingCharIndex(text, 3), new Highlight(3, "first".Length, Color.red) },
+                    { Highlight.GetStartingCharIndex(text, 8), new Highlight(8, "second".Length, Color.green) }
                 });
 
             _data = new TalkData(new List<TextPage>() { page })

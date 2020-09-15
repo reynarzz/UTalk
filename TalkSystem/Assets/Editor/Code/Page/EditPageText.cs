@@ -16,7 +16,7 @@ namespace TalkSystem.Editor
 
         private string _text;
         private int _oldCursorIndex;
-        private (string, int) _selectedWord;
+        private (int, string) _selectedWord;
 
         private GUIStyle _labelStyle;
 
@@ -27,9 +27,11 @@ namespace TalkSystem.Editor
         public event TextChanged OnTextChanged;
 
         private TextPage _currentTextPage;
+        private StringBuilder _highlightedText;
 
         public EditPageText()
         {
+            _highlightedText = new StringBuilder();
             OnTextChanged += OnTextChangedHandler;
         }
 
@@ -54,19 +56,20 @@ namespace TalkSystem.Editor
                 {
                     _oldCursorIndex = textEditor.CursorIndex;
 
-                    var word = GetSelectedWord(_text, textEditor.CursorIndex);
+                    var word = GetWordIndex(_text, textEditor.CursorIndex);
 
-                    if (!string.IsNullOrEmpty(word.Item1))
+                    if (!string.IsNullOrEmpty(word.Item2))
                     {
                         _selectedWord = word;
 
-                        //Debug.Log(word);
+                        Debug.Log(word);
                     }
                 }
 
                 GUILayout.Space(5);
 
-                if (!string.IsNullOrEmpty(_selectedWord.Item1))
+                //does the TextArea have text?
+                if (!string.IsNullOrEmpty(_selectedWord.Item2))
                 {
                     GUILayout.BeginHorizontal();
                     EditorGUILayout.Toggle(false, GUILayout.MaxWidth(17));
@@ -77,7 +80,7 @@ namespace TalkSystem.Editor
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
 
-                    var startingCharIndex = Highlight.GetStartingCharIndex(_text, _selectedWord.Item2);
+                    var startingCharIndex = Highlight.GetStartingCharIndex(_text, _selectedWord.Item1);
 
                     var containsKey = _currentTextPage.Highlight.ContainsKey(startingCharIndex);
 
@@ -98,7 +101,7 @@ namespace TalkSystem.Editor
                     color.a = 1;
                     GUILayout.EndHorizontal();
 
-                    highlight = new Highlight(_selectedWord.Item2, _selectedWord.Item1, color, HighlightAnimation.None);
+                    highlight = new Highlight(startingCharIndex, _selectedWord.Item2.Length, color, HighlightAnimation.None);
 
                     _currentTextPage.Highlight[startingCharIndex] = highlight;
 
@@ -114,7 +117,6 @@ namespace TalkSystem.Editor
             }
         }
 
-        //private void
         private void Init()
         {
             if (_labelStyle == null)
@@ -137,31 +139,7 @@ namespace TalkSystem.Editor
             GUILayout.EndVertical();
         }
 
-        //very inefficient
-        private (string, int) GetSelectedWord(string text, int cursor)
-        {
-            var explit = Regex.Split(text, " |\n");
-            var charCount = 0;
 
-            var word = "";
-
-            for (int i = 0; i < explit.Length; i++)
-            {
-                for (int j = 0; j < explit[i].Length; j++)
-                {
-                    if (charCount == cursor)
-                    {
-                        return (explit[i], i);
-                    }
-
-                    charCount++;
-                }
-
-                charCount++;
-            }
-
-            return (word, 0);
-        }
 
         public void SetTextPageIndex(int textPageIndex)
         {
@@ -172,88 +150,137 @@ namespace TalkSystem.Editor
             _text = _currentTextPage.Text;
         }
 
-        //This is a text.
         //TODO: detect if a modified text index was changed.
         private void OnTextChangedHandler(string newText, int addedChars, int cursor)
         {
             //basically a word have to be like a pointer, all the properties you put to a word can't be losed if a word chage it's index.
-            var oldText = _currentTextPage.Text;
+            //var oldText = _currentTextPage.Text;
 
-            var wasAdded = addedChars > 0;
+            //var wasAdded = addedChars > 0;
 
-            if (wasAdded)
+            var insertedIndex = cursor - addedChars;
+
+            //if (wasAdded)
+            //{
+            //    //Added to end of text.
+            //    if (cursor == newText.Length)
+            //    {
+            //        Debug.Log("Added to end");
+            //    }
+            //    else //Inserted in a part of the text.
+            //    {
+            //        var textInserted = newText.Substring(cursor - addedChars, addedChars);
+
+            //        //var notModifableText = oldText.Substring(0, insertedIndex);
+            //        //var textToModify = oldText.Substring(insertedIndex, oldText.Length - insertedIndex);
+
+            //        RearrangeHighlightedWords(addedChars, insertedIndex);
+
+
+            //        Debug.Log($"Inserted \"{textInserted}\" in: " + insertedIndex + ", Recreated");
+            //    }
+            //}
+            //else
+            //{
+            //    Debug.Log("Was removed: " + addedChars);
+
+            //    RearrangeHighlightedWords(addedChars, insertedIndex);
+            //}
+
+            RearrangeHighlightedWords(addedChars, insertedIndex);
+
+            _currentTextPage = new TextPage(newText, _currentTextPage.Highlight);
+        }
+
+        private void RearrangeHighlightedWords(int addedChars, int insertedIndex)
+        {
+            if (_currentTextPage.Highlight.Count > 0)
             {
-                if (cursor == newText.Length)
+                var highlightKeysToModify = _currentTextPage.Highlight.Keys.Where(x => x >= insertedIndex);
+                var count = highlightKeysToModify.Count();
+
+                for (int i = 0; i < count; i++)
                 {
-                    Debug.Log("Added to end");
-                }
-                else
-                {
-                    var insertedIndex = cursor - addedChars;
-                    var textInserted = newText.Substring(cursor - addedChars, addedChars);
+                    var key = highlightKeysToModify.ElementAt(i);
 
-                    if (_currentTextPage.Highlight.Count > 0)
-                    {
-                        //_currentTextPage.Highlight[];
-                    }
+                    Debug.Log($"char index: {key}" + ", Now: " + (key + addedChars));
 
-                    Debug.Log($"Inserted \"{textInserted}\" in: " + insertedIndex);
+                    var highlight = _currentTextPage.Highlight[key];
+
+                    highlight = new Highlight(key + addedChars, highlight.WordLength, highlight.Color, highlight.Type);
+
+                    _currentTextPage.Highlight.Remove(key);
+
+                    _currentTextPage.Highlight.Add(key + addedChars, highlight);
                 }
             }
-            else
-            {
-                Debug.Log("Was removed: " + addedChars);
-            }
-
-            if (wasAdded)
-            {
-                var splited = Regex.Split(oldText, " |\n");
-
-                //Array.Exists(_currentTextPage.Highlight, x => x.
-            }
-            else
-            {
-
-            }
-
-            //_currentTextPage.Highlight;
-
-            //_currentTextPage = new TextPage(newText, );
         }
 
         private string HighlightText(TextPage page)
         {
-            var modifiedText = page.Text;
+            _highlightedText.Clear();
+            _highlightedText.Append(page.Text);
 
-            var splited = Regex.Split(modifiedText, " |\n");
+            var splited = Regex.Split(_highlightedText.ToString(), " ");
 
             for (int i = 0; i < page.Highlight.Count; i++)
             {
-                var highlight = page.Highlight[page.Highlight.Keys.ElementAt(i)];
+                var key = page.Highlight.Keys.ElementAt(i);
 
-                var startIndex = Highlight.GetStartingCharIndex(modifiedText, highlight.WordIndex);
+                //Get a highlight
+                var highlight = page.Highlight[key];
+
+                //Get the wordIndex where the highligh is, this sould change.
+                var wordIndex = GetWordIndex(_highlightedText.ToString(), highlight.WordCharIndex).Item1;
 
                 var hex = ColorUtility.ToHtmlStringRGBA(highlight.Color);
 
-                var insertColor = $"<color=#{hex}>";
+                var colorOpen = $"<color=#{hex}>";
+                var colorClose = "</color>";
 
-                //this can be improve it
-                modifiedText = modifiedText.Insert(startIndex, insertColor)
-                                           .Insert(startIndex + splited[highlight.WordIndex].Length + insertColor.Length, $"</color>");
+                var unmmodified = splited[wordIndex];
 
-                //var unmmodified = splited[highlight.WordIndex];
+                unmmodified = unmmodified.Insert(0, colorOpen);
+                unmmodified = unmmodified.Insert(unmmodified.Length, colorClose);
 
-                //unmmodified = unmmodified.Insert(0, insertColor);
-                //unmmodified = unmmodified.Insert(unmmodified.Length - 1, "</color>");
-
-                ////this can be improve it
-                //modifiedText = modifiedText.Insert(startIndex, insertColor);
-                //modifiedText = modifiedText.Insert(startIndex + splited[highlight.WordIndex].Length + insertColor.Length, $"</color>");
-
-                //splited[highlight.WordIndex] = unmmodified;
+                splited[wordIndex] = unmmodified;
             }
 
-            return modifiedText;
+            _highlightedText.Clear();
+
+            for (int i = 0; i < splited.Length; i++)
+            {
+                _highlightedText.Append(splited[i]);
+                _highlightedText.Append(" ");
+            }
+
+            return _highlightedText.ToString();
+        }
+
+        //very inefficient
+        private (int, string) GetWordIndex(string text, int charIndex)
+        {
+            var explit = Regex.Split(text, " |\n");
+            var charCount = 0;
+
+            var word = "";
+
+            for (int i = 0; i < explit.Length; i++)
+            {
+                for (int j = 0; j < explit[i].Length; j++)
+                {
+                    if (charCount == charIndex)
+                    {
+                        return (i, explit[i]);
+                    }
+
+                    charCount++;
+                }
+
+                charCount++;
+            }
+
+            return (0, word);
         }
     }
 }

@@ -128,7 +128,7 @@ namespace TalkSystem
     [Serializable]
     public struct Highlight
     {
-        [SerializeField] private int _wordIndex;
+        [SerializeField] private int _wordCharIndex;
         [SerializeField] private int _wordLength;
 
         [SerializeField] private Color32 _color;
@@ -136,29 +136,29 @@ namespace TalkSystem
 
         public int WordLength => _wordLength;
 
-        public int WordIndex => _wordIndex;
+        public int WordCharIndex => _wordCharIndex;
         public Color32 Color => _color;
         public HighlightAnimation Type => _animationType;
 
         private const int _whiteSpace = 1;
 
-        public Highlight(int wordIndex, string word, Color32 color)
+        public Highlight(int wordCharIndex, int wordLength, Color32 color)
         {
-            _wordIndex = wordIndex;
+            _wordCharIndex = wordCharIndex;
             _color = color;
             _animationType = HighlightAnimation.None;
 
-            _wordLength = word.Length;
+            _wordLength = wordLength;
         }
 
-        public Highlight(int wordIndex, string word, Color32 color, HighlightAnimation type)
+        public Highlight(int wordCharIndex, int wordLength, Color32 color, HighlightAnimation type)
         {
-            _wordIndex = wordIndex;
+            _wordCharIndex = wordCharIndex;
 
             _color = color;
             _animationType = type;
 
-            _wordLength = word.Length;
+            _wordLength = wordLength;
         }
 
         public static bool operator ==(Highlight a, Highlight b)
