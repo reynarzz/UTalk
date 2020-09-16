@@ -27,6 +27,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.Reflection;
 
 namespace TalkSystem.Editor
 {
@@ -34,8 +35,20 @@ namespace TalkSystem.Editor
     public static class GUIUtils
     {
         private static GUIContent _guiContent;
-
         private static int _cursorIndex;
+
+        private static PropertyInfo _compositionStringProperty;
+        private static PropertyInfo _textFieldInput;
+        private static FieldInfo _hasFocusProperty;
+
+        private static string _compositionString => (string)_compositionStringProperty.GetValue(null);
+
+        public enum TextOperation
+        {
+            Copy,
+            Cut,
+            Paste
+        }
 
         public struct TextEditorInfo
         {
@@ -45,7 +58,6 @@ namespace TalkSystem.Editor
             private bool _lengthChanged;
             private int _addedChars;
             private string _selectedText;
-
             public int CursorIndex => _cursorIndex;
 
             public string Text => _fullText;
@@ -68,6 +80,10 @@ namespace TalkSystem.Editor
         static GUIUtils()
         {
             _guiContent = new GUIContent();
+
+            _compositionStringProperty = typeof(GUIUtility).GetProperty("compositionString", BindingFlags.Static | BindingFlags.NonPublic);
+            _textFieldInput = typeof(GUIUtility).GetProperty("textFieldInput", BindingFlags.Static | BindingFlags.NonPublic);
+            _hasFocusProperty = typeof(SmartTextEditor).GetField("m_HasFocus", BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
         public static TextEditorInfo TextArea(ref string text, params GUILayoutOption[] options)
@@ -77,7 +93,7 @@ namespace TalkSystem.Editor
                 text = "";
             }
 
-            return DoTextFieldOrSomething(ref text, true, GUI.skin.textArea, options);
+            return DoTextFieldOrSomething(ref text, true, GUI.skin.textArea, options, null);
         }
 
         public static TextEditorInfo TextField(ref string text, params GUILayoutOption[] options)
@@ -87,11 +103,22 @@ namespace TalkSystem.Editor
                 text = "";
             }
 
-            return DoTextFieldOrSomething(ref text, false, GUI.skin.textField, options);
+            return DoTextFieldOrSomething(ref text, false, GUI.skin.textField, options, null);
+        }
+
+        public static TextEditorInfo TextArea(ref string text, Action<TextOperation, string, int> onOperationCallback, params GUILayoutOption[] options)
+        {
+            if (text == null)
+            {
+                text = "";
+            }
+
+            return DoTextFieldOrSomething(ref text, true, GUI.skin.textArea, options, onOperationCallback);
         }
 
         //TODO: Copy paste doesn't work correctly. 
-        private static TextEditorInfo DoTextFieldOrSomething(ref string text, bool multiline, GUIStyle style, GUILayoutOption[] options)
+        private static TextEditorInfo DoTextFieldOrSomething(ref string text, bool multiline, GUIStyle style, GUILayoutOption[] options, 
+                                                             Action<TextOperation, string, int> onTextInClipboard)
         {
             int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
 
@@ -100,14 +127,15 @@ namespace TalkSystem.Editor
             //gUIContent = ((GUIUtility.keyboardControl == controlID) ? _guiContent.text /*+ GUIUtility.compositionString*/ : te);
             var rect = GUILayoutUtility.GetRect(_guiContent, style, options);
 
-            var textEditor = DoTextField(rect, controlID, _guiContent, multiline, -1, style);
+            var textEditor = DoTextField(rect, controlID, _guiContent, multiline, -1, style, onTextInClipboard);
 
             text = textEditor.Text;
 
             return textEditor;
         }
 
-        private static TextEditorInfo DoTextField(Rect position, int id, GUIContent content, bool multiline, int maxLength, GUIStyle style)
+        private static TextEditorInfo DoTextField(Rect position, int id, GUIContent content, bool multiline, int maxLength, GUIStyle style, 
+                                                  Action<TextOperation, string, int> onTextInClipboard)
         {
             //GUIUtility.CheckOnGUI(); //If is called from OnGUI method
 
@@ -116,7 +144,16 @@ namespace TalkSystem.Editor
                 content.text = content.text.Substring(0, maxLength);
             }
 
-            var textEditor = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), id);
+            var textEditor = (SmartTextEditor)GUIUtility.GetStateObject(typeof(SmartTextEditor), id);
+
+            textEditor.Clear();
+
+            if (onTextInClipboard != null)
+            {
+                textEditor.OnCopy += x => onTextInClipboard(TextOperation.Copy, x, textEditor.cursorIndex);
+                textEditor.OnCut += x => onTextInClipboard(TextOperation.Cut, x, textEditor.cursorIndex);
+                textEditor.OnPaste += x => onTextInClipboard(TextOperation.Paste, x, textEditor.cursorIndex);
+            }
 
             textEditor.text = content.text;
             textEditor.SaveBackup();
@@ -126,12 +163,6 @@ namespace TalkSystem.Editor
             textEditor.controlID = id;
             textEditor.DetectFocusChange();
 
-            //if (TouchScreenKeyboard.isSupported && !TouchScreenKeyboard.isInPlaceEditingAllowed)
-            //{
-            //    HandleTextFieldEventForTouchscreen(position, id, content, multiline, maxLength, style, secureText, maskChar, textEditor);
-            //}
-            //else
-
             var charsAdded = HandleTextFieldEventForDesktop(position, id, content, multiline, maxLength, style, textEditor);
 
             textEditor.UpdateScrollOffsetIfNeeded(Event.current);
@@ -139,7 +170,7 @@ namespace TalkSystem.Editor
             return new TextEditorInfo(textEditor.text, textEditor.SelectedText, _cursorIndex, charsAdded, charsAdded != 0); ;
         }
 
-        private static int HandleTextFieldEventForDesktop(Rect position, int id, GUIContent content, bool multiline, int maxLength, GUIStyle style, TextEditor editor)
+        private static int HandleTextFieldEventForDesktop(Rect position, int id, GUIContent content, bool multiline, int maxLength, GUIStyle style, SmartTextEditor editor)
         {
             Event current = Event.current;
             bool flag = false;
@@ -154,7 +185,7 @@ namespace TalkSystem.Editor
                     {
                         GUIUtility.hotControl = id;
                         GUIUtility.keyboardControl = id;
-                        //editor.m_HasFocus = true;
+                        _hasFocusProperty.SetValue(editor, true);
                         editor.MoveCursorToPosition(Event.current.mousePosition);
                         if (Event.current.clickCount == 2 && GUI.skin.settings.doubleClickSelectsWord)
                         {
@@ -202,8 +233,6 @@ namespace TalkSystem.Editor
                             return charsAdded;
                         }
 
-
-
                         if (editor.HandleKeyEvent(current))
                         {
                             current.Use();
@@ -218,14 +247,10 @@ namespace TalkSystem.Editor
                                     var deleted = originalTextLength - editor.text.Length;
 
                                     charsAdded = -deleted;
-
-                                    //Debug.Log($"{-deleted} added, was: " + (_cursorIndex + deleted) + ", is: " + _cursorIndex);
                                 }
                                 else
                                 {
                                     charsAdded = editor.text.Length - originalTextLength;
-
-                                    //Debug.Log("add: " + charAdded);
                                 }
                             }
 
@@ -258,16 +283,15 @@ namespace TalkSystem.Editor
                             flag = true;
 
                             charsAdded++;
-
-                            //Debug.Log("add " + charAdded);
                         }
                         else if (character == '\0') //if is null char
                         {
-                            //if (GUIUtility.compositionString.Length > 0)
+                            if (_compositionString.Length > 0)
                             {
                                 editor.ReplaceSelection("");
                                 flag = true;
                             }
+
                             current.Use();
                         }
 
@@ -278,8 +302,6 @@ namespace TalkSystem.Editor
                                 var deleted = originalTextLength - editor.text.Length;
 
                                 charsAdded = -deleted;
-
-                                //Debug.Log($"{-deleted} added, was: " + (_cursorIndex + deleted) + ", is: " + _cursorIndex);
                             }
                         }
                         break;
@@ -295,12 +317,10 @@ namespace TalkSystem.Editor
                     }
 
                     break;
-
-
             }
             if (GUIUtility.keyboardControl == id)
             {
-                //GUIUtility.textFieldInput = true;
+                _textFieldInput.SetValue(null, true);
             }
             if (flag)
             {

@@ -24,6 +24,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -188,6 +189,32 @@ namespace TalkSystem
             }
 
             return charIndex;
+        }
+
+        //very inefficient
+        public static (int, string) GetWordIndex(string text, int charIndex)
+        {
+            var explit = Regex.Split(text, " |\n");
+            var charCount = 0;
+
+            var word = "";
+
+            for (int i = 0; i < explit.Length; i++)
+            {
+                for (int j = 0; j < explit[i].Length; j++)
+                {
+                    if (charCount == charIndex)
+                    {
+                        return (i, explit[i]);
+                    }
+
+                    charCount++;
+                }
+
+                charCount++;
+            }
+
+            return (0, word);
         }
     }
 
