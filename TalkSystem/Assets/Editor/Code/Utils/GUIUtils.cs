@@ -39,22 +39,25 @@ namespace TalkSystem.Editor
 
         public struct TextEditorInfo
         {
-            private string _text;
+            private string _fullText;
 
             private int _cursorIndex;
             private bool _lengthChanged;
             private int _addedChars;
+            private string _selectedText;
 
             public int CursorIndex => _cursorIndex;
 
-            public string Text => _text;
+            public string Text => _fullText;
 
             public bool TextLengthChanged => _lengthChanged;
             public int AddedChars => _addedChars;
+            public string SelectedText => _selectedText;
 
-            public TextEditorInfo(string text, int cursorIndex, int addedChars, bool textLengthChanged)
+            public TextEditorInfo(string fullText, string selectedText, int cursorIndex, int addedChars, bool textLengthChanged)
             {
-                _text = text;
+                _fullText = fullText;
+                _selectedText = selectedText;
                 _cursorIndex = cursorIndex;
                 _addedChars = addedChars;
 
@@ -133,7 +136,7 @@ namespace TalkSystem.Editor
 
             textEditor.UpdateScrollOffsetIfNeeded(Event.current);
 
-            return new TextEditorInfo(textEditor.text, _cursorIndex, charsAdded, charsAdded != 0); ;
+            return new TextEditorInfo(textEditor.text, textEditor.SelectedText, _cursorIndex, charsAdded, charsAdded != 0); ;
         }
 
         private static int HandleTextFieldEventForDesktop(Rect position, int id, GUIContent content, bool multiline, int maxLength, GUIStyle style, TextEditor editor)

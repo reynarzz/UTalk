@@ -179,7 +179,7 @@ namespace TalkSystem
 
             for (int i = 0; i < splited.Length; i++)
             {
-                if (splited[wordIndex] == splited[i])
+                if (i == wordIndex)
                 {
                     return charIndex;
                 }

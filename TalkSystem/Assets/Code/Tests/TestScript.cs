@@ -13,10 +13,10 @@ namespace Tests
         [Test]
         public void GetStartingCharIndex_TEST()
         {
-            var charIndex = Highlight.GetStartingCharIndex("The text being tested right now", 2);
-            var charIndex2 = Highlight.GetStartingCharIndex("The text being\ntested right now", 3);
+            var charIndex = Highlight.GetStartingCharIndex("The text being tested right now text", 6);
+            var charIndex2 = Highlight.GetStartingCharIndex("The text being\ntested right now text", 3);
 
-            Assert.IsTrue(charIndex == 9);
+            Assert.IsTrue(charIndex == 32);
             Assert.IsTrue(charIndex2 == 15);
         }
 

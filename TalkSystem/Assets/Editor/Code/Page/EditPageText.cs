@@ -45,68 +45,16 @@ namespace TalkSystem.Editor
 
                 GUILayout.Space(10);
 
-                var textEditor = GUIUtils.TextArea(ref _text);
+                var textInfo = GUIUtils.TextArea(ref _text);
 
-                if (textEditor.TextLengthChanged)
+                if (textInfo.TextLengthChanged)
                 {
-                    OnTextChanged(textEditor.Text, textEditor.AddedChars, textEditor.CursorIndex);
-                }
-
-                if (_oldCursorIndex != textEditor.CursorIndex)
-                {
-                    _oldCursorIndex = textEditor.CursorIndex;
-
-                    var word = GetWordIndex(_text, textEditor.CursorIndex);
-
-                    if (!string.IsNullOrEmpty(word.Item2))
-                    {
-                        _selectedWord = word;
-
-                        Debug.Log(word);
-                    }
+                    OnTextChanged(textInfo.Text, textInfo.AddedChars, textInfo.CursorIndex);
                 }
 
                 GUILayout.Space(5);
 
-                //does the TextArea have text?
-                if (!string.IsNullOrEmpty(_selectedWord.Item2))
-                {
-                    GUILayout.BeginHorizontal();
-                    EditorGUILayout.Toggle(false, GUILayout.MaxWidth(17));
-
-                    GUILayout.Label($"Highlight Options ({_selectedWord.Item1})");
-
-                    GUILayout.EndHorizontal();
-
-                    GUILayout.BeginVertical(EditorStyles.helpBox);
-
-                    var startingCharIndex = Highlight.GetStartingCharIndex(_text, _selectedWord.Item1);
-
-                    var containsKey = _currentTextPage.Highlight.ContainsKey(startingCharIndex);
-
-                    var highlight = default(Highlight);
-
-                    if (containsKey)
-                    {
-                        highlight = _currentTextPage.Highlight[startingCharIndex];
-                    }
-                    else
-                    {
-                        _currentTextPage.Highlight.Add(startingCharIndex, highlight);
-                    }
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("Color", GUILayout.MaxWidth(60));
-                    var color = EditorGUILayout.ColorField(highlight.Color);
-                    color.a = 1;
-                    GUILayout.EndHorizontal();
-
-                    highlight = new Highlight(startingCharIndex, _selectedWord.Item2.Length, color, HighlightAnimation.None);
-
-                    _currentTextPage.Highlight[startingCharIndex] = highlight;
-
-                    GUILayout.EndVertical();
-                }
+                UpdateColor(textInfo);
 
                 var page = new TextPage(_text, _currentTextPage.Sprite, _currentTextPage.Event, _currentTextPage.Highlight);
 
@@ -114,6 +62,63 @@ namespace TalkSystem.Editor
 
                 GUILayout.Space(5);
                 TextPreview(hightligted);
+            }
+        }
+
+        private void UpdateColor(GUIUtils.TextEditorInfo textInfo)
+        {
+            if (_oldCursorIndex != textInfo.CursorIndex)
+            {
+                _oldCursorIndex = textInfo.CursorIndex;
+
+                var word = GetWordIndex(_text, textInfo.CursorIndex);
+
+                if (!string.IsNullOrEmpty(word.Item2))
+                {
+                    _selectedWord = word;
+
+                    //Debug.Log(word);
+                }
+            }
+             
+            //does the TextArea have text?
+            if (!string.IsNullOrEmpty(_selectedWord.Item2))
+            {
+                GUILayout.BeginHorizontal();
+                EditorGUILayout.Toggle(false, GUILayout.MaxWidth(17));
+
+                GUILayout.Label($"Highlight Options ({textInfo.SelectedText + ", " + _selectedWord.Item1})");
+
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginVertical(EditorStyles.helpBox);
+
+                var startingCharIndex = Highlight.GetStartingCharIndex(_text, _selectedWord.Item1);
+
+                var containsKey = _currentTextPage.Highlight.ContainsKey(startingCharIndex);
+
+                var highlight = default(Highlight);
+
+                if (containsKey)
+                {
+                    highlight = _currentTextPage.Highlight[startingCharIndex];
+                }
+                else
+                {
+                    _currentTextPage.Highlight.Add(startingCharIndex, highlight);
+                }
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Color", GUILayout.MaxWidth(60));
+                var color = EditorGUILayout.ColorField(highlight.Color);
+                color.a = 1;
+                GUILayout.EndHorizontal();
+
+                highlight = new Highlight(startingCharIndex, _selectedWord.Item2.Length, color, HighlightAnimation.None);
+
+                _currentTextPage.Highlight[startingCharIndex] = highlight;
+
+                GUILayout.EndVertical();
             }
         }
 
@@ -125,6 +130,7 @@ namespace TalkSystem.Editor
                 _labelStyle.active.textColor = Color.white;
                 _labelStyle.normal.textColor = Color.white;
                 _labelStyle.richText = true;
+                _labelStyle.wordWrap = true;
             }
         }
 
@@ -187,9 +193,9 @@ namespace TalkSystem.Editor
             //    RearrangeHighlightedWords(addedChars, insertedIndex);
             //}
 
-            RearrangeHighlightedWords(addedChars, insertedIndex);
+            //--RearrangeHighlightedWords(addedChars, insertedIndex);
 
-            _currentTextPage = new TextPage(newText, _currentTextPage.Highlight);
+            //--_currentTextPage = new TextPage(newText, _currentTextPage.Highlight);
         }
 
         private void RearrangeHighlightedWords(int addedChars, int insertedIndex)
@@ -197,22 +203,32 @@ namespace TalkSystem.Editor
             if (_currentTextPage.Highlight.Count > 0)
             {
                 var highlightKeysToModify = _currentTextPage.Highlight.Keys.Where(x => x >= insertedIndex);
-                var count = highlightKeysToModify.Count();
-
-                for (int i = 0; i < count; i++)
+                Debug.Log("inserted");
+                for (int i = 0; i < highlightKeysToModify.Count(); i++)
                 {
                     var key = highlightKeysToModify.ElementAt(i);
 
-                    Debug.Log($"char index: {key}" + ", Now: " + (key + addedChars));
+                    var newKey = key + addedChars;
+                    //Debug.Log($"char index: {key}" + ", Now: " + newKey);
 
                     var highlight = _currentTextPage.Highlight[key];
 
-                    highlight = new Highlight(key + addedChars, highlight.WordLength, highlight.Color, highlight.Type);
+                    highlight = new Highlight(newKey, highlight.WordLength, highlight.Color, highlight.Type);
 
                     _currentTextPage.Highlight.Remove(key);
 
-                    _currentTextPage.Highlight.Add(key + addedChars, highlight);
+                    if (_currentTextPage.Highlight.ContainsKey(newKey))
+                    {
+                        Debug.Log("New key");
+                        _currentTextPage.Highlight[newKey] = highlight;
+                    }
+                    else
+                    {
+                        _currentTextPage.Highlight.Add(newKey, highlight);
+                    }
                 }
+
+                Debug.Log("Count: " + highlightKeysToModify.Count());
             }
         }
 
@@ -221,7 +237,7 @@ namespace TalkSystem.Editor
             _highlightedText.Clear();
             _highlightedText.Append(page.Text);
 
-            var splited = Regex.Split(_highlightedText.ToString(), " ");
+            var splited = Regex.Split(_highlightedText.ToString(), " |\n");
 
             for (int i = 0; i < page.Highlight.Count; i++)
             {
@@ -230,7 +246,7 @@ namespace TalkSystem.Editor
                 //Get a highlight
                 var highlight = page.Highlight[key];
 
-                //Get the wordIndex where the highligh is, this sould change.
+                //Get the wordIndex where the highligh is
                 var wordIndex = GetWordIndex(_highlightedText.ToString(), highlight.WordCharIndex).Item1;
 
                 var hex = ColorUtility.ToHtmlStringRGBA(highlight.Color);
@@ -239,7 +255,7 @@ namespace TalkSystem.Editor
                 var colorClose = "</color>";
 
                 var unmmodified = splited[wordIndex];
-
+                 
                 unmmodified = unmmodified.Insert(0, colorOpen);
                 unmmodified = unmmodified.Insert(unmmodified.Length, colorClose);
 
@@ -252,6 +268,7 @@ namespace TalkSystem.Editor
             {
                 _highlightedText.Append(splited[i]);
                 _highlightedText.Append(" ");
+
             }
 
             return _highlightedText.ToString();
