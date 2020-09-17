@@ -28,43 +28,62 @@ namespace TalkSystem.Editor
 
         private TextPage _currentTextPage;
         private StringBuilder _highlightedText;
+
         private class Clipboard
         {
-            private Dictionary<Highlight, string> _buffer;
+            private List<Highlight> _highlightClipboard;
 
             public Clipboard()
             {
-                _buffer = new Dictionary<Highlight, string>();
+                _highlightClipboard = new List<Highlight>();
             }
 
-            public void SetToClipBoard(TextPage page, string fullText, string copiedText, int cursor)
+            public void SetToClipBoard(TextPage page, string fullText, string copiedText, int selectIndex, int cursor)
             {
-                var startChar = cursor;
+                int startCharIndex;
+                int endCharIndex;
 
-                Debug.Log(startChar);
+                _highlightClipboard.Clear();
 
-                var splitWords = Regex.Split(fullText, " |\n");
-
-                var matches = Regex.Matches(copiedText, " |\n");
-
-                var moreThanOneWord = matches.Count > 0;
-
-                if (moreThanOneWord)
+                if (cursor > selectIndex)
                 {
-                    foreach (Match match in matches)
-                    {
-                        var cursorInWord = match.Index - 1;
-
-                        var wordIndex = Highlight.GetWordIndex(fullText, cursorInWord);
-
-                        Debug.Log("Word Index: " + wordIndex);
-                    }
+                    startCharIndex = selectIndex;
+                    endCharIndex = cursor;
                 }
                 else
                 {
-
+                    startCharIndex = cursor;
+                    endCharIndex = selectIndex;
                 }
 
+                for (int i = startCharIndex; i < endCharIndex; i++)
+                {
+                    var prevChar = fullText.ElementAtOrDefault(i - 1);
+
+                    var prevCharIsValid = prevChar == default || prevChar == ' ' || prevChar == '\n';
+                    var currentCharIsValid = fullText[i] != ' ' && fullText[i] != '\n' && i < endCharIndex;
+
+                    if (prevCharIsValid && currentCharIsValid)
+                    {
+                        //Does this word has a highlight property?
+                        if (page.Highlight.ContainsKey(i))
+                        {
+                            _highlightClipboard.Add(page.Highlight[i]);
+                        }
+
+                        Debug.Log("Starting char " + i);
+                    }
+                }
+            }
+
+            public void PasteHighlightOfClipboard()
+            {
+                //TODO
+            }
+
+            public List<Highlight> GetHighlightClipboard()
+            {
+                return default;
             }
         }
 
@@ -122,13 +141,13 @@ namespace TalkSystem.Editor
             }
         }
 
-        private void SetToClipboard(GUIUtils.TextOperation operation, string inclipboard, int cursor)
+        private void SetToClipboard(GUIUtils.TextOperation operation, string clipboardText, int selectIndex, int cursor)
         {
             switch (operation)
             {
                 case GUIUtils.TextOperation.Copy:
                 case GUIUtils.TextOperation.Cut:
-                    _clipboard.SetToClipBoard(_currentTextPage, _text, inclipboard, cursor);
+                    _clipboard.SetToClipBoard(_currentTextPage, _text, clipboardText, selectIndex, cursor);
                     break;
                 case GUIUtils.TextOperation.Paste:
                     break;
@@ -154,39 +173,61 @@ namespace TalkSystem.Editor
             //does the TextArea have text?
             if (!string.IsNullOrEmpty(_selectedWord.Item2))
             {
-                GUILayout.BeginHorizontal();
-                EditorGUILayout.Toggle(false, GUILayout.MaxWidth(17));
-
-                GUILayout.Label($"Highlight Options ({textInfo.SelectedText + ", " + _selectedWord.Item1})");
-
-                GUILayout.EndHorizontal();
+                var startingCharIndex = Highlight.GetStartingCharIndex(_text, _selectedWord.Item1);
+                var containsKey = _currentTextPage.Highlight.ContainsKey(startingCharIndex);
 
                 GUILayout.BeginVertical(EditorStyles.helpBox);
-
-                var startingCharIndex = Highlight.GetStartingCharIndex(_text, _selectedWord.Item1);
-
-                var containsKey = _currentTextPage.Highlight.ContainsKey(startingCharIndex);
 
                 var highlight = default(Highlight);
 
                 if (containsKey)
                 {
+                    GUILayout.BeginHorizontal();
+                    if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
+                    {
+                        _currentTextPage.Highlight.Remove(startingCharIndex);
+
+                        GUILayout.EndHorizontal();
+                        GUILayout.EndVertical();
+
+                        return;
+                    }
+
+                    var selected = !string.IsNullOrEmpty(textInfo.SelectedText) ? textInfo.SelectedText : _selectedWord.Item2;
+
+                    GUILayout.Label($"Highlight ({ selected + " : " + _selectedWord.Item1})");
+
+                    GUILayout.EndHorizontal();
+
                     highlight = _currentTextPage.Highlight[startingCharIndex];
                 }
-                else
+                else if (GUILayout.Button($"Add Hightlight to: {_selectedWord.Item2}"))
                 {
+                    highlight = new Highlight(startingCharIndex, _selectedWord.Item2.Length, Color.white, HighlightAnimation.None);
+
                     _currentTextPage.Highlight.Add(startingCharIndex, highlight);
                 }
 
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("Color", GUILayout.MaxWidth(60));
-                var color = EditorGUILayout.ColorField(highlight.Color);
-                color.a = 1;
-                GUILayout.EndHorizontal();
+                if (highlight != default)
+                {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("Color", GUILayout.MaxWidth(70));
+                    var color = EditorGUILayout.ColorField(highlight.Color);
+                    color.a = 1;
+                    GUILayout.EndHorizontal();
 
-                highlight = new Highlight(startingCharIndex, _selectedWord.Item2.Length, color, HighlightAnimation.None);
+                    GUILayout.Space(3);
 
-                _currentTextPage.Highlight[startingCharIndex] = highlight;
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("Animation", GUILayout.MaxWidth(70));
+                    var type = (HighlightAnimation)EditorGUILayout.EnumPopup(highlight.Type);
+                    GUILayout.EndHorizontal();
+
+
+                    highlight = new Highlight(startingCharIndex, _selectedWord.Item2.Length, color, type);
+
+                    _currentTextPage.Highlight[startingCharIndex] = highlight;
+                }
 
                 GUILayout.EndVertical();
             }

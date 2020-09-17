@@ -43,6 +43,7 @@ namespace TalkSystem.Editor
 
         private static string _compositionString => (string)_compositionStringProperty.GetValue(null);
 
+        public delegate void OnOperation(TextOperation operation, string clipboardText, int selectIndex, int cursorIndex);
         public enum TextOperation
         {
             Copy,
@@ -106,7 +107,7 @@ namespace TalkSystem.Editor
             return DoTextFieldOrSomething(ref text, false, GUI.skin.textField, options, null);
         }
 
-        public static TextEditorInfo TextArea(ref string text, Action<TextOperation, string, int> onOperationCallback, params GUILayoutOption[] options)
+        public static TextEditorInfo TextArea(ref string text, OnOperation onOperationCallback, params GUILayoutOption[] options)
         {
             if (text == null)
             {
@@ -117,8 +118,8 @@ namespace TalkSystem.Editor
         }
 
         //TODO: Copy paste doesn't work correctly. 
-        private static TextEditorInfo DoTextFieldOrSomething(ref string text, bool multiline, GUIStyle style, GUILayoutOption[] options, 
-                                                             Action<TextOperation, string, int> onTextInClipboard)
+        private static TextEditorInfo DoTextFieldOrSomething(ref string text, bool multiline, GUIStyle style, GUILayoutOption[] options,
+                                                             OnOperation onTextInClipboard)
         {
             int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
 
@@ -134,8 +135,8 @@ namespace TalkSystem.Editor
             return textEditor;
         }
 
-        private static TextEditorInfo DoTextField(Rect position, int id, GUIContent content, bool multiline, int maxLength, GUIStyle style, 
-                                                  Action<TextOperation, string, int> onTextInClipboard)
+        private static TextEditorInfo DoTextField(Rect position, int id, GUIContent content, bool multiline, int maxLength, GUIStyle style,
+                                                  OnOperation onTextInClipboard)
         {
             //GUIUtility.CheckOnGUI(); //If is called from OnGUI method
 
@@ -150,9 +151,9 @@ namespace TalkSystem.Editor
 
             if (onTextInClipboard != null)
             {
-                textEditor.OnCopy += x => onTextInClipboard(TextOperation.Copy, x, textEditor.cursorIndex);
-                textEditor.OnCut += x => onTextInClipboard(TextOperation.Cut, x, textEditor.cursorIndex);
-                textEditor.OnPaste += x => onTextInClipboard(TextOperation.Paste, x, textEditor.cursorIndex);
+                textEditor.OnCopy += t => onTextInClipboard(TextOperation.Copy, t, textEditor.selectIndex, textEditor.cursorIndex);
+                textEditor.OnCut += t => onTextInClipboard(TextOperation.Cut, t, textEditor.selectIndex, textEditor.cursorIndex);
+                textEditor.OnPaste += t => onTextInClipboard(TextOperation.Paste, t, textEditor.selectIndex, textEditor.cursorIndex);
             }
 
             textEditor.text = content.text;
