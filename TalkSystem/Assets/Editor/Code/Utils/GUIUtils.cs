@@ -59,6 +59,8 @@ namespace TalkSystem.Editor
             private bool _lengthChanged;
             private int _addedChars;
             private string _selectedText;
+            private int _selectIndex;
+
             public int CursorIndex => _cursorIndex;
 
             public string Text => _fullText;
@@ -66,11 +68,26 @@ namespace TalkSystem.Editor
             public bool TextLengthChanged => _lengthChanged;
             public int AddedChars => _addedChars;
             public string SelectedText => _selectedText;
+            public int StartSelectIndex 
+            {
+                get 
+                {
+                    if (_cursorIndex < _selectIndex)
+                    {
+                        return _cursorIndex;
+                    }
+                    else
+                    {
+                        return _selectIndex;
+                    }
+                }
+            }
 
-            public TextEditorInfo(string fullText, string selectedText, int cursorIndex, int addedChars, bool textLengthChanged)
+            public TextEditorInfo(string fullText, string selectedText, int selectIndex, int cursorIndex, int addedChars, bool textLengthChanged)
             {
                 _fullText = fullText;
                 _selectedText = selectedText;
+                _selectIndex = selectIndex;
                 _cursorIndex = cursorIndex;
                 _addedChars = addedChars;
 
@@ -124,7 +141,7 @@ namespace TalkSystem.Editor
             int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
 
             _guiContent.text = text;
-
+            style.richText = true;
             //gUIContent = ((GUIUtility.keyboardControl == controlID) ? _guiContent.text /*+ GUIUtility.compositionString*/ : te);
             var rect = GUILayoutUtility.GetRect(_guiContent, style, options);
 
@@ -168,7 +185,7 @@ namespace TalkSystem.Editor
 
             textEditor.UpdateScrollOffsetIfNeeded(Event.current);
 
-            return new TextEditorInfo(textEditor.text, textEditor.SelectedText, _cursorIndex, charsAdded, charsAdded != 0); ;
+            return new TextEditorInfo(textEditor.text, textEditor.SelectedText, textEditor.selectIndex, _cursorIndex, charsAdded, charsAdded != 0); ;
         }
 
         private static int HandleTextFieldEventForDesktop(Rect position, int id, GUIContent content, bool multiline, int maxLength, GUIStyle style, SmartTextEditor editor)

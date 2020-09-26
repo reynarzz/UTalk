@@ -129,47 +129,51 @@ namespace TalkSystem
     [Serializable]
     public struct Highlight
     {
-        [SerializeField] private int _wordCharIndex;
-        [SerializeField] private int _wordLength;
-
+        [SerializeField] private int _wordIndex;
+        [SerializeField] private int _wordStartCharIndex;
+        [SerializeField] private int _highlightLength;
         [SerializeField] private Color32 _color;
         [SerializeField] private HighlightAnimation _animationType;
 
-        public int WordLength => _wordLength;
+        public int WordIndex => _wordIndex;
+        public int WordStartCharIndex => _wordStartCharIndex;
+        public int HighlighLength => _highlightLength;
 
-        public int WordCharIndex => _wordCharIndex;
         public Color32 Color => _color;
         public HighlightAnimation Type => _animationType;
 
         private const int _whiteSpace = 1;
 
-        public Highlight(int wordCharIndex, int wordLength, Color32 color)
+        public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color)
         {
-            _wordCharIndex = wordCharIndex;
+            _wordIndex = wordIndex;
+            _wordStartCharIndex = startChar;
+            _highlightLength = highlightLength;
+
             _color = color;
             _animationType = HighlightAnimation.None;
-
-            _wordLength = wordLength;
         }
 
-        public Highlight(int wordCharIndex, int wordLength, Color32 color, HighlightAnimation type)
+        public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color, HighlightAnimation type)
         {
-            _wordCharIndex = wordCharIndex;
+            _wordIndex = wordIndex;
+            _wordStartCharIndex = startChar;
+            _highlightLength = highlightLength;
 
             _color = color;
             _animationType = type;
-
-            _wordLength = wordLength;
         }
 
         public static bool operator ==(Highlight a, Highlight b)
         {
-            return a._wordLength == b._wordLength && a._animationType == b._animationType;
+            return a._wordIndex == b._wordIndex && a._wordStartCharIndex == b._wordStartCharIndex &&
+                   a._highlightLength == b._highlightLength && a._animationType == b._animationType;
         }
 
         public static bool operator !=(Highlight a, Highlight b)
         {
-            return a._wordLength != b._wordLength || a._animationType != b._animationType;
+            return a._wordIndex != b._wordIndex || a._wordStartCharIndex != b._wordStartCharIndex ||
+                   a._highlightLength != b._highlightLength || a._animationType != b._animationType;
         }
 
         /// <summary>Helper function to get the char index of a word in a text.</summary>

@@ -33,16 +33,14 @@ public class TalkEditorWindow : EditorWindow
     {
         Init();
 
-        
         _editPageText.OnGUI(_test);
+
         if (!_pageSet)
         {
             _pageSet = true;
 
             _editPageText.SetTextPageIndex(0);
         }
-
-
     }
 
     private void Init()
@@ -51,10 +49,9 @@ public class TalkEditorWindow : EditorWindow
         {
             _test = new TalkData();
             _pageSet = false;
-            var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius ligula ac dui \nermentum, sed finibus tortor aliquam.ni";
+            var text = "Lorem ipsum dolor";// sit amet, consectetur adipiscing elit. Maecenas varius ligula ac dui \nermentum, sed finibus tortor aliquam.ni";
 
-            var charIndex = Highlight.GetStartingCharIndex(text, 4);
-            _test.AddPage(new TextPage(text, new SDictionary<int, Highlight> { { charIndex, new Highlight(charIndex, "amet,".Length, Color.green) } }));
+            _test.AddPage(new TextPage(text, new SDictionary<int, Highlight> { { 1, new Highlight(1, 1, 3, Color.green) } }));
 
             _editPageText = new EditPageText();
 

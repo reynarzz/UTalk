@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-
+ 
 namespace TalkSystem
 {
     public abstract class TalkCloudBase : MonoBehaviour

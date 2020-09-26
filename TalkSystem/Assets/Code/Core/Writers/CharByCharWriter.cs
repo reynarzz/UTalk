@@ -94,7 +94,8 @@ namespace TalkSystem
                 {
                     var highlight = page.Highlight[highlightIndex];
 
-                    applyColor = coloredCharCount++ < highlight.WordLength;
+                    //FIX
+                    //--applyColor = coloredCharCount++ < highlight.WordLength;
 
                     if (applyColor)
                     {
