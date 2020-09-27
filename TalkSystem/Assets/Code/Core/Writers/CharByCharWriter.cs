@@ -26,6 +26,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 
 namespace TalkSystem
@@ -50,10 +51,14 @@ namespace TalkSystem
         private WaitForSeconds _writeSpeed;
         private readonly MonoBehaviour _mono;
 
+        private readonly List<string> _words;
+
         public event Action OnPageWriten;
         public CharByCharWriter(MonoBehaviour mono)
         {
             _mono = mono;
+
+            _words = new List<string>();
         }
 
         public void Write(TextControl control, TextPage page)
@@ -70,53 +75,115 @@ namespace TalkSystem
 
         private IEnumerator WriteByChar(TextControl control, TextPage page)
         {
-            //var words = Regex.Split(page.Text, " |\n");
+            SplitWords(page.Text, _words);
 
             //show chars in the next frame.
             yield return 0;
 
-            var i = 0;
+            var charIndex = 0;
 
-            var applyColor = false;
-            var highlightIndex = 0;
-            var coloredCharCount = 0;
-
-            while (i < page.Text.Length)
+            for (int i = 0; i < _words.Count; i++)
             {
-                if (page.Highlight.ContainsKey(i))
+                var hasKey = page.Highlight.ContainsKey(i);
+
+                if (hasKey)
                 {
-                    applyColor = true;
-                    highlightIndex = i;
-                    coloredCharCount = 0;
-                }
+                    var highlight = page.Highlight[i];
 
-                if (applyColor)
-                {
-                    var highlight = page.Highlight[highlightIndex];
-
-                    //FIX
-                    //--applyColor = coloredCharCount++ < highlight.WordLength;
-
-                    if (applyColor)
+                    for (int j = 0; j < _words[i].Length; j++)
                     {
-                        control.ShowChar(i, highlight.Color);
-                    }
-                    else
-                    {
-                        control.ShowChar(i);
+                        if (j >= highlight.WordStartCharIndex && j <= highlight.HighlighLength)
+                        {
+                            control.ShowChar(charIndex, highlight.Color);
+                        }
+                        else
+                        {
+                            control.ShowChar(charIndex);
+                        }
+
+                        charIndex++;
+                        yield return _writeSpeed;
                     }
                 }
                 else
                 {
-                    control.ShowChar(i);
+                    for (int j = 0; j < _words[i].Length; j++)
+                    {
+                        control.ShowChar(charIndex);
+                        charIndex++;
+
+                        yield return _writeSpeed;
+                    }
                 }
 
-                i++;
-
-                yield return _writeSpeed;
+                charIndex++;
             }
 
+            //var i = 0;
+
+            //var applyColor = false;
+            //var highlightIndex = 0;
+            //var coloredCharCount = 0;
+
+            //while (i < page.Text.Length)
+            //{
+            //    if (page.Highlight.ContainsKey(i))
+            //    {
+            //        applyColor = true;
+            //        highlightIndex = i;
+            //        coloredCharCount = 0;
+            //    }
+
+            //    if (applyColor)
+            //    {
+            //        var highlight = page.Highlight[highlightIndex];
+
+            //        //FIX
+            //        applyColor = coloredCharCount++ < highlight.HighlighLength;
+
+            //        if (applyColor)
+            //        {
+            //            control.ShowChar(i, highlight.Color);
+            //        }
+            //        else
+            //        {
+            //            control.ShowChar(i);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        control.ShowChar(i);
+            //    }
+
+            //    i++;
+
+            //    yield return _writeSpeed;
+            //}
+
             OnPageWriten?.Invoke();
+        }
+
+        private StringBuilder _string = new StringBuilder();
+
+        private void SplitWords(string text, List<string> words)
+        {
+            words.Clear();
+
+            _string.Clear();
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (!char.IsWhiteSpace(text[i]) && text[i] != '\n')
+                {
+                    _string.Append(text[i]);
+                }
+                else
+                {
+                    words.Add(_string.ToString());
+
+                    _string.Clear();
+                }
+            }
         }
 
         public void OnLanguageChanged(TextPage textPage)

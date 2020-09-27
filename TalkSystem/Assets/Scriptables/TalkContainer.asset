@@ -28,10 +28,11 @@ MonoBehaviour:
             - _pageText: This text is highlighted right now.
               _sprite: {fileID: 0}
               _highlight:
-                _keys: 0d000000
+                _keys: 03000000
                 _values:
-                - _wordIndex: 0
-                  _wordLength: 11
+                - _wordIndex: 3
+                  _wordStartCharIndex: 0
+                  _highlightLength: 11
                   _color:
                     serializedVersion: 2
                     rgba: 4278230527
