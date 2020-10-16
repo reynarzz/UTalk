@@ -6,7 +6,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEditor;
-using UnityEditor.Tilemaps;
 using UnityEngine;
 
 namespace TalkSystem.Editor
