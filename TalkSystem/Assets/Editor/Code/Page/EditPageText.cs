@@ -373,7 +373,7 @@ namespace TalkSystem.Editor
                 var colorOpen = $"<color=#{hex}>";
                 var colorClose = "</color>";
                 //Debug.Log(splitted[wordIndex]);
-                 
+                  
                 //Debug.Log("Word: " + splitted[wordIndex] + ", StartChar " + highlight.WordStartCharIndex + ", end: " + highlight.HighlighLength);
                 var modified = splitted[wordIndex];
 
