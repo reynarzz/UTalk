@@ -125,7 +125,7 @@ namespace TalkSystem
         }
     }
 
-    //TODO:Save highlighted words by index
+    //TODO: Save highlighted words by index
     [Serializable]
     public struct Highlight
     {
@@ -144,15 +144,7 @@ namespace TalkSystem
 
         private const int _whiteSpace = 1;
 
-        public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color)
-        {
-            _wordIndex = wordIndex;
-            _wordStartCharIndex = startChar;
-            _highlightLength = highlightLength;
-
-            _color = color;
-            _animationType = HighlightAnimation.None;
-        }
+        public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color) : this(wordIndex, startChar, highlightLength, color, default) { }
 
         public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color, HighlightAnimation type)
         {
