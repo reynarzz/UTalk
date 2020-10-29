@@ -57,14 +57,16 @@ namespace TalkSystem.Editor
 
             return charIndex;
         }
-         
+
         //Very inefficient.
-        public static (int, string) GetWordIndex(string text, int charIndex)
+        public static (int, string) GetWordIndex(string text, int charIndex, bool ignoreWhiteSpace = false)
         {
             var explit = text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
+            //IEnumerable white = Regex.Matches(text, " ");
+
             var charCount = 0;
 
-            var word = "";
+            var word = "NULL";
 
             for (int i = 0; i < explit.Length; i++)
             {
@@ -72,16 +74,53 @@ namespace TalkSystem.Editor
                 {
                     if (charCount == charIndex)
                     {
-                        return (i, explit[i]);
+
+                        if (text[charCount] != ' ')
+                        {
+                            return (i, explit[i]);
+
+                        }
+                        else
+                        {
+                            return (i - 1, explit[i - 1]);
+                        }
                     }
 
                     charCount++;
                 }
 
-                charCount++;
+                if (!ignoreWhiteSpace)
+                    charCount++;
+            }
+            //Debug.Log(charCount + ", " + charIndex);
+            return (0, word);
+        }
+          
+        public static int GetWordIndexRaw(string text, int charIndex)
+        {
+            var wordIndex = 0;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (charIndex == i)
+                    break;
+
+                var isCurrentWhiteSpaceOrNewLine = text[i] == ' ' || text[i] == '\n';
+                var isNextAWord = text[i + 1] != ' ' && text[i + 1] != '\n';
+
+                if (isCurrentWhiteSpaceOrNewLine && isNextAWord)
+                    wordIndex++;
+
             }
 
-            return (0, word);
+            return wordIndex;
+        }
+
+        public static (int, string) GetWordIndexRawPair(string text, int charIndex)
+        {
+            var wIndex = GetWordIndexRaw(text, charIndex);
+
+            return (wIndex, text.Split(SplitPattern)[wIndex]);
         }
 
         public static int GetChangedWordsCount(string current, string compare)

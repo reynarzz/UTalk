@@ -136,7 +136,7 @@ namespace TalkSystem
         [SerializeField] private HighlightAnimation _animationType;
 
         public int WordIndex => _wordIndex;
-        public int CharIndex => _wordStartCharIndex;
+        public int StartLocalChar => _wordStartCharIndex;
         public int HighlighLength => _highlightLength;
 
         public Color32 Color => _color;

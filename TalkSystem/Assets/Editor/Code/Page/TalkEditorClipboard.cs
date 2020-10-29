@@ -8,16 +8,17 @@ using UnityEngine;
 
 namespace TalkSystem.Editor
 {
-    public class Clipboard
+    //Maybe this has to be inside the text scriptable object, and be cleaned on build.
+    public static class TalkEditorClipboard
     {
-        private List<Highlight> _highlightClipboard;
+        private static List<Highlight> _highlightClipboard;
 
-        public Clipboard()
+        static TalkEditorClipboard()
         {
             _highlightClipboard = new List<Highlight>();
         }
 
-        public void SetToClipBoard(TextPage page, string fullText, string copiedText, int selectIndex, int cursor)
+        public static void SetToClipBoard(TextPage page, string fullText, string copiedText, int selectIndex, int cursor)
         {
             int startCharIndex;
             int endCharIndex;
@@ -34,7 +35,7 @@ namespace TalkSystem.Editor
                 startCharIndex = cursor;
                 endCharIndex = selectIndex;
             }
-             
+            
             var splitCopiedText = copiedText.Split(Utils.SplitPattern, StringSplitOptions.RemoveEmptyEntries).ToList();
             splitCopiedText.Print();
 
@@ -70,12 +71,12 @@ namespace TalkSystem.Editor
             }
         }
 
-        public void PasteHighlightOfClipboard()
+        public static void PasteHighlightOfClipboard()
         {
             //TODO
         }
 
-        public List<Highlight> GetHighlightClipboard()
+        public static List<Highlight> GetHighlightClipboard()
         {
             return default;
         }

@@ -28,7 +28,6 @@ namespace TalkSystem.Editor
         private StringBuilder _highlightedText;
 
 
-        private Clipboard _clipboard;
         private SDictionary<int, Highlight> _temp;
 
         public EditPageText()
@@ -36,32 +35,44 @@ namespace TalkSystem.Editor
             _temp = new SDictionary<int, Highlight>();
 
             _highlightedText = new StringBuilder();
-            _clipboard = new Clipboard();
 
             Init();
 
             OnTextChanged += OnTextChangedHandler;
         }
-         
+
+        private void Init()
+        {
+            if (_labelStyle == null)
+            {
+                _labelStyle = new GUIStyle(GUI.skin.label);
+                _labelStyle.active.textColor = Color.white;
+                _labelStyle.normal.textColor = Color.white;
+                _labelStyle.richText = true;
+                _labelStyle.wordWrap = true;
+            }
+        }
+
         public void OnGUI(TalkData talkData)
         {
             _talkData = talkData;
 
             if (_textPageIndex >= 0)
-            { 
+            {
                 //var returnLoop = Init();
 
                 //if (returnLoop)
                 //{
                 //    return;
-                //}
-
+                //}  
                 GUILayout.Space(10);
-
+                 
                 var oldText = _text.ToString();
 
                 var textInfo = GUIUtils.TextArea(ref _text, SetToClipboard);
 
+                //Debug.Log(Utils.GetWordIndex(_text, textInfo.CursorIndex, true).Item2);
+                 
                 if (textInfo.TextLengthChanged)
                 {
                     OnTextChanged(oldText, textInfo.Text, textInfo.AddedChars, textInfo.CursorIndex);
@@ -87,7 +98,7 @@ namespace TalkSystem.Editor
                         var key = orderedKeys.ElementAt(i);
                         var highlight = _currentTextPage.Highlight[key];
 
-                        Debug.Log("Key: " + key + ", wordIndex: " + highlight.WordIndex + ", startChar: " + highlight.CharIndex + ", " + "length: " + highlight.HighlighLength);
+                        Debug.Log("Key: " + key + ", wordIndex: " + highlight.WordIndex + ", startChar: " + highlight.StartLocalChar + ", " + "length: " + highlight.HighlighLength);
                     }
                 }
             }
@@ -100,12 +111,12 @@ namespace TalkSystem.Editor
                 case GUIUtils.TextOperation.Copy:
                 case GUIUtils.TextOperation.Cut:
                     Debug.Log("Cut");
-                    _clipboard.SetToClipBoard(_currentTextPage, _text, clipboardText, selectIndex, cursor);
+                    TalkEditorClipboard.SetToClipBoard(_currentTextPage, _text, clipboardText, selectIndex, cursor);
                     break;
                 case GUIUtils.TextOperation.Paste:
                     break;
             }
-        }
+        } 
 
         private void UpdateHighlight(GUIUtils.TextEditorInfo textInfo)
         {
@@ -115,7 +126,7 @@ namespace TalkSystem.Editor
                 //Debug.Log("selectd: " + textInfo.SelectedText);
 
                 //Debug.Log(textInfo.StartSelectIndex);
-                var pair = Utils.GetWordIndex(textInfo.Text, textInfo.StartSelectIndex);
+                var pair = Utils.GetWordIndexRawPair(textInfo.Text, textInfo.StartSelectIndex);
 
                 var wordText = pair.Item2;
                 var wordIndex = pair.Item1;
@@ -182,21 +193,6 @@ namespace TalkSystem.Editor
             }
         }
 
-        private bool Init()
-        {
-            if (_labelStyle == null)
-            {
-                _labelStyle = new GUIStyle(GUI.skin.label);
-                _labelStyle.active.textColor = Color.white;
-                _labelStyle.normal.textColor = Color.white;
-                _labelStyle.richText = true;
-                _labelStyle.wordWrap = true;
-                return true; 
-            }
-
-            return false;
-        }
-
         private void TextPreview(string text)
         {
             GUILayout.Label("Preview");
@@ -207,11 +203,11 @@ namespace TalkSystem.Editor
             GUILayout.EndVertical();
         }
 
-        public void SetTextPageIndex(int textPageIndex)
+        public void SetTextPageIndex(int textPageIndex, TalkData talkData)
         {
             _textPageIndex = textPageIndex;
 
-            _currentTextPage = _talkData.GetPage(_textPageIndex);
+            _currentTextPage = talkData.GetPage(_textPageIndex);
 
             _text = _currentTextPage.Text;
         }
@@ -226,14 +222,14 @@ namespace TalkSystem.Editor
             //removes duplicated white spaces.
             //oldText = Regex.Replace(oldText, @"\s+", " ");
             //newText = Regex.Replace(newText, @"\s+", " ");
-             
+
             if (charAdded)
-            { 
+            {
                 //char added.
                 OnCharAdded(insertedIndex, cursor != newText.Length);
 
                 //word added.
-            }  
+            }
             else
             {
                 var wordIndex = Utils.GetWordIndex(newText, insertedIndex).Item1;
@@ -260,8 +256,8 @@ namespace TalkSystem.Editor
 
         private void OnWordAdded(int charIndex, int wordsAdded, string newText)
         {
-            var value = Utils.GetWordIndex(newText, charIndex);
-            var wordIndex = value.Item1;
+            var wordIndex = Utils.GetWordIndexRaw(newText, charIndex);
+
             _temp.Clear();
 
             //inefficient
@@ -273,22 +269,22 @@ namespace TalkSystem.Editor
             }
 
             _currentTextPage.Highlight.Clear();
-             
+
             for (int i = 0; i < _temp.Count; i++)
             {
                 var highlight = _temp[_temp.Keys.ElementAt(i)];
 
                 var index = highlight.WordIndex >= wordIndex ? highlight.WordIndex + wordsAdded : highlight.WordIndex;
 
-                _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.CharIndex, highlight.HighlighLength, highlight.Color, highlight.Type));
+                _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar, highlight.HighlighLength, highlight.Color, highlight.Type));
             }
-
-            Debug.Log("WordCountAdded: " + wordsAdded + ", Word added at char: " + charIndex + ", index: " + wordIndex + ", word: " + value.Item2);
+            //--Debug.Log("WordCountAdded: " + wordsAdded + ", Word added at char: " + charIndex + ", index: " + wordIndex + ", word: " + value.Item2);
         }
-
+        
         private void OnWordRemoved(int charIndex, int removedCount, string newText)
         {
-            var wordIndex = Utils.GetWordIndex(newText, charIndex).Item1;
+            var pair = Utils.GetWordIndexRawPair(newText, charIndex);
+            var wordIndex = pair.Item1;
 
             _temp.Clear();
 
@@ -307,8 +303,8 @@ namespace TalkSystem.Editor
                 var highlight = _temp[_temp.Keys.ElementAt(i)];
 
                 var index = highlight.WordIndex >= wordIndex ? highlight.WordIndex - removedCount : highlight.WordIndex;
-
-                _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.CharIndex, highlight.HighlighLength, highlight.Color));
+                 
+                _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar, highlight.HighlighLength, highlight.Color, highlight.Type));
             }
 
             Debug.Log("wIndex: " + wordIndex + ", removedCount: " + removedCount);
@@ -316,7 +312,7 @@ namespace TalkSystem.Editor
 
         private void OnWordSplitted()
         {
-
+             
         }
 
         private void OnCharAdded(int charIndex, bool inserted)
@@ -367,23 +363,6 @@ namespace TalkSystem.Editor
                 //                                                                     highlight.HighlighLength + addedChars, highlight.Color);
                 //    }
                 //}
-            }
-        }
-
-        private void RemoveDeletedHighlightWords(string oldText, string newText)
-        {
-            var oldSplit = oldText.Split(Utils.SplitPattern);
-            var newSplit = newText.Split(Utils.SplitPattern);
-
-            for (int i = 0; i < oldSplit.Length; i++)
-            {
-                var value = newSplit.ElementAtOrDefault(i);
-
-                if (value == null || value != oldSplit[i])
-                {
-                    Debug.Log("Remove word: " + i);
-                    _currentTextPage.Highlight.Remove(i);
-                }
             }
         }
 
@@ -456,37 +435,36 @@ namespace TalkSystem.Editor
                 //Debug.Log("Word: " + splitted[wordIndex] + ", StartChar " + highlight.WordStartCharIndex + ", end: " + highlight.HighlighLength);
                 var modified = splitted[wordIndex];
 
-                modified = modified.Insert(highlight.CharIndex, colorOpen);
+                modified = modified.Insert(highlight.StartLocalChar, colorOpen);
 
-                var insertIndex = colorOpen.Length + highlight.CharIndex + highlight.HighlighLength;
-
-                if (modified.Length > insertIndex)
+                var insertIndex = colorOpen.Length + highlight.StartLocalChar + highlight.HighlighLength;
+                 
+                //if (modified.Length > insertIndex)
                 {
-                    modified = modified.Insert(colorOpen.Length + highlight.CharIndex + highlight.HighlighLength, colorClose);
+                    modified = modified.Insert(colorOpen.Length + highlight.StartLocalChar + highlight.HighlighLength, colorClose);
                 }
-                else
-                {
-                    //Adjust hightlightLength.
-                    var hightlight = page.Highlight[wordIndex];
+                //else
+                //{
+                //    //Adjust hightlightLength.
+                //    var hightlight = page.Highlight[wordIndex];
 
-                    var length = splitted[wordIndex].Length - (highlight.CharIndex);
+                //    var length = splitted[wordIndex].Length - (highlight.StartLocalChar);
 
-                    if (length > 0)
-                    {
-                        page.Highlight[wordIndex] = new Highlight(hightlight.WordIndex, hightlight.CharIndex, length, hightlight.Color);
+                //    if (length > 0)
+                //    {
+                //        page.Highlight[wordIndex] = new Highlight(hightlight.WordIndex, hightlight.StartLocalChar, length, hightlight.Color, hightlight.Type);
 
-                        modified = modified.Insert(modified.Length, colorClose);
-                    }
-                    else
-                    {
-                        page.Highlight.Remove(wordIndex);
-                        continue;
-                    }
-                }
+                //        modified = modified.Insert(modified.Length, colorClose);
+                //    }
+                //    else
+                //    {
+                //        page.Highlight.Remove(wordIndex);
+                //        continue;
+                //    }
+                //}
 
-
+                 
                 splitted[wordIndex] = modified;
-
             }
 
             for (int i = 0; i < splitted.Length; i++)
