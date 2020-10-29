@@ -31,9 +31,6 @@ namespace TalkSystem
 {
     public class TalkCloud : TalkCloudBase
     {
-        public override event Action OnCloudShown;
-        public override event Action OnCloudHidden;
-
         //Use tween instead for more performance.
         [SerializeField] private Animator _animator;
 
@@ -50,19 +47,13 @@ namespace TalkSystem
         //A = Animation
         private void A_OnCloudShown()
         {
-            OnCloudShown?.Invoke();
+            OnCloudShow();
         }
 
         //A = Animation
         private void A_OnCloudHidden()
         {
-            OnCloudHidden?.Invoke();
-        }
-
-        protected override void Clear()
-        {
-            OnCloudShown = null;
-            OnCloudHidden = null;
+            OnCloudHidde();
         }
     }
 }

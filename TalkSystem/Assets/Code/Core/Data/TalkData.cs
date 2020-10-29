@@ -136,13 +136,11 @@ namespace TalkSystem
         [SerializeField] private HighlightAnimation _animationType;
 
         public int WordIndex => _wordIndex;
-        public int WordStartCharIndex => _wordStartCharIndex;
+        public int CharIndex => _wordStartCharIndex;
         public int HighlighLength => _highlightLength;
 
         public Color32 Color => _color;
         public HighlightAnimation Type => _animationType;
-
-        private const int _whiteSpace = 1;
 
         public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color) : this(wordIndex, startChar, highlightLength, color, default) { }
 
@@ -166,51 +164,6 @@ namespace TalkSystem
         {
             return a._wordIndex != b._wordIndex || a._wordStartCharIndex != b._wordStartCharIndex ||
                    a._highlightLength != b._highlightLength || a._animationType != b._animationType;
-        }
-
-        /// <summary>Helper function to get the char index of a word in a text.</summary>
-        public static int GetStartingCharIndex(string text, int wordIndex)
-        {
-            var splited = System.Text.RegularExpressions.Regex.Split(text, " |\n");
-            var charIndex = 0;
-
-            for (int i = 0; i < splited.Length; i++)
-            {
-                if (i == wordIndex)
-                {
-                    return charIndex;
-                }
-
-                charIndex += splited[i].Length + _whiteSpace;
-            }
-
-            return charIndex;
-        }
-
-        //very inefficient
-        public static (int, string) GetWordIndex(string text, int charIndex)
-        {
-            var explit = Regex.Split(text, " |\n");
-            var charCount = 0;
-
-            var word = "";
-
-            for (int i = 0; i < explit.Length; i++)
-            {
-                for (int j = 0; j < explit[i].Length; j++)
-                {
-                    if (charCount == charIndex)
-                    {
-                        return (i, explit[i]);
-                    }
-
-                    charCount++;
-                }
-
-                charCount++;
-            }
-
-            return (0, word);
         }
     }
 

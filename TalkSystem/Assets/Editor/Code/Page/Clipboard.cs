@@ -42,7 +42,7 @@ namespace TalkSystem.Editor
 
             for (int i = startCharIndex; i < endCharIndex; i++)
             {
-                var value = Highlight.GetWordIndex(fullText, i);
+                var value = Utils.GetWordIndex(fullText, i);
 
                 var wordIndex = value.Item1;
                 var word = value.Item2;

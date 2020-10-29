@@ -42,6 +42,12 @@ namespace TalkSystem
             _values = new List<TValue>();
         }
 
+        public SDictionary(IDictionary<TKey, TValue> copy) : base(copy)
+        {
+            _keys = new List<TKey>();
+            _values = new List<TValue>();
+        }
+
         public void OnAfterDeserialize()
         {
             Clear();

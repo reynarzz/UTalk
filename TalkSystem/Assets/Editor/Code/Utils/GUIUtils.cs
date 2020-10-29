@@ -185,7 +185,7 @@ namespace TalkSystem.Editor
 
             textEditor.UpdateScrollOffsetIfNeeded(Event.current);
 
-            return new TextEditorInfo(textEditor.text, textEditor.SelectedText, textEditor.selectIndex, _cursorIndex, charsAdded, charsAdded != 0); ;
+            return new TextEditorInfo(textEditor.text, textEditor.SelectedText, textEditor.selectIndex, _cursorIndex, charsAdded, charsAdded != 0);
         }
 
         private static int HandleTextFieldEventForDesktop(Rect position, int id, GUIContent content, bool multiline, int maxLength, GUIStyle style, SmartTextEditor editor)

@@ -92,7 +92,7 @@ namespace TalkSystem
 
                     for (int j = 0; j < _words[i].Length; j++)
                     {
-                        if (j >= highlight.WordStartCharIndex && j <= highlight.HighlighLength)
+                        if (j >= highlight.CharIndex && j <= highlight.HighlighLength)
                         {
                             control.ShowChar(charIndex, highlight.Color);
                         }
