@@ -1,8 +1,0 @@
-.talkButton {
-    margin-top: 8px;
-    -unity-text-align: middle-left;
-    -unity-font-style: bold;
-    padding-left: 17px;
-    width: 98%;
-    height: 44px;
-}

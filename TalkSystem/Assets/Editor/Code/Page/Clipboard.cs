@@ -34,11 +34,11 @@ namespace TalkSystem.Editor
                 startCharIndex = cursor;
                 endCharIndex = selectIndex;
             }
-
+             
             var splitCopiedText = copiedText.Split(Utils.SplitPattern, StringSplitOptions.RemoveEmptyEntries).ToList();
             splitCopiedText.Print();
 
-            Debug.Log(fullText + ", -startchar: " + startCharIndex + ", End: " + endCharIndex);
+            //Debug.Log(fullText + ", -startchar: " + startCharIndex + ", End: " + endCharIndex);
 
             for (int i = startCharIndex; i < endCharIndex; i++)
             {

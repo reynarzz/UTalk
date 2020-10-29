@@ -38,17 +38,23 @@ namespace TalkSystem.Editor
             _highlightedText = new StringBuilder();
             _clipboard = new Clipboard();
 
+            Init();
+
             OnTextChanged += OnTextChangedHandler;
         }
-
-
+         
         public void OnGUI(TalkData talkData)
         {
             _talkData = talkData;
 
             if (_textPageIndex >= 0)
-            {
-                Init();
+            { 
+                //var returnLoop = Init();
+
+                //if (returnLoop)
+                //{
+                //    return;
+                //}
 
                 GUILayout.Space(10);
 
@@ -176,7 +182,7 @@ namespace TalkSystem.Editor
             }
         }
 
-        private void Init()
+        private bool Init()
         {
             if (_labelStyle == null)
             {
@@ -185,7 +191,10 @@ namespace TalkSystem.Editor
                 _labelStyle.normal.textColor = Color.white;
                 _labelStyle.richText = true;
                 _labelStyle.wordWrap = true;
+                return true; 
             }
+
+            return false;
         }
 
         private void TextPreview(string text)
@@ -210,24 +219,21 @@ namespace TalkSystem.Editor
         //TODO: Detect if a modified text index was changed.
         private void OnTextChangedHandler(string oldText, string newText, int addedChars, int cursor)
         {
-            var wasAdded = addedChars > 0;
+            var charAdded = addedChars > 0;
 
+            //i have to adjust the cursor to support multi whitespaces and tabs.
             var insertedIndex = cursor - addedChars;
-
-            if (wasAdded)
-            {
+            //removes duplicated white spaces.
+            //oldText = Regex.Replace(oldText, @"\s+", " ");
+            //newText = Regex.Replace(newText, @"\s+", " ");
+             
+            if (charAdded)
+            { 
                 //char added.
                 OnCharAdded(insertedIndex, cursor != newText.Length);
 
                 //word added.
-                var old = oldText.Split(Utils.SplitPattern, StringSplitOptions.RemoveEmptyEntries);
-                var newSplit = newText.Split(Utils.SplitPattern, StringSplitOptions.RemoveEmptyEntries);
-
-                if (newSplit.Length > old.Length)
-                {
-                    OnWordAdded(insertedIndex, Utils.GetChangedWordsCount(oldText, newText), newText, newSplit);
-                }
-            }
+            }  
             else
             {
                 var wordIndex = Utils.GetWordIndex(newText, insertedIndex).Item1;
@@ -237,17 +243,56 @@ namespace TalkSystem.Editor
                 RearrangeHighlightedWords(wordIndex, addedChars, insertedIndex);
             }
 
-            //RearrangeHighlightedWords(addedChars, insertedIndex);
-            _currentTextPage = new TextPage(newText, _currentTextPage.Highlight);
+            var old = oldText.Split(Utils.SplitPattern, StringSplitOptions.RemoveEmptyEntries);
+            var newSplit = newText.Split(Utils.SplitPattern, StringSplitOptions.RemoveEmptyEntries);
+
+            var wordAdded = newSplit.Length > old.Length;
+
+            if (wordAdded)
+            {
+                OnWordAdded(insertedIndex, Utils.GetChangedWordsCount(oldText, newText), newText);
+            }
+            else if (newSplit.Length < old.Length)
+            {
+                OnWordRemoved(insertedIndex, Utils.GetChangedWordsCount(oldText, newText), newText);
+            }
         }
 
-        private void OnWordAdded(int charIndex, int wordsAddedCount, string newText, string[] newSplit)
+        private void OnWordAdded(int charIndex, int wordsAdded, string newText)
+        {
+            var value = Utils.GetWordIndex(newText, charIndex);
+            var wordIndex = value.Item1;
+            _temp.Clear();
+
+            //inefficient
+            for (int i = 0; i < _currentTextPage.Highlight.Count; i++)
+            {
+                var key = _currentTextPage.Highlight.Keys.ElementAt(i);
+
+                _temp.Add(key, _currentTextPage.Highlight[key]);
+            }
+
+            _currentTextPage.Highlight.Clear();
+             
+            for (int i = 0; i < _temp.Count; i++)
+            {
+                var highlight = _temp[_temp.Keys.ElementAt(i)];
+
+                var index = highlight.WordIndex >= wordIndex ? highlight.WordIndex + wordsAdded : highlight.WordIndex;
+
+                _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.CharIndex, highlight.HighlighLength, highlight.Color, highlight.Type));
+            }
+
+            Debug.Log("WordCountAdded: " + wordsAdded + ", Word added at char: " + charIndex + ", index: " + wordIndex + ", word: " + value.Item2);
+        }
+
+        private void OnWordRemoved(int charIndex, int removedCount, string newText)
         {
             var wordIndex = Utils.GetWordIndex(newText, charIndex).Item1;
 
             _temp.Clear();
 
-            //inefficient
+            //inefficient 
             for (int i = 0; i < _currentTextPage.Highlight.Count; i++)
             {
                 var key = _currentTextPage.Highlight.Keys.ElementAt(i);
@@ -261,17 +306,12 @@ namespace TalkSystem.Editor
             {
                 var highlight = _temp[_temp.Keys.ElementAt(i)];
 
-                var index = highlight.WordIndex >= wordIndex ? highlight.WordIndex + wordsAddedCount : highlight.WordIndex;
+                var index = highlight.WordIndex >= wordIndex ? highlight.WordIndex - removedCount : highlight.WordIndex;
 
                 _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.CharIndex, highlight.HighlighLength, highlight.Color));
             }
 
-            Debug.Log("WordCountAdded: " + wordsAddedCount + ", Word added at char: " + charIndex + ", index: " + wordIndex);
-        }
-
-        private void OnWordRemoved(int wordIndex)
-        {
-            Debug.Log("Word removed");
+            Debug.Log("wIndex: " + wordIndex + ", removedCount: " + removedCount);
         }
 
         private void OnWordSplitted()
@@ -281,7 +321,6 @@ namespace TalkSystem.Editor
 
         private void OnCharAdded(int charIndex, bool inserted)
         {
-            
             if (inserted) //inserted in text
             {
                 //if (!string.IsNullOrEmpty(indexValue.Item2) && _currentTextPage.Highlight.ContainsKey(indexValue.Item1))
@@ -294,7 +333,7 @@ namespace TalkSystem.Editor
                 //    {
                 //        _currentTextPage.Highlight[indexValue.Item1] = new Highlight(highlight.WordIndex, highlight.WordStartCharIndex, 
                 //                                                                     highlight.HighlighLength + addedChars, highlight.Color);
-                //    }
+                //    } 
                 //}
             }
             else //added at the end of the text

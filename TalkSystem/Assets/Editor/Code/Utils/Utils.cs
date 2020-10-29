@@ -14,6 +14,7 @@ namespace TalkSystem.Editor
     {
         private static StringBuilder _printArray;
         public static char[] SplitPattern = { ' ', '\n' };
+        public static char[] SplitPatternNotNewline = { ' ', '\n' };
         private const int _whiteSpace = 1;
 
         static Utils()
@@ -41,7 +42,7 @@ namespace TalkSystem.Editor
         /// <summary>Helper function to get the char index of a word in a text.</summary>
         public static int GetStartingCharIndex(string text, int wordIndex)
         {
-            var splited = Regex.Split(text, " |\n");
+            var splited = text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
             var charIndex = 0;
 
             for (int i = 0; i < splited.Length; i++)
@@ -56,11 +57,11 @@ namespace TalkSystem.Editor
 
             return charIndex;
         }
-
-        //very inefficient
+         
+        //Very inefficient.
         public static (int, string) GetWordIndex(string text, int charIndex)
         {
-            var explit = Regex.Split(text, " |\n");
+            var explit = text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
             var charCount = 0;
 
             var word = "";
@@ -85,27 +86,10 @@ namespace TalkSystem.Editor
 
         public static int GetChangedWordsCount(string current, string compare)
         {
-            var addedWords = 0;
+            var currentSplit = current.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
+            var compareSplit = compare.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
 
-            var currentSplit = current.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries).ToList();
-            var compareSplit = compare.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries).ToList();
-
-            var a = compareSplit.Count > currentSplit.Count ? compareSplit : currentSplit;
-            var b = compareSplit.Count > currentSplit.Count ? currentSplit : compareSplit;
-
-            for (int i = 0; i < a.Count; i++)
-            {
-                if (b.ElementAtOrDefault(i) != a[i])
-                {
-                    b.Insert(i, a[i]);
-
-                    addedWords++;
-                }
-            }
-
-            return addedWords;
+            return Mathf.Abs(currentSplit.Length - compareSplit.Length);
         }
-
-
     }
 }
