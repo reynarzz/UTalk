@@ -40,23 +40,23 @@ namespace TalkSystem.Editor
         }
 
         /// <summary>Helper function to get the char index of a word in a text.</summary>
-        public static int GetStartingCharIndex(string text, int wordIndex)
-        {
-            var splited = text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
-            var charIndex = 0;
+        //public static int GetStartingCharIndex(string text, int wordIndex)
+        //{
+        //    var splited = text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
+        //    var charIndex = 0;
 
-            for (int i = 0; i < splited.Length; i++)
-            {
-                if (i == wordIndex)
-                {
-                    return charIndex;
-                }
+        //    for (int i = 0; i < splited.Length; i++)
+        //    {
+        //        if (i == wordIndex)
+        //        {
+        //            return charIndex;
+        //        }
 
-                charIndex += splited[i].Length + _whiteSpace;
-            }
+        //        charIndex += splited[i].Length + _whiteSpace;
+        //    }
 
-            return charIndex;
-        }
+        //    return charIndex;
+        //}
 
         //Very inefficient.
         public static (int, string) GetWordIndex(string text, int charIndex, bool ignoreWhiteSpace = false)
@@ -116,11 +116,41 @@ namespace TalkSystem.Editor
             return wordIndex;
         }
 
+
         public static (int, string) GetWordIndexRawPair(string text, int charIndex)
         {
             var wIndex = GetWordIndexRaw(text, charIndex);
 
-            return (wIndex, text.Split(SplitPattern)[wIndex]);
+            return (wIndex, text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries)[wIndex]);
+        }
+
+        /// <summary>Takes in consideration white spaces.</summary>
+        public static int GetStartingCharIndexRaw(string text, int wordIndex)
+        {
+            var charIndex = 0;
+            var currentWordIndex = 0;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                var isCurrentWhiteSpaceOrNewLine = text[i] == ' ' || text[i] == '\n';
+                var isNextAWord = text.ElementAtOrDefault(i + 1) != ' ' && text.ElementAtOrDefault(i + 1) != '\n';
+
+                if (currentWordIndex != wordIndex)
+                {
+                    if (isCurrentWhiteSpaceOrNewLine && isNextAWord)
+                    {
+                        currentWordIndex++;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+
+                charIndex++;
+            }
+
+            return charIndex;
         }
 
         public static int GetChangedWordsCount(string current, string compare)
