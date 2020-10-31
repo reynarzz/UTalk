@@ -196,7 +196,7 @@ namespace TalkSystem.Editor
             return _selectedWords;
         }
 
-        public static int ToLocalStartingChar(int globalStartCharIndex, string fullText, string word)
+        public static int ToLocalStartChar(int globalStartCharIndex, string fullText, string word)
         {
             return word.IndexOf(fullText[globalStartCharIndex]);
         }

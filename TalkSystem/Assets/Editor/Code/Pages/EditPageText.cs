@@ -17,6 +17,7 @@ namespace TalkSystem.Editor
         private string _text;
 
         private GUIStyle _labelStyle;
+        private GUIStyle _buttonWrapStyle;
 
         private TalkData _talkData;
 
@@ -30,6 +31,7 @@ namespace TalkSystem.Editor
 
         private SDictionary<int, Highlight> _temp;
         private GUIUtils.TextEditorInfo _textInfo;
+        private bool _showInfo = false;
 
         public EditPageText()
         {
@@ -51,6 +53,9 @@ namespace TalkSystem.Editor
                 _labelStyle.normal.textColor = Color.white;
                 _labelStyle.richText = true;
                 _labelStyle.wordWrap = true;
+
+                _buttonWrapStyle = new GUIStyle(GUI.skin.button);
+                _buttonWrapStyle.wordWrap = true;
             }
         }
 
@@ -88,17 +93,22 @@ namespace TalkSystem.Editor
                 TextPreview(hightligted);
 
                 //TEST
-                if (GUILayout.Button("Show highlight info"))
+                if (_showInfo = EditorGUILayout.Foldout(_showInfo, "Highlight Info"))
                 {
                     var orderedKeys = _currentTextPage.Highlight.Keys.OrderBy(x => x);
+
+                    GUILayout.BeginVertical(EditorStyles.helpBox);
+
                     //Debug.Log("Show");
                     for (int i = 0; i < _currentTextPage.Highlight.Count; i++)
                     {
                         var key = orderedKeys.ElementAt(i);
                         var highlight = _currentTextPage.Highlight[key];
 
-                        Debug.Log("wIndex: " + highlight.WordIndex + ", startChar: " + highlight.StartLocalChar + ", " + "length: " + highlight.HighlighLength);
+                        GUILayout.Label("Index: " + highlight.WordIndex + ", Char: " + highlight.StartLocalChar + ", " + "Length: " + highlight.HighlighLength);
                     }
+
+                    GUILayout.EndVertical();
                 }
             }
         }
@@ -125,6 +135,37 @@ namespace TalkSystem.Editor
             {
                 var selectedWords = Utils.GetSelectedWords(textInfo.StartSelectIndex, textInfo.SelectedText, textInfo.Text);
 
+                var wordsToHighlight = "";
+
+                for (int i = 0; i < selectedWords.Count; i++)
+                {
+                    if (!_currentTextPage.Highlight.ContainsKey(selectedWords[i].WordIndex))
+                    {
+                        wordsToHighlight += selectedWords[i].Word + (i + 1 == selectedWords.Count ? null : " | ");
+                    }
+                }
+                
+                if (!string.IsNullOrEmpty(wordsToHighlight) && GUILayout.Button($"Add Hightlight to: {wordsToHighlight}", _buttonWrapStyle))
+                {
+                    for (int i = 0; i < selectedWords.Count; i++)
+                    {
+                        if (!_currentTextPage.Highlight.ContainsKey(selectedWords[i].WordIndex))
+                        {
+                            var word = selectedWords[i].Word;
+                            var wordIndex = selectedWords[i].WordIndex;
+                            var globalStartingChar = selectedWords[i].GlobalCharIndex;
+                            var localStartCharIndex = Utils.ToLocalStartChar(globalStartingChar, textInfo.Text, word);
+                            var highlightLength = textInfo.SelectedText.Length;
+
+                            var highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, Color.white, HighlightAnimation.None);
+
+                            _currentTextPage.Highlight.Add(wordIndex, highlight);
+                        }
+                    }
+                }
+
+                GUILayout.BeginHorizontal();
+
                 for (int i = 0; i < selectedWords.Count; i++)
                 {
                     var word = selectedWords[i].Word;
@@ -133,17 +174,17 @@ namespace TalkSystem.Editor
 
                     var containsKey = _currentTextPage.Highlight.ContainsKey(wordIndex);
 
-                    GUILayout.BeginVertical(EditorStyles.helpBox);
 
                     var highlight = default(Highlight);
                     //Debug.Log("Starting char created: " + startingChar);
-                    var localStartCharIndex = Utils.ToLocalStartingChar(globalStartingChar, textInfo.Text, word);
+                    var localStartCharIndex = Utils.ToLocalStartChar(globalStartingChar, textInfo.Text, word);
                     var highlightLength = textInfo.SelectedText.Length;
 
                     //Debug.Log("startChar: " + startingChar + ", local start: " + startCharIndex + ", length " + highlightLength);
 
                     if (containsKey)
                     {
+                        GUILayout.BeginVertical(EditorStyles.helpBox);
                         GUILayout.BeginHorizontal();
                         if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
                         {
@@ -155,7 +196,7 @@ namespace TalkSystem.Editor
                             return;
                         }
 
-                        GUILayout.Label($"Highlight ({word})", _labelStyle);
+                        GUILayout.Label($"{word}", _labelStyle);
 
                         GUILayout.EndHorizontal();
 
@@ -180,16 +221,19 @@ namespace TalkSystem.Editor
 
                             _currentTextPage.Highlight[wordIndex] = highlight;
                         }
-                    }  
-                    else if (GUILayout.Button($"Add Hightlight to: {word}"))
-                    {
-                        highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, Color.white, HighlightAnimation.None);
-
-                        _currentTextPage.Highlight.Add(wordIndex, highlight);
+                            GUILayout.EndVertical();
                     }
 
-                    GUILayout.EndVertical();
+                    //EditorGUILayout.
+                    //else if (GUILayout.Button($"Add Hightlight to: {word}"))
+                    //{
+                    //    highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, Color.white, HighlightAnimation.None);
+
+                    //    _currentTextPage.Highlight.Add(wordIndex, highlight);
+                    //}
+
                 }
+                GUILayout.EndHorizontal();
 
             }
         }
@@ -281,23 +325,25 @@ namespace TalkSystem.Editor
         private void OnWordRemoved(int charIndex, int removedCount, string oldText)
         {
             _temp.Clear();
-
-            //WARNING: removing characters with the "delete" keyword will have problems using "search left".
-            //I need here to be exact (using left), so i will not be ending deleting a wrong word highlight.
-
-            var wIndexes = Utils.GetSelectedWords(_textInfo.TextEditor.StartSelectIndexLate, _textInfo.TextEditor.SelectedTextLate, oldText);
-            //wIndexes.Print(); 
-            for (int i = 0; i < wIndexes.Count; i++)
+            
+            if (!string.IsNullOrEmpty(_textInfo.TextEditor.SelectedTextLate))
             {
-                var wIndex = wIndexes[i].WordIndex;
-
-                if (_currentTextPage.Highlight.ContainsKey(wIndex))
+                var wIndexes = Utils.GetSelectedWords(_textInfo.TextEditor.StartSelectIndexLate, _textInfo.TextEditor.SelectedTextLate, oldText);
+                //wIndexes.Print(); 
+                for (int i = 0; i < wIndexes.Count; i++)
                 {
-                    Debug.Log("Selection removed: " + wIndexes[i].Word + " (" + (wIndex) + ")");
-                    _currentTextPage.Highlight.Remove(wIndex);
+                    var wIndex = wIndexes[i].WordIndex;
+
+                    if (_currentTextPage.Highlight.ContainsKey(wIndex))
+                    {
+                        Debug.Log("Selection removed: " + wIndexes[i].Word + " (" + (wIndex) + ")");
+                        _currentTextPage.Highlight.Remove(wIndex);
+                    }
                 }
             }
 
+            //WARNING: removing characters with the "delete" keyword will have problems using "search left".
+            //I need here to be exact (using left), so i will not be ending deleting a wrong word highlight.
             var wexactIndex = Utils.GetWordIndex(oldText, charIndex, Utils.SearchCharType.Left);
 
             for (int i = 0; i < removedCount; i++)
