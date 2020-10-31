@@ -97,7 +97,7 @@ namespace TalkSystem.Editor
                         var key = orderedKeys.ElementAt(i);
                         var highlight = _currentTextPage.Highlight[key];
 
-                        Debug.Log("wordIndex: " + highlight.WordIndex + ", startChar: " + highlight.StartLocalChar + ", " + "length: " + highlight.HighlighLength);
+                        Debug.Log("wIndex: " + highlight.WordIndex + ", startChar: " + highlight.StartLocalChar + ", " + "length: " + highlight.HighlighLength);
                     }
                 }
             }
@@ -125,68 +125,72 @@ namespace TalkSystem.Editor
             {
                 var selectedWords = Utils.GetSelectedWords(textInfo.StartSelectIndex, textInfo.SelectedText, textInfo.Text);
 
-                var word = selectedWords[0].Word;
-                var wordIndex = selectedWords[0].WordIndex;
-                var globalStartingChar = selectedWords[0].GlobalCharIndex;//Utils.GetStartingCharIndexRaw(textInfo.Text, wordIndex);
-
-                var containsKey = _currentTextPage.Highlight.ContainsKey(wordIndex);
-
-                GUILayout.BeginVertical(EditorStyles.helpBox);
-
-                var highlight = default(Highlight);
-                //Debug.Log("Starting char created: " + startingChar);
-                var localStartCharIndex = Utils.ToLocalStartingChar(globalStartingChar, textInfo.Text, word);
-                var highlightLength = textInfo.SelectedText.Length;
-
-                //Debug.Log("startChar: " + startingChar + ", local start: " + startCharIndex + ", length " + highlightLength);
-
-                if (containsKey)
+                for (int i = 0; i < selectedWords.Count; i++)
                 {
-                    GUILayout.BeginHorizontal();
-                    if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
+                    var word = selectedWords[i].Word;
+                    var wordIndex = selectedWords[i].WordIndex;
+                    var globalStartingChar = selectedWords[i].GlobalCharIndex;
+
+                    var containsKey = _currentTextPage.Highlight.ContainsKey(wordIndex);
+
+                    GUILayout.BeginVertical(EditorStyles.helpBox);
+
+                    var highlight = default(Highlight);
+                    //Debug.Log("Starting char created: " + startingChar);
+                    var localStartCharIndex = Utils.ToLocalStartingChar(globalStartingChar, textInfo.Text, word);
+                    var highlightLength = textInfo.SelectedText.Length;
+
+                    //Debug.Log("startChar: " + startingChar + ", local start: " + startCharIndex + ", length " + highlightLength);
+
+                    if (containsKey)
                     {
-                        _currentTextPage.Highlight.Remove(wordIndex);
+                        GUILayout.BeginHorizontal();
+                        if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
+                        {
+                            _currentTextPage.Highlight.Remove(wordIndex);
+
+                            GUILayout.EndHorizontal();
+                            GUILayout.EndVertical();
+
+                            return;
+                        }
+
+                        GUILayout.Label($"Highlight ({word})", _labelStyle);
 
                         GUILayout.EndHorizontal();
-                        GUILayout.EndVertical();
 
-                        return;
+                        highlight = _currentTextPage.Highlight[wordIndex];
+
+                        if (highlight != default)
+                        {
+                            GUILayout.BeginHorizontal();
+                            GUILayout.Label("Color", GUILayout.MaxWidth(70));
+                            var color = EditorGUILayout.ColorField(highlight.Color);
+                            color.a = 1;
+                            GUILayout.EndHorizontal();
+
+                            GUILayout.Space(3);
+
+                            GUILayout.BeginHorizontal();
+                            GUILayout.Label("Animation", GUILayout.MaxWidth(70));
+                            var type = (HighlightAnimation)EditorGUILayout.EnumPopup(highlight.Type);
+                            GUILayout.EndHorizontal();
+
+                            highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, color, type);
+
+                            _currentTextPage.Highlight[wordIndex] = highlight;
+                        }
+                    }  
+                    else if (GUILayout.Button($"Add Hightlight to: {word}"))
+                    {
+                        highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, Color.white, HighlightAnimation.None);
+
+                        _currentTextPage.Highlight.Add(wordIndex, highlight);
                     }
 
-                    GUILayout.Label($"Highlight ({textInfo.SelectedText})", _labelStyle);
-
-                    GUILayout.EndHorizontal();
-
-                    highlight = _currentTextPage.Highlight[wordIndex];
-                }
-                else if (GUILayout.Button($"Add Hightlight to: {word}"))
-                {
-                    highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, Color.white, HighlightAnimation.None);
-
-                    _currentTextPage.Highlight.Add(wordIndex, highlight);
+                    GUILayout.EndVertical();
                 }
 
-                if (highlight != default)
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("Color", GUILayout.MaxWidth(70));
-                    var color = EditorGUILayout.ColorField(highlight.Color);
-                    color.a = 1;
-                    GUILayout.EndHorizontal();
-
-                    GUILayout.Space(3);
-
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label("Animation", GUILayout.MaxWidth(70));
-                    var type = (HighlightAnimation)EditorGUILayout.EnumPopup(highlight.Type);
-                    GUILayout.EndHorizontal();
-
-                    highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, color, type);
-
-                    _currentTextPage.Highlight[wordIndex] = highlight;
-                }
-
-                GUILayout.EndVertical();
             }
         }
 
@@ -273,23 +277,23 @@ namespace TalkSystem.Editor
                 _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar, highlight.HighlighLength, highlight.Color, highlight.Type));
             }
         }
-          
+
         private void OnWordRemoved(int charIndex, int removedCount, string oldText)
         {
             _temp.Clear();
 
             //WARNING: removing characters with the "delete" keyword will have problems using "search left".
             //I need here to be exact (using left), so i will not be ending deleting a wrong word highlight.
-          
+
             var wIndexes = Utils.GetSelectedWords(_textInfo.TextEditor.StartSelectIndexLate, _textInfo.TextEditor.SelectedTextLate, oldText);
             //wIndexes.Print(); 
             for (int i = 0; i < wIndexes.Count; i++)
             {
                 var wIndex = wIndexes[i].WordIndex;
-                 
+
                 if (_currentTextPage.Highlight.ContainsKey(wIndex))
                 {
-                    Debug.Log("Selection removed: " + wIndexes[i].Word + " | "+ (wIndex));
+                    Debug.Log("Selection removed: " + wIndexes[i].Word + " (" + (wIndex) + ")");
                     _currentTextPage.Highlight.Remove(wIndex);
                 }
             }
@@ -312,7 +316,7 @@ namespace TalkSystem.Editor
 
                 _temp.Add(key, _currentTextPage.Highlight[key]);
             }
-             
+
             _currentTextPage.Highlight.Clear();
 
             var pair = Utils.GetWordIndexPair(oldText, charIndex);
@@ -388,51 +392,6 @@ namespace TalkSystem.Editor
                 //}
             }
         }
-
-        //RULES:
-        //1-if you add a char in a word and is before the start char, the startChar index should be added 1 and length remain the same.
-        //1-if you add a char in a word and is after the start char, the startChar index will remain the same bu the length will be added one.
-        //asd
-        //TODO: if you mix two words, there should be a way to clean up.
-        //Always clean: repeated charIndex of highlights, and charIndexes that points to empty chars.
-        //Two problems: Clean up of unnuced highlights and word duplicates with different charIndex in the highlight object.
-        private void RearrangeHighlightedWords(int wordIndex, int addedChars, int insertedIndex)
-        {
-            //Get the word index and modify it
-
-            if (_currentTextPage.Highlight.Count > 0)
-            {
-                var highlightKeysToModify = _currentTextPage.Highlight.Values.Where(x => x.WordIndex >= wordIndex);
-
-                for (int i = 0; i < highlightKeysToModify.Count(); i++)
-                {
-                    var highlight = highlightKeysToModify.ElementAt(i);
-
-                    //Debug.Log("Indexes after: " + highlight.WordIndex);
-
-                    //var newKey = key + addedChars;
-
-                    //var highlight = _currentTextPage.Highlight[key];
-
-                    ////--highlight = new Highlight(newKey, highlight.WordLength, highlight.Color, highlight.Type);
-
-                    //_currentTextPage.Highlight.Remove(key);
-
-                    //if (_currentTextPage.Highlight.ContainsKey(newKey))
-                    //{
-                    //    Debug.Log("replace key");
-                    //    _currentTextPage.Highlight[newKey] = highlight;
-                    //}
-                    //else
-                    //{
-                    //    _currentTextPage.Highlight.Add(newKey, highlight);
-                    //}
-                }
-
-                //Debug.Log("Count: " + highlightKeysToModify.Count());
-            }
-        }
-
 
         //Remove word index feature, there should not be color by words but color by charStart + wordLength
         private string HighlightText(TextPage page)

@@ -157,11 +157,11 @@ namespace TalkSystem.Editor
         //I have to optimise this.
         public static List<WordInfo> GetSelectedWords(int startSelectionIndex, string selectedText, string fullText)
         {
-            var selectedSplitted = selectedText.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
-
             _selectedWords.Clear();
 
             var charIndex = 0;
+
+            var selectedSplitted = selectedText.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
 
             for (int i = 0; i < selectedSplitted.Length; i++)
             {
@@ -200,6 +200,11 @@ namespace TalkSystem.Editor
         {
             return word.IndexOf(fullText[globalStartCharIndex]);
         }
+
+        //public static string ToLocalTextSelected(int globalStartCharIndex, string globalSelected, string word)
+        //{
+
+        //}
 
         public static int GetChangedWordsCount(string current, string compare)
         {

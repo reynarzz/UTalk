@@ -213,29 +213,25 @@ namespace TalkSystem.Editor
                     SelectGraphicalLineEnd();
                     break;
                 case TextEditOp.Delete:
-                    SelectedTextLate = SelectedText;
-                    SelectIndexLate = selectIndex;
-                    CursorIndexLate = cursorIndex;
-                    TextLate = text;
-                    //Debug.Log("Se");
+                    
+                    SetLateInfo();
+
                     if (textIsReadOnly)
                     {
                         return false;
                     }
                     return Delete();
                 case TextEditOp.Backspace:
-                    SelectedTextLate = SelectedText;
-                    SelectIndexLate = selectIndex;
-                    CursorIndexLate = cursorIndex;
-                    TextLate = text;
+                    SetLateInfo();
 
-                    //Debug.Log("Se");
                     if (textIsReadOnly)
                     {
                         return false;
                     }
                     return Backspace();
                 case TextEditOp.Cut:
+                    SetLateInfo();
+
                     if (textIsReadOnly)
                     {
                         return false;
@@ -261,6 +257,7 @@ namespace TalkSystem.Editor
                     SelectNone();
                     break;
                 case TextEditOp.DeleteWordBack:
+
                     if (textIsReadOnly)
                     {
                         return false;
@@ -285,6 +282,14 @@ namespace TalkSystem.Editor
             return false;
         }
 
+        /// <summary>This data is not updated after removing text, but before.</summary>
+        private void SetLateInfo()
+        {
+            SelectedTextLate = SelectedText;
+            SelectIndexLate = selectIndex;
+            CursorIndexLate = cursorIndex;
+            TextLate = text;
+        }
         public void Clear()
         {
             OnCopy = null;
