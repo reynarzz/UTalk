@@ -2,10 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace TalkSystem.Editor
@@ -16,10 +15,13 @@ namespace TalkSystem.Editor
         public static char[] SplitPattern = { ' ', '\n' };
         public static char[] SplitPatternNotNewline = { ' ', '\n' };
         private const int _whiteSpace = 1;
+        //private const char EmptyChar = '\0';
+        private static List<WordInfo> _selectedWords;
 
         static Utils()
         {
             _printArray = new StringBuilder();
+            _selectedWords = new List<WordInfo>();
         }
 
         public static void Print(this IEnumerable collection, string title = null)
@@ -39,89 +41,77 @@ namespace TalkSystem.Editor
             Debug.Log(_printArray.ToString());
         }
 
-        /// <summary>Helper function to get the char index of a word in a text.</summary>
-        //public static int GetStartingCharIndex(string text, int wordIndex)
-        //{
-        //    var splited = text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
-        //    var charIndex = 0;
-
-        //    for (int i = 0; i < splited.Length; i++)
-        //    {
-        //        if (i == wordIndex)
-        //        {
-        //            return charIndex;
-        //        }
-
-        //        charIndex += splited[i].Length + _whiteSpace;
-        //    }
-
-        //    return charIndex;
-        //}
-
-        ////Very inefficient.
-        //public static (int, string) GetWordIndex(string text, int charIndex, bool ignoreWhiteSpace = false)
-        //{
-        //    var explit = text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
-        //    //IEnumerable white = Regex.Matches(text, " ");
-
-        //    var charCount = 0;
-
-        //    var word = "NULL";
-
-        //    for (int i = 0; i < explit.Length; i++)
-        //    {
-        //        for (int j = 0; j < explit[i].Length; j++)
-        //        {
-        //            if (charCount == charIndex)
-        //            {
-
-        //                if (text[charCount] != ' ')
-        //                {
-        //                    return (i, explit[i]);
-
-        //                }
-        //                else
-        //                {
-        //                    return (i - 1, explit[i - 1]);
-        //                }
-        //            }
-
-        //            charCount++;
-        //        }
-
-        //        if (!ignoreWhiteSpace)
-        //            charCount++;
-        //    }
-        //    //Debug.Log(charCount + ", " + charIndex);
-        //    return (0, word);
-        //}
-           
-        public static int GetWordIndex(string text, int charIndex)
+        /// <summary>If you want to do an exact search, you have to choose which char test agains to.</summary>
+        public enum SearchCharType
         {
-            var wordIndex = 0;
+            None,
+            Left, Right,
+        }
+
+        public static (int, string) GetWordIndexPair(string text, int charIndex, SearchCharType type = SearchCharType.None)
+        {
+            var wIndex = GetWordIndex(text, charIndex, type);
+            //Debug.Log(wIndex);
+            return (wIndex, text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(wIndex));
+        }
+        //A word is a string or char between white spaces or new lines or null chars
+        public static int GetWordIndex(string text, int charIndex, SearchCharType type = SearchCharType.None)
+        {
+            var wIndex = 0;
+            var whiteSpacesCount = -1;
+            var exit = false;
 
             for (int i = 0; i < text.Length; i++)
             {
                 if (charIndex == i)
                     break;
 
-                var isCurrentWhiteSpaceOrNewLine = text[i] == ' ' || text[i] == '\n';
-                var isNextAWord = text[i + 1] != ' ' && text[i + 1] != '\n';
+                while (text.ElementAtOrDefault(i).IsValidChar())
+                {
+                    i++;
+                    whiteSpacesCount = 0;
 
-                if (isCurrentWhiteSpaceOrNewLine && isNextAWord)
-                    wordIndex++;
+                    if (charIndex == i)
+                        exit = true;
+                }
 
+                if (exit)
+                {
+                    break;
+                }
+
+                whiteSpacesCount++;
+
+                if (whiteSpacesCount == 1)
+                {
+                    wIndex++;
+                }
+                else
+                {
+                    whiteSpacesCount = -1;
+                }
             }
 
-            return wordIndex;
+            if (type != SearchCharType.None)
+            {
+                var value = type == SearchCharType.Right ? 1 : -1;
+
+                if (!text.ElementAtOrDefault(charIndex + value).IsValidChar())
+                {
+                    wIndex = -1;
+                }
+            }
+
+            return wIndex;
         }
 
-
-        public static (int, string) GetWordIndexPair(string text, int charIndex)
+        /// <summary>Is a letter, a number or a symbol?</summary>
+        /// <returns></returns>
+        public static bool IsValidChar(this char character)
         {
-            var wIndex = GetWordIndex(text, charIndex);
-
-            return (wIndex, text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries)[wIndex]);
+            return character != default &&
+                   character != ' ' &&
+                   character != '\n';
         }
 
         /// <summary>Takes in consideration white spaces.</summary>
@@ -151,6 +141,64 @@ namespace TalkSystem.Editor
             }
 
             return charIndex;
+        }
+
+        public struct WordInfo
+        {
+            public int GlobalCharIndex { get; set; }
+            public int WordIndex { get; set; }
+            public string Word { get; set; }
+
+            public override string ToString()
+            {
+                return $"Char I: {GlobalCharIndex}, WordIndex: {WordIndex}, Word: {Word} ";
+            }
+        }
+        //I have to optimise this.
+        public static List<WordInfo> GetSelectedWords(int startSelectionIndex, string selectedText, string fullText)
+        {
+            var selectedSplitted = selectedText.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
+
+            _selectedWords.Clear();
+
+            var charIndex = 0;
+
+            for (int i = 0; i < selectedSplitted.Length; i++)
+            {
+                for (int j = startSelectionIndex; j < startSelectionIndex + selectedText.Length; j++)
+                {
+                    if (fullText[j].IsValidChar())
+                    {
+                        charIndex = j;
+
+                        while (fullText.ElementAtOrDefault(j).IsValidChar())
+                        {
+                            j++;
+                        }
+
+                        startSelectionIndex = j;
+                        break;
+                    }
+                }
+
+                var pair = GetWordIndexPair(fullText, charIndex);
+
+                var info = new WordInfo()
+                {
+                    GlobalCharIndex = charIndex,
+                    WordIndex = pair.Item1,
+                    Word = pair.Item2
+                };
+
+                _selectedWords.Add(info);
+            }
+
+            return _selectedWords;
+        }
+
+        public static int ToLocalStartingChar(int globalStartCharIndex, string fullText, string word)
+        {
+            return word.IndexOf(fullText[globalStartCharIndex]);
         }
 
         public static int GetChangedWordsCount(string current, string compare)
