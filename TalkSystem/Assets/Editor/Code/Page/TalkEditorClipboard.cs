@@ -35,15 +35,13 @@ namespace TalkSystem.Editor
                 startCharIndex = cursor;
                 endCharIndex = selectIndex;
             }
-            
+
             var splitCopiedText = copiedText.Split(Utils.SplitPattern, StringSplitOptions.RemoveEmptyEntries).ToList();
             splitCopiedText.Print();
 
-            //Debug.Log(fullText + ", -startchar: " + startCharIndex + ", End: " + endCharIndex);
-
             for (int i = startCharIndex; i < endCharIndex; i++)
             {
-                var value = Utils.GetWordIndex(fullText, i);
+                var value = Utils.GetWordIndexPair(fullText, i);
 
                 var wordIndex = value.Item1;
                 var word = value.Item2;
@@ -55,7 +53,6 @@ namespace TalkSystem.Editor
                     if (page.Highlight.ContainsKey(wordIndex))
                     {
                         _highlightClipboard.Add(page.Highlight[wordIndex]);
-                        // Debug.Log("Clipboard: " + splitCopiedText[index]);
                     }
                     else
                     {

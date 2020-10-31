@@ -58,45 +58,45 @@ namespace TalkSystem.Editor
         //    return charIndex;
         //}
 
-        //Very inefficient.
-        public static (int, string) GetWordIndex(string text, int charIndex, bool ignoreWhiteSpace = false)
-        {
-            var explit = text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
-            //IEnumerable white = Regex.Matches(text, " ");
+        ////Very inefficient.
+        //public static (int, string) GetWordIndex(string text, int charIndex, bool ignoreWhiteSpace = false)
+        //{
+        //    var explit = text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
+        //    //IEnumerable white = Regex.Matches(text, " ");
 
-            var charCount = 0;
+        //    var charCount = 0;
 
-            var word = "NULL";
+        //    var word = "NULL";
 
-            for (int i = 0; i < explit.Length; i++)
-            {
-                for (int j = 0; j < explit[i].Length; j++)
-                {
-                    if (charCount == charIndex)
-                    {
+        //    for (int i = 0; i < explit.Length; i++)
+        //    {
+        //        for (int j = 0; j < explit[i].Length; j++)
+        //        {
+        //            if (charCount == charIndex)
+        //            {
 
-                        if (text[charCount] != ' ')
-                        {
-                            return (i, explit[i]);
+        //                if (text[charCount] != ' ')
+        //                {
+        //                    return (i, explit[i]);
 
-                        }
-                        else
-                        {
-                            return (i - 1, explit[i - 1]);
-                        }
-                    }
+        //                }
+        //                else
+        //                {
+        //                    return (i - 1, explit[i - 1]);
+        //                }
+        //            }
 
-                    charCount++;
-                }
+        //            charCount++;
+        //        }
 
-                if (!ignoreWhiteSpace)
-                    charCount++;
-            }
-            //Debug.Log(charCount + ", " + charIndex);
-            return (0, word);
-        }
-          
-        public static int GetWordIndexRaw(string text, int charIndex)
+        //        if (!ignoreWhiteSpace)
+        //            charCount++;
+        //    }
+        //    //Debug.Log(charCount + ", " + charIndex);
+        //    return (0, word);
+        //}
+           
+        public static int GetWordIndex(string text, int charIndex)
         {
             var wordIndex = 0;
 
@@ -117,9 +117,9 @@ namespace TalkSystem.Editor
         }
 
 
-        public static (int, string) GetWordIndexRawPair(string text, int charIndex)
+        public static (int, string) GetWordIndexPair(string text, int charIndex)
         {
-            var wIndex = GetWordIndexRaw(text, charIndex);
+            var wIndex = GetWordIndex(text, charIndex);
 
             return (wIndex, text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries)[wIndex]);
         }

@@ -36,7 +36,7 @@ namespace TalkSystem.Editor
     {
         private static GUIContent _guiContent;
         private static int _cursorIndex;
-
+         
         private static PropertyInfo _compositionStringProperty;
         private static PropertyInfo _textFieldInput;
         private static FieldInfo _hasFocusProperty;
