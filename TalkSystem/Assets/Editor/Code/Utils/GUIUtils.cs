@@ -42,9 +42,10 @@ namespace TalkSystem.Editor
         private static FieldInfo _hasFocusProperty;
         private static StringBuilder _text;
 
-    private static string _compositionString => (string)_compositionStringProperty.GetValue(null);
+        private static string _compositionString => (string)_compositionStringProperty.GetValue(null);
 
         public delegate void OnOperation(TextOperation operation, string clipboardText, int selectIndex, int cursorIndex);
+
         public enum TextOperation
         {
             Copy,
@@ -84,7 +85,9 @@ namespace TalkSystem.Editor
                 }
             }
 
-            public TextEditorInfo(string fullText, string selectedText, int selectIndex, int cursorIndex, int addedChars, bool textLengthChanged)
+            public SmartTextEditor TextEditor { get; private set; }
+
+            public TextEditorInfo(string fullText, string selectedText, int selectIndex, int cursorIndex, int addedChars, bool textLengthChanged, SmartTextEditor textEditor)
             {
                 _fullText = fullText;
                 _selectedText = selectedText;
@@ -93,6 +96,7 @@ namespace TalkSystem.Editor
                 _addedChars = addedChars;
 
                 _lengthChanged = textLengthChanged;
+                TextEditor = textEditor;
             }
         }
 
@@ -141,7 +145,6 @@ namespace TalkSystem.Editor
         private static TextEditorInfo DoTextFieldOrSomething(ref string text, bool multiline, GUIStyle style, GUILayoutOption[] options,
                                                              OnOperation onTextInClipboard)
         {
-
             int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
 
             _guiContent.text = text;
@@ -177,10 +180,10 @@ namespace TalkSystem.Editor
             {
                 textEditor.OnCopy += t => onTextInClipboard(TextOperation.Copy, t, textEditor.selectIndex, textEditor.cursorIndex);
                 textEditor.OnCut += t => onTextInClipboard(TextOperation.Cut, t, textEditor.selectIndex, textEditor.cursorIndex);
-                textEditor.OnPaste += t => { pasted = true;  charsAdded = t.Length; };
+                textEditor.OnPaste += t => { pasted = true; charsAdded = t.Length; };
                 //textEditor.OnPaste += t => onTextInClipboard(TextOperation.Paste, t, textEditor.selectIndex, textEditor.cursorIndex);
             }
-             
+
             textEditor.text = content.text;
             textEditor.SaveBackup();
             textEditor.position = position;
@@ -196,7 +199,7 @@ namespace TalkSystem.Editor
             {
                 charsAdded = currentlyAdded;
             }
-               
+
             textEditor.UpdateScrollOffsetIfNeeded(Event.current);
 
             //_text.Clear();
@@ -209,8 +212,8 @@ namespace TalkSystem.Editor
             //}
 
             //textEditor.text = _text.ToString();
-
-            return new TextEditorInfo(textEditor.text, textEditor.SelectedText, textEditor.selectIndex, _cursorIndex, charsAdded, charsAdded != 0);
+            
+            return new TextEditorInfo(textEditor.text, textEditor.SelectedText, textEditor.selectIndex, _cursorIndex, charsAdded, charsAdded != 0, textEditor);
         }
 
         private static int HandleTextFieldEventForDesktop(Rect position, int id, GUIContent content, bool multiline, int maxLength, GUIStyle style, SmartTextEditor editor)

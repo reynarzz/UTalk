@@ -16,6 +16,26 @@ namespace TalkSystem.Editor
         public event Action<string> OnPaste;
         public event Action<string> OnCut;
 
+        public string SelectedTextLate { get; set; }
+        public int SelectIndexLate { get; set; }
+        public int CursorIndexLate { get; set; }
+        public string TextLate { get; set; }
+
+        public int StartSelectIndexLate
+        {
+            get
+            {
+                if (CursorIndexLate < SelectIndexLate)
+                {
+                    return CursorIndexLate;
+                }
+                else
+                {
+                    return SelectIndexLate;
+                }
+            }
+        }
+
         new public void Copy()
         {
             base.Copy();
@@ -40,7 +60,7 @@ namespace TalkSystem.Editor
 
             OnCut?.Invoke(GUIUtility.systemCopyBuffer);
             //Debug.Log(GUIUtility.systemCopyBuffer + " clipped");
-
+            
             return clipped;
         }
 
@@ -193,12 +213,23 @@ namespace TalkSystem.Editor
                     SelectGraphicalLineEnd();
                     break;
                 case TextEditOp.Delete:
+                    SelectedTextLate = SelectedText;
+                    SelectIndexLate = selectIndex;
+                    CursorIndexLate = cursorIndex;
+                    TextLate = text;
+                    //Debug.Log("Se");
                     if (textIsReadOnly)
                     {
                         return false;
                     }
                     return Delete();
                 case TextEditOp.Backspace:
+                    SelectedTextLate = SelectedText;
+                    SelectIndexLate = selectIndex;
+                    CursorIndexLate = cursorIndex;
+                    TextLate = text;
+
+                    //Debug.Log("Se");
                     if (textIsReadOnly)
                     {
                         return false;

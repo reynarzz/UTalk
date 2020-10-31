@@ -29,6 +29,7 @@ namespace TalkSystem.Editor
 
 
         private SDictionary<int, Highlight> _temp;
+        private GUIUtils.TextEditorInfo _textInfo;
 
         public EditPageText()
         {
@@ -63,22 +64,22 @@ namespace TalkSystem.Editor
 
                 var oldText = _text.ToString();
 
-                var textInfo = GUIUtils.TextArea(ref _text, SetToClipboard);
+                _textInfo = GUIUtils.TextArea(ref _text, SetToClipboard);
 
-                if (textInfo.TextLengthChanged)
+                if (_textInfo.TextLengthChanged)
                 {
-                    OnTextChanged(oldText, textInfo.Text, textInfo.AddedChars, textInfo.CursorIndex);
+                    OnTextChanged(oldText, _textInfo.Text, _textInfo.AddedChars, _textInfo.CursorIndex);
                 }
 
                 //var selected = Utils.GetSelectedWords(textInfo.StartSelectIndex, textInfo.SelectedText, textInfo.Text);
                 //selected.Print();
                 GUILayout.Space(5);
 
-                var pair = Utils.GetWordIndexPair(_text, textInfo.CursorIndex);
+                var pair = Utils.GetWordIndexPair(_text, _textInfo.CursorIndex);
 
                 //Debug.Log(pair);
 
-                UpdateHighlight(textInfo);
+                UpdateHighlight(_textInfo);
 
                 var hightligted = HighlightText(new TextPage(_text, _currentTextPage.Sprite, _currentTextPage.Event, _currentTextPage.Highlight));
 
@@ -188,7 +189,7 @@ namespace TalkSystem.Editor
                 GUILayout.EndVertical();
             }
         }
-          
+
         private void TextPreview(string text)
         {
             GUILayout.Label("Preview");
@@ -243,7 +244,7 @@ namespace TalkSystem.Editor
             }
             else if (newSplit.Length < old.Length)
             {
-                OnWordRemoved(cursor - addedChars, Utils.GetChangedWordsCount(oldText, newText), oldText);
+                OnWordRemoved(insertedIndex, Utils.GetChangedWordsCount(oldText, newText), oldText);
             }
         }
 
@@ -272,21 +273,35 @@ namespace TalkSystem.Editor
                 _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar, highlight.HighlighLength, highlight.Color, highlight.Type));
             }
         }
-
-        private void OnWordRemoved(int charIndex, int removedCount, string newText)
+          
+        private void OnWordRemoved(int charIndex, int removedCount, string oldText)
         {
             _temp.Clear();
 
             //WARNING: removing characters with the "delete" keyword will have problems using "search left".
             //I need here to be exact (using left), so i will not be ending deleting a wrong word highlight.
-            var exactWIndex = Utils.GetWordIndex(newText, charIndex, Utils.SearchCharType.Left);
+          
+            var wIndexes = Utils.GetSelectedWords(_textInfo.TextEditor.StartSelectIndexLate, _textInfo.TextEditor.SelectedTextLate, oldText);
+            //wIndexes.Print(); 
+            for (int i = 0; i < wIndexes.Count; i++)
+            {
+                var wIndex = wIndexes[i].WordIndex;
+                 
+                if (_currentTextPage.Highlight.ContainsKey(wIndex))
+                {
+                    Debug.Log("Selection removed: " + wIndexes[i].Word + " | "+ (wIndex));
+                    _currentTextPage.Highlight.Remove(wIndex);
+                }
+            }
+
+            var wexactIndex = Utils.GetWordIndex(oldText, charIndex, Utils.SearchCharType.Left);
 
             for (int i = 0; i < removedCount; i++)
             {
-                if (_currentTextPage.Highlight.ContainsKey(exactWIndex + i))
+                if (_currentTextPage.Highlight.ContainsKey(wexactIndex + i))
                 {
-                    Debug.Log("WHR: " + (exactWIndex + i));
-                    _currentTextPage.Highlight.Remove(exactWIndex + i);
+                    Debug.Log("By Char: " + (wexactIndex + i));
+                    _currentTextPage.Highlight.Remove(wexactIndex + i);
                 }
             }
 
@@ -297,10 +312,10 @@ namespace TalkSystem.Editor
 
                 _temp.Add(key, _currentTextPage.Highlight[key]);
             }
-
+             
             _currentTextPage.Highlight.Clear();
 
-            var pair = Utils.GetWordIndexPair(newText, charIndex);
+            var pair = Utils.GetWordIndexPair(oldText, charIndex);
             var wordIndex = pair.Item1;
             //Debug.Log("WIndex: " + wordIndex + ", removed: " + removedCount + ", word: " + pair.Item2);
 
@@ -451,7 +466,7 @@ namespace TalkSystem.Editor
                 if (modified.Length > insertIndex)
                 {
                     modified = modified.Insert(colorOpen.Length + highlight.StartLocalChar + highlight.HighlighLength, colorClose);
-                } 
+                }
                 else
                 {
                     //Adjust hightlightLength.
