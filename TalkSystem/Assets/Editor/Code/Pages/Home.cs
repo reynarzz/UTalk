@@ -29,17 +29,12 @@ namespace TalkSystem.Editor
 
         private List<TalkGroup> _group;
         private GUIContent[] _groupsTextGrid;
+        private bool _deleteGroup;
 
         public Home(TalkDataContainerScriptable data)
         {
             _data = data;
 
-            _groupButtonStyle = new GUIStyle(GUI.skin.button);
-            _groupButtonStyle.alignment = TextAnchor.MiddleLeft;
-            _groupButtonStyle.margin.left = 20;
-            _groupButtonStyle.margin.right = 20;
-            _groupButtonStyle.margin.top = 10;
-            _groupButtonStyle.padding.left = 20;
 
             _navigationButtons = new GUIStyle(GUI.skin.label);
             _navigationButtons.margin.left = 0;
@@ -66,28 +61,36 @@ namespace TalkSystem.Editor
         {
             Navigator();
 
+            GUILayout.BeginHorizontal(EditorStyles.toolbar);
+            var search = EditorStyles.toolbarSearchField;
+
+            search.margin.left = 5;
+            search.margin.right = 5;
+            search.margin.top = 5;
+            search.padding.left = 20;
+
+            _searchText = EditorGUILayout.TextField(_searchText, search);
+
+            if (GUILayout.Button("+", EditorStyles.toolbarButton, GUILayout.MaxWidth(30)))
+            {
+                AddGroup();
+                return;
+            }
+
+            if (GUILayout.Button("x", EditorStyles.toolbarButton, GUILayout.MaxWidth(30)))
+            {
+                _deleteGroup = true;
+            }
+
+            GUILayout.EndHorizontal();
+
             if (_currentGroup < 0)
             {
-                GUILayout.BeginHorizontal(EditorStyles.toolbar);
-                var search = EditorStyles.toolbarSearchField;
-
-                search.margin.left = 5;
-                search.margin.right = 5;
-                search.margin.top = 5;
-                search.padding.left = 20;
-
-                _searchText = EditorGUILayout.TextField(_searchText, search);
-
-                if (GUILayout.Button("+ Group", EditorStyles.toolbarButton))
-                {
-                    AddGroup();
-                    return;
-                }
-                GUILayout.EndHorizontal();
+               
                 Groups();
             }
 
-            //TalksPage();
+            TalksPage();
         }
 
         private void Navigator()
@@ -124,8 +127,6 @@ namespace TalkSystem.Editor
 
         private void AddGroup()
         {
-            // if (GUI.Button(new Rect(Screen.width - 65, Screen.height - 90, 40, 40), "+"))
-            //{
             Context.ShowContext(TalkEditorWindow.Position, "Group", x =>
             {
                 _group.Add(new TalkGroup() { Name = x });
@@ -135,26 +136,45 @@ namespace TalkSystem.Editor
 
                 _groupsTextGrid = text.ToArray();
             });
-            // }
         }
-
+         
         private Vector2 _gridScroll;
 
         private void Groups()
         {
-            GUILayout.Space(5);
-
+            GUILayout.Space(4);
+             
             _gridScroll = GUILayout.BeginScrollView(_gridScroll);
 
             _currentGroup = GUILayout.SelectionGrid(_currentGroup, _groupsTextGrid, 2, _groupGridButtons);
 
-            GUILayout.EndScrollView();
+            if (_deleteGroup)
+            {
+                var selectedGroup = 0;
+                  
+                for (int i = 0; i < Mathf.CeilToInt((float)_groupsTextGrid.Length / 2); i++) 
+                {  
+                    for (int j = 0; j < 2; j++)
+                    {
+                        if(_groupsTextGrid.Length > selectedGroup)
+                        {
+                            if (GUI.Button(new Rect(j * Screen.width / 2, i * 80, 20, 20), "X"))
+                            {
+                                Debug.Log("Delete: " + selectedGroup);
+                            }
+                        }
 
+                        selectedGroup++;
+                    }
+                }
+            }
+
+            GUILayout.EndScrollView();
         }
 
         private void TalksPage()
         {
-            if (_currentGroup > 0)
+            if (_currentGroup > -1)
             {
                 _talksPage.OnGUI();
             }

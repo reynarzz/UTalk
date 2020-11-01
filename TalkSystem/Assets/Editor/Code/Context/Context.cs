@@ -19,7 +19,7 @@ namespace TalkSystem.Editor
 
         public Context()
         {
-           
+
         }
 
         private static Rect _constantPos;
@@ -31,18 +31,19 @@ namespace TalkSystem.Editor
             _onCreated = onCreated;
 
             var window = GetWindow<Context>();
-            
+
             window.maxSize = new Vector2(250, 100);
             window.minSize = new Vector2(250, 100);
 
             position.x -= window.minSize.x / 2;
-            position.y -= (window.minSize.y / 2) + 20;
+            position.y -= (window.minSize.y / 2) + 50;
 
             window.position = position;
             window.titleContent = new GUIContent(title);
             //window.Show();
             _constantPos = position;
             window.ShowModal();
+
             //window.ShowModalUtility();
         }
 
@@ -69,20 +70,23 @@ namespace TalkSystem.Editor
             GUILayout.Label("Create " + _title);
             GUILayout.Space(4);
 
+            GUI.SetNextControlName("createName");
             _text = GUILayout.TextField(_text);
             GUILayout.EndVertical();
+
+            GUI.FocusControl("createName");
 
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
 
-            if(!string.IsNullOrEmpty(_text) && GUILayout.Button("Create", _createButton))
-            {
-                {
-                    _onCreated(_text);
-                    Close();
-                }
-                
+            var current = Event.current;
 
+            var enterPressed = current.keyCode == KeyCode.Return;
+             
+            if (!string.IsNullOrEmpty(_text) && (GUILayout.Button("Create", _createButton) || enterPressed))
+            {
+                _onCreated(_text);
+                Close();
             }
 
             if (GUILayout.Button("Cancel", _cancelButton))
