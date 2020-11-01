@@ -10,6 +10,8 @@ using TalkSystem;
 public class TalkEditorWindow : EditorWindow
 {
     private EditPageText _editPageText;
+    private Home _homePage;
+
     private TalkData _test;
 
     [MenuItem("Window/TalkEditor")]
@@ -24,17 +26,24 @@ public class TalkEditorWindow : EditorWindow
 
     private bool _pageSet = false;
 
+    public static Rect Position;
+
     public void OnGUI()
     {
+        Position = new Rect(position.x + Screen.width / 2, position.y + Screen.height / 2, position.width, position.height);
         Init();
 
-        _editPageText.OnGUI(_test);
+        _homePage.OnGUI();
+
+        //_editPageText.OnGUI(_test);
     }  
     
     private void Init()
     {
         if (_editPageText == null)
         {
+            _homePage = new Home(null);
+
             _test = new TalkData();
             _pageSet = false;
             var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius ligula ac dui \nermentum, sed finibus tortor aliquam.ni";

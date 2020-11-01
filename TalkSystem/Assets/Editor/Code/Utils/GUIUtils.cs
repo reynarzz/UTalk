@@ -28,6 +28,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using System.Reflection;
+using UnityEditor;
 
 namespace TalkSystem.Editor
 {
@@ -146,6 +147,9 @@ namespace TalkSystem.Editor
                                                              OnOperation onTextInClipboard)
         {
             int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
+
+            style = EditorStyles.helpBox;
+            style.fontSize = 12;
 
             _guiContent.text = text;
             style.richText = true;

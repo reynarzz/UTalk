@@ -40,6 +40,6 @@ MonoBehaviour:
               _wordEvent:
                 _wordIndex: 0
               _charByChar:
-                _normalWriteSpeed: 0.03
-                _fastWriteSpeed: 1
+                _normalWriteSpeed: 0.1
+                _fastWriteSpeed: 2
                 _highlightedWordSpeed: 0

@@ -10,6 +10,6 @@ namespace TalkSystem.Editor
 {
     public interface IPage
     {
-        void OnGUI(TalkData talkData);
+        void OnGUI();
     }
 }
