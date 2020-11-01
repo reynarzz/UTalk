@@ -54,6 +54,11 @@ namespace TalkSystem.Editor
             //Debug.Log(wIndex);
             return (wIndex, text.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(wIndex));
         }
+
+        public static string GetWord(int wordIndex, string fullText)
+        {
+           return fullText.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries).ElementAtOrDefault(wordIndex);
+        }
         //A word is a string or char between white spaces or new lines or null chars
         public static int GetWordIndex(string text, int charIndex, SearchCharType type = SearchCharType.None)
         {
@@ -162,7 +167,7 @@ namespace TalkSystem.Editor
             var charIndex = 0;
 
             var selectedSplitted = selectedText.Split(SplitPattern, StringSplitOptions.RemoveEmptyEntries);
-
+             
             for (int i = 0; i < selectedSplitted.Length; i++)
             {
                 for (int j = startSelectionIndex; j < startSelectionIndex + selectedText.Length; j++)

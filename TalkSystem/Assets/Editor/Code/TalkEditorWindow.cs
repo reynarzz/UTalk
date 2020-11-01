@@ -10,7 +10,7 @@ using TalkSystem;
 public class TalkEditorWindow : EditorWindow
 {
     private PageNavigator _pageNavigator;
-    public static Rect _position;
+    public static Rect Position;
 
     [MenuItem("Window/TalkEditor")]
     private static void Open()
@@ -22,18 +22,6 @@ public class TalkEditorWindow : EditorWindow
         window.Show();
     }
 
-    public void OnGUI()
-    {
-        Init();
-
-        _pageNavigator.OnGUI();
-    }
-
-    private void Update()
-    {
-        _position = new Rect(position.x + Screen.width / 2, position.y + Screen.height / 2, position.width, position.height);
-    }
-
     private void Init()
     {
         if (_pageNavigator == null)
@@ -43,4 +31,13 @@ public class TalkEditorWindow : EditorWindow
             _pageNavigator.PushPage<TalkGroups>();
         }
     }
+
+    public void OnGUI()
+    {
+        Init();
+
+        Position = new Rect(position.x + Screen.width / 2, position.y + Screen.height / 2, position.width, position.height);
+
+        _pageNavigator.OnGUI();
+    }  
 }

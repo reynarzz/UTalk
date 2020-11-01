@@ -26,6 +26,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 
 namespace TalkSystem
@@ -64,7 +65,7 @@ namespace TalkSystem
     }
 
     [Serializable]
-    public struct TextPage
+    public class TextPage
     {
         [SerializeField, TextArea] private string _pageText;
         [SerializeField, HideInInspector] private Sprite _sprite; //later
@@ -74,7 +75,7 @@ namespace TalkSystem
         [Header("Write Styles")]
         [SerializeField] private CharByCharInfo _charByChar;
 
-        public string Text => _pageText;
+        public string Text { get => _pageText; set => _pageText = value; }
         public Sprite Sprite => _sprite;
         public SDictionary<int, Highlight> Highlight => _highlight;
         public WordEvent Event => _wordEvent;
@@ -114,15 +115,15 @@ namespace TalkSystem
             _charByChar = default;
         }
 
-        public static bool operator ==(TextPage a, TextPage b)
-        {
-            return a.Text == b.Text && a.Highlight == b.Highlight && a.Sprite == b.Sprite;
-        }
+        //public static bool operator ==(TextPage a, TextPage b)
+        //{
+        //    return a.Text == b.Text && a.Highlight == b.Highlight && a.Sprite == b.Sprite;
+        //}
 
-        public static bool operator !=(TextPage a, TextPage b)
-        {
-            return a.Text != b.Text || a.Highlight != b.Highlight || a.Sprite != b.Sprite;
-        }
+        //public static bool operator !=(TextPage a, TextPage b)
+        //{
+        //    return a.Text != b.Text || a.Highlight != b.Highlight || a.Sprite != b.Sprite;
+        //}
     }
 
     //TODO: Save highlighted words by index
@@ -186,10 +187,11 @@ namespace TalkSystem
 
         public TalkData()
         {
-            _pages = new List<TextPage>()
-            {
-                new TextPage("", new SDictionary<int, Highlight>())
-            };
+            _pages = new List<TextPage>();
+
+            //{
+            //    
+            //};
         }
 
         public TextPage GetPage(int pageIndex)
@@ -200,6 +202,16 @@ namespace TalkSystem
         public void AddPage(TextPage page)
         {
             _pages.Add(page);
+        }
+
+        public void DeletePage(int textPageIndex)
+        {
+            _pages.RemoveAt(textPageIndex);
+        }
+
+        public void CreateEmptyPage()
+        {
+            _pages.Add(new TextPage("", new SDictionary<int, Highlight>()));
         }
 
         public static implicit operator bool(TalkData a)

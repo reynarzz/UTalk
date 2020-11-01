@@ -43,7 +43,7 @@ namespace TalkSystem
             var color = Color.white;
             color.a = 0.1f;
 
-            EditorGUI.DrawRect(new Rect(0, 0, Screen.width, 18), color);
+            EditorGUI.DrawRect(new Rect(0, 0, Screen.width, 22), color);
 
             GUILayout.BeginHorizontal();
 

@@ -14,12 +14,13 @@ namespace TalkSystem.Editor
     {
         public delegate void TextChanged(string oldText, string newText, int charsAdded, int cursor);
 
-        private string _text;
-
         private GUIStyle _labelStyle;
         private GUIStyle _buttonWrapStyle;
 
-        private TalkData _talkData;
+        private GUIStyle _centeredLabel;
+        private GUIStyle _prevNextButtons;
+        private GUIStyle _prevNextButtonsDisabled;
+
 
         private int _textPageIndex = 0;
 
@@ -31,11 +32,11 @@ namespace TalkSystem.Editor
 
         private SDictionary<int, Highlight> _temp;
         private GUIUtils.TextEditorInfo _textInfo;
-        private Color32 _backgroundColor = Color.black;
+        private Color32 _backgroundColor = new Color(0, 0, 0, 0.2f);
 
         private bool _showInfo = false;
 
-        public string NavigationName => nameof(EditPageText);
+        public string NavigationName { get; set; }
 
         public EditPageText()
         {
@@ -57,19 +58,44 @@ namespace TalkSystem.Editor
                 _labelStyle.normal.textColor = Color.white;
                 _labelStyle.richText = true;
                 _labelStyle.wordWrap = true;
+                _labelStyle.alignment = TextAnchor.UpperLeft;
 
                 _buttonWrapStyle = new GUIStyle(GUI.skin.button);
                 _buttonWrapStyle.wordWrap = true;
+
+                _centeredLabel = new GUIStyle(GUI.skin.label);
+                _centeredLabel.alignment = TextAnchor.MiddleCenter;
+                _centeredLabel.fontSize = 15;
+                _centeredLabel.normal.textColor = Color.cyan;
+
+                _prevNextButtons = new GUIStyle(GUI.skin.button);
+                _prevNextButtons.margin.left = 30;
+                _prevNextButtons.margin.right = 30;
+
+                _prevNextButtonsDisabled = new GUIStyle(EditorStyles.helpBox);
+                _prevNextButtonsDisabled.margin.left = 30;
+                _prevNextButtonsDisabled.margin.right = 30;
+                _prevNextButtonsDisabled.alignment = TextAnchor.MiddleCenter;
+                _prevNextButtonsDisabled.fontSize = _prevNextButtons.fontSize;
+
+                _disabledButton = new GUIStyle(EditorStyles.helpBox);
+                _disabledButton.alignment = TextAnchor.MiddleCenter;
+                _disabledButton.fontSize = GUI.skin.button.fontSize;
             }
         }
 
         public void SetCurrentTalkData(TalkData talkData)
         {
             _talkData = talkData;
-            SetTextPageIndex(0, _talkData);
 
-            _temp.Clear();
-            _highlightedText.Clear();
+            if (_textInfo.TextEditor != null)
+            {
+                _textInfo.TextEditor.SelectNone();
+            }
+
+            _textInfo = default;
+
+            SetTextPageIndex(0, talkData);
         }
 
         private void SetTextPageIndex(int textPageIndex, TalkData talkData)
@@ -78,59 +104,119 @@ namespace TalkSystem.Editor
 
             _currentTextPage = talkData.GetPage(_textPageIndex);
 
-            _text = _currentTextPage.Text;
         }
 
         public void OnGUI()
         {
             if (_textPageIndex >= 0)
             {
-                GUILayout.Space(10);
+                GUILayout.Space(5);
 
-                var oldText = _text.ToString();
+                AddRemovePageToolbar();
 
-                _textInfo = GUIUtils.TextArea(ref _text, SetToClipboard);
+
+                var oldText = _currentTextPage.Text.ToString();
+
+                var text = oldText.ToString();
+
+                _textInfo = GUIUtils.SmartTextArea(ref text, SetToClipboard, GUILayout.MinHeight(100));
+
+                _currentTextPage.Text = text;
 
                 if (_textInfo.TextLengthChanged)
                 {
                     OnTextChanged(oldText, _textInfo.Text, _textInfo.AddedChars, _textInfo.CursorIndex);
                 }
 
+
+                PagesToolBar();
+                GUILayout.Space(5);
+
                 //var selected = Utils.GetSelectedWords(textInfo.StartSelectIndex, textInfo.SelectedText, textInfo.Text);
                 //selected.Print();
                 GUILayout.Space(5);
 
-                var pair = Utils.GetWordIndexPair(_text, _textInfo.CursorIndex);
+                var pair = Utils.GetWordIndexPair(_currentTextPage.Text, _textInfo.CursorIndex);
 
                 //Debug.Log(pair);
 
                 UpdateHighlight(_textInfo);
 
-                var hightligted = HighlightText(new TextPage(_text, _currentTextPage.Sprite, _currentTextPage.Event, _currentTextPage.Highlight));
+                var hightligted = HighlightText(new TextPage(_currentTextPage.Text, _currentTextPage.Sprite, _currentTextPage.Event, _currentTextPage.Highlight));
 
                 GUILayout.Space(5);
 
                 TextPreview(hightligted);
 
                 //TEST
-                if (_showInfo = EditorGUILayout.Foldout(_showInfo, "Highlight Info"))
+                //if (_showInfo = EditorGUILayout.Foldout(_showInfo, "Highlight Info"))
+                //{
+                //    var orderedKeys = _currentTextPage.Highlight.Keys.OrderBy(x => x);
+
+                //    GUILayout.BeginVertical(EditorStyles.helpBox);
+
+                //    //Debug.Log("Show");
+                //    for (int i = 0; i < _currentTextPage.Highlight.Count; i++)
+                //    {
+                //        var key = orderedKeys.ElementAt(i);
+                //        var highlight = _currentTextPage.Highlight[key];
+
+                //        GUILayout.Label("Index: " + highlight.WordIndex + ", Char: " + highlight.StartLocalChar + ", " + "Length: " + highlight.HighlighLength);
+                //    }
+
+                //    GUILayout.EndVertical();
+                //}
+            }
+        }
+
+        private void PagesToolBar()
+        {
+            GUILayout.BeginHorizontal(EditorStyles.helpBox);
+
+            var nextSkin = _textPageIndex + 1 < _talkData.PagesCount ? _prevNextButtons : _prevNextButtonsDisabled;
+            var prevSkin = _textPageIndex > 0 ? _prevNextButtons : _prevNextButtonsDisabled;
+
+            if (GUILayout.Button("Prev", prevSkin) && _textPageIndex > 0)
+            {
+                _textPageIndex--;
+                _currentTextPage = _talkData.GetPage(_textPageIndex);
+            }
+            GUILayout.Label((_textPageIndex + 1).ToString() + "/" + _talkData.PagesCount, _centeredLabel, GUILayout.Width(40));
+
+            if (GUILayout.Button("Next", nextSkin) && _textPageIndex + 1 < _talkData.PagesCount)
+            {
+                _textPageIndex++;
+                _currentTextPage = _talkData.GetPage(_textPageIndex);
+            }
+            GUILayout.EndHorizontal();
+        }
+         
+        private void AddRemovePageToolbar()
+        {
+            GUILayout.BeginHorizontal(EditorStyles.helpBox);
+
+            if (GUILayout.Button("Add Page"))
+            {
+                _talkData.CreateEmptyPage();
+                _textPageIndex = _talkData.PagesCount - 1;
+                _currentTextPage = _talkData.GetPage(_textPageIndex);
+            }
+
+            var buttonSkin = _talkData.PagesCount > 1 ? GUI.skin.button : _disabledButton;
+
+            if (GUILayout.Button("Delete This", buttonSkin))
+            {
+                if(_talkData.PagesCount > 1)
                 {
-                    var orderedKeys = _currentTextPage.Highlight.Keys.OrderBy(x => x);
+                    _talkData.DeletePage(_textPageIndex);
 
-                    GUILayout.BeginVertical(EditorStyles.helpBox);
-
-                    //Debug.Log("Show");
-                    for (int i = 0; i < _currentTextPage.Highlight.Count; i++)
-                    {
-                        var key = orderedKeys.ElementAt(i);
-                        var highlight = _currentTextPage.Highlight[key];
-
-                        GUILayout.Label("Index: " + highlight.WordIndex + ", Char: " + highlight.StartLocalChar + ", " + "Length: " + highlight.HighlighLength);
-                    }
-
-                    GUILayout.EndVertical();
+                    if (_textPageIndex - 1 > -1)
+                        _textPageIndex--;
+                    _currentTextPage = _talkData.GetPage(_textPageIndex);
                 }
             }
+            GUILayout.EndHorizontal();
+
         }
 
         private void SetToClipboard(GUIUtils.TextOperation operation, string clipboardText, int selectIndex, int cursor)
@@ -140,7 +226,7 @@ namespace TalkSystem.Editor
                 case GUIUtils.TextOperation.Copy:
                 case GUIUtils.TextOperation.Cut:
                     Debug.Log("Cut");
-                    TalkEditorClipboard.SetToClipBoard(_currentTextPage, _text, clipboardText, selectIndex, cursor);
+                    TalkEditorClipboard.SetToClipBoard(_currentTextPage, _currentTextPage.Text, clipboardText, selectIndex, cursor);
                     break;
                 case GUIUtils.TextOperation.Paste:
                     Debug.Log("Paste: " + clipboardText);
@@ -149,7 +235,9 @@ namespace TalkSystem.Editor
         }
 
         private Vector2 _scrollView;
-
+        private Vector2 _textScroll;
+        private TalkData _talkData;
+        private GUIStyle _disabledButton;
 
         private void UpdateHighlight(GUIUtils.TextEditorInfo textInfo)
         {
@@ -188,7 +276,8 @@ namespace TalkSystem.Editor
                 }
 
                 GUILayout.BeginVertical(EditorStyles.helpBox);
-                GUILayout.Label("Highlights");
+                //GUILayout.Label("Highlights");
+
                 GUILayout.Space(5);
                 _scrollView = GUILayout.BeginScrollView(_scrollView, GUI.skin.horizontalScrollbar, GUIStyle.none, GUILayout.MaxHeight(90), GUILayout.MinHeight(90));
 
@@ -264,18 +353,16 @@ namespace TalkSystem.Editor
         {
             GUILayout.BeginHorizontal();
             GUILayout.Label("Preview");
-            _backgroundColor = EditorGUILayout.ColorField(_backgroundColor, GUILayout.MaxWidth(100));
+            //_backgroundColor = EditorGUILayout.ColorField(_backgroundColor, GUILayout.MaxWidth(100));
 
             GUILayout.EndHorizontal();
 
-            var rect = GUILayoutUtility.GetRect(new GUIContent(text), _labelStyle);
+            var rect = GUILayoutUtility.GetRect(Screen.width, 100);
 
             EditorGUI.DrawRect(rect, _backgroundColor);
 
             GUI.Label(rect, text, _labelStyle);
         }
-
-       
 
         //TODO: Detect if a modified text index was changed.
         private void OnTextChangedHandler(string oldText, string newText, int addedChars, int cursor)
@@ -319,9 +406,9 @@ namespace TalkSystem.Editor
         private void OnWordAdded(int charIndex, int wordsAdded, string newText)
         {
             var wordIndex = Utils.GetWordIndex(newText, charIndex);
-             
+
             _temp.Clear();
-             
+
             //inefficient
             for (int i = 0; i < _currentTextPage.Highlight.Count; i++)
             {
@@ -470,7 +557,7 @@ namespace TalkSystem.Editor
             for (int i = 0; i < page.Highlight.Count; i++)
             {
                 var wordIndex = page.Highlight.Keys.ElementAt(i);
-                 
+
                 //Get a highlight.
                 var highlight = page.Highlight[wordIndex];
 

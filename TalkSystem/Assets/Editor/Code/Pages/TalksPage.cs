@@ -21,7 +21,7 @@ namespace TalkSystem.Editor
         private readonly PageNavigator _navigator;
         private GUIStyle _groupButtonStyle;
         private Dictionary<string, List<TalkData>> _talkData;
-        public string NavigationName => "TalksPage";
+        public string NavigationName { get; set; }
 
         private List<string> _subGroupsList;
         private Vector2 _scroll;
@@ -39,24 +39,30 @@ namespace TalkSystem.Editor
             _groupButtonStyle.padding.left = 20;
             _groupButtonStyle.wordWrap = true;
 
+            var talkData = new TalkData() { TalkName = "Calling jhon" };
+            var talkData2 = new TalkData() { TalkName = "Second talk" };
+            talkData.AddPage(new TextPage("Hello", new SDictionary<int, Highlight>()));
+            talkData2.AddPage(new TextPage("Not way", new SDictionary<int, Highlight>()));
+
             _talkData = new Dictionary<string, List<TalkData>>()
             {
                 {
                    "Neighbor House", new List<TalkData>()
                    {
-                       new TalkData() { TalkName = "Calling jhon"  },
-                       new TalkData() { TalkName = "Telling jhon i found something" },
-                       new TalkData() { TalkName = "Going to my home" },
+                       talkData,
+                       talkData2
+                       //new TalkData() { TalkName = "Telling jhon i found something" },
+                       //new TalkData() { TalkName = "Going to my home" },
                    }
-                },
-                {
-                   "", new List<TalkData>()
-                   {
-                       new TalkData() { TalkName = "Something random" },
-                       new TalkData() { TalkName = "Starting game" },
-                       new TalkData() { TalkName = "Closing a door" },
-                   }
-                }
+                }//,
+                //{
+                //   "", new List<TalkData>()
+                //   {
+                //       new TalkData() { TalkName = "Something random" },
+                //       new TalkData() { TalkName = "Starting game" },
+                //       new TalkData() { TalkName = "Closing a door" },
+                //   }
+                //}
             };
 
             _subGroupsList = new List<string>() { "Neighbor House" };
@@ -66,7 +72,7 @@ namespace TalkSystem.Editor
         {
             ShowTalks();
         }
-
+         
         private void ShowTalks()
         {
             _scroll = GUILayout.BeginScrollView(_scroll);
@@ -81,12 +87,12 @@ namespace TalkSystem.Editor
                 {
                     GUILayout.Space(5);
                     var color = GUI.color;
-                    GUI.color = Color.red;
+                    //GUI.color = Color.green;
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUI.color = color;
 
-                    GUILayout.Label("SubGroup: " + key);
+                    GUILayout.Label(key);
                     GUILayout.Space(5);
                 }
 
@@ -95,14 +101,7 @@ namespace TalkSystem.Editor
                     if (GUILayout.Button(talksOfSubGroup[j].TalkName + " | Pages: " + talksOfSubGroup[j].PagesCount, _groupButtonStyle, GUILayout.MinHeight(40)))
                     {
                         var editPage = _navigator.PushPage<EditPageText>();
-
-
-                        //_test = new TalkData();
-                        //var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius ligula ac dui \nermentum, sed finibus tortor aliquam.ni";
-
-                        //_test.AddPage(new TextPage(text, new SDictionary<int, Highlight> { { 1, new Highlight(1, 1, 3, Color.green) },
-                        //                                                       { 8, new Highlight(8, 0, 8, Color.yellow) },
-                        //                                                       { 16, new Highlight(16, 0, 6, Color.red) }}));
+                        editPage.NavigationName = talksOfSubGroup[j].TalkName;
 
                         editPage.SetCurrentTalkData(talksOfSubGroup[j]);
                     }
@@ -110,7 +109,7 @@ namespace TalkSystem.Editor
 
                 if (_subGroupsList.Contains(key))
                 {
-                    GUILayout.Space(5);
+                    GUILayout.Space(10);
                     GUILayout.EndVertical();
                 }
             }

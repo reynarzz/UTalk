@@ -77,18 +77,18 @@ namespace TalkSystem.Editor
 
             if (_currentGroup < 0)
             {
-               
+
                 Groups();
             }
 
             TalksPage();
         }
 
-        
+
 
         private void AddGroup()
         {
-            Context.ShowContext(TalkEditorWindow._position, "Group", x =>
+            Context.ShowContext(TalkEditorWindow.Position, "Group", x =>
             {
                 _group.Add(new TalkGroup() { Name = x });
 
@@ -98,14 +98,14 @@ namespace TalkSystem.Editor
                 _groupsTextGrid = text.ToArray();
             });
         }
-         
+
         private Vector2 _gridScroll;
 
 
         private void Groups()
         {
             GUILayout.Space(4);
-             
+
             _gridScroll = GUILayout.BeginScrollView(_gridScroll);
 
             _currentGroup = GUILayout.SelectionGrid(_currentGroup, _groupsTextGrid, 2, _groupGridButtons);
@@ -113,12 +113,12 @@ namespace TalkSystem.Editor
             if (_deleteGroup)
             {
                 var selectedGroup = 0;
-                  
-                for (int i = 0; i < Mathf.CeilToInt((float)_groupsTextGrid.Length / 2); i++) 
-                {  
+
+                for (int i = 0; i < Mathf.CeilToInt((float)_groupsTextGrid.Length / 2); i++)
+                {
                     for (int j = 0; j < 2; j++)
                     {
-                        if(_groupsTextGrid.Length > selectedGroup)
+                        if (_groupsTextGrid.Length > selectedGroup)
                         {
                             if (GUI.Button(new Rect(j * Screen.width / 2, i * 80, 20, 20), "X"))
                             {
@@ -138,8 +138,9 @@ namespace TalkSystem.Editor
         {
             if (_currentGroup > -1)
             {
+                _navigator.PushPage<TalksPage>().NavigationName = _groupsTextGrid[_currentGroup].text;
+
                 _currentGroup = -1;
-                _navigator.PushPage<TalksPage>();
             }
         }
     }

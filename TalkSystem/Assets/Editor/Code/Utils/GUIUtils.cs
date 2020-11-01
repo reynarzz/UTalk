@@ -112,7 +112,7 @@ namespace TalkSystem.Editor
 
         }
 
-        public static TextEditorInfo TextArea(ref string text, params GUILayoutOption[] options)
+        public static TextEditorInfo SmartTextArea(ref string text, params GUILayoutOption[] options)
         {
             if (text == null)
             {
@@ -122,17 +122,7 @@ namespace TalkSystem.Editor
             return DoTextFieldOrSomething(ref text, true, GUI.skin.textArea, options, null);
         }
 
-        public static TextEditorInfo TextField(ref string text, params GUILayoutOption[] options)
-        {
-            if (text == null)
-            {
-                text = "";
-            }
-
-            return DoTextFieldOrSomething(ref text, false, GUI.skin.textField, options, null);
-        }
-
-        public static TextEditorInfo TextArea(ref string text, OnOperation onOperationCallback, params GUILayoutOption[] options)
+        public static TextEditorInfo SmartTextArea(ref string text, OnOperation onOperationCallback, params GUILayoutOption[] options)
         {
             if (text == null)
             {
@@ -153,6 +143,7 @@ namespace TalkSystem.Editor
 
             _guiContent.text = text;
             style.richText = true;
+            style.wordWrap = false;
             //gUIContent = ((GUIUtility.keyboardControl == controlID) ? _guiContent.text /*+ GUIUtility.compositionString*/ : te);
             var rect = GUILayoutUtility.GetRect(_guiContent, style, options);
 
