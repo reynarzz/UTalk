@@ -25,6 +25,7 @@ namespace TalkSystem.Editor
 
         private readonly PageNavigator _navigator;
         private GUIStyle _groupButtonStyle;
+        private GUIStyle _centeredButtonLabel;
         private Dictionary<string, List<TalkData>> _talkData;
         public string NavigationName { get; set; }
 
@@ -42,6 +43,9 @@ namespace TalkSystem.Editor
             _groupButtonStyle.margin.bottom = 10;
             _groupButtonStyle.padding.left = 20;
             _groupButtonStyle.wordWrap = true;
+
+            _centeredButtonLabel = new GUIStyle(GUI.skin.button);
+            _centeredButtonLabel.alignment = TextAnchor.MiddleCenter;
 
             var talkData = new TalkData() { TalkName = "Calling jhon" };
             var talkData2 = new TalkData() { TalkName = "Second talk" };
@@ -140,13 +144,24 @@ namespace TalkSystem.Editor
                 if (_subGroupsList.Contains(key))
                 {
                     GUILayout.Space(5);
-                    var color = GUI.color;
-                    //GUI.color = Color.green;
-
                     GUILayout.BeginVertical(EditorStyles.helpBox);
-                    GUI.color = color;
+                    GUILayout.Space(2);
 
+                    GUILayout.BeginHorizontal();
+
+                    if (GUILayout.Button("x", _centeredButtonLabel, GUILayout.Width(22), GUILayout.MaxHeight(22)))
+                    {
+                        Context.Delete(TalkEditorWindow.Position, "Delete", key, "Group and all it's data", DeleteGroup);
+
+                        void DeleteGroup()
+                        {
+                            _talkData.Remove(key);
+                        }
+
+                        return;
+                    }
                     GUILayout.Label(key);
+                    GUILayout.EndHorizontal();
                     GUILayout.Space(5);
                 }
 
@@ -156,13 +171,23 @@ namespace TalkSystem.Editor
                     GUILayout.BeginHorizontal();
                     GUILayout.Space(10);
 
-                    if(GUILayout.Button("X", GUILayout.Width(40), GUILayout.MinHeight(40)))
+                    var talk = talksOfSubGroup[j];
+
+                    if (GUILayout.Button("X", GUILayout.Width(40), GUILayout.MinHeight(40)))
                     {
+                        Context.Delete(TalkEditorWindow.Position, "Delete Talk", talk.TalkName, "Talk", RemoveTalk);
+
+                        void RemoveTalk()
+                        {
+                            talksOfSubGroup.RemoveAt(j);
+                        }
+                        return;
 
                     }
+
                     GUILayout.Space(7);
 
-                    if (GUILayout.Button(talksOfSubGroup[j].TalkName + " | Pages: " + talksOfSubGroup[j].PagesCount, _groupButtonStyle, GUILayout.MinHeight(40)))
+                    if (GUILayout.Button(talk.TalkName + " | Pages: " + talk.PagesCount, _groupButtonStyle, GUILayout.MinHeight(40)))
                     {
                         var editPage = _navigator.PushPage<EditPageText>();
                         editPage.NavigationName = talksOfSubGroup[j].TalkName;
