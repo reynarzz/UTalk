@@ -24,7 +24,7 @@ namespace TalkSystem
 
             _navigatedPages = new List<IPage>();
 
-            _navigationButtons = new GUIStyle(GUI.skin.label);
+            _navigationButtons = new GUIStyle(EditorStyles.label);
             _navigationButtons.margin.left = 0;
             _navigationButtons.margin.right = 0;
             _navigationButtons.font = GUI.skin.font;
@@ -43,17 +43,20 @@ namespace TalkSystem
             var color = Color.white;
             color.a = 0.1f;
 
-            EditorGUI.DrawRect(new Rect(0, 0, Screen.width, 22), color);
+            //EditorGUI.DrawRect(new Rect(0, 0, Screen.width, 22), color);
 
             GUILayout.BeginHorizontal();
 
+            //GUILayout.SelectionGrid(0, new string[] { "" }, 3);
+
             for (int i = 0; i < _navigatedPages.Count; i++)
             {
-                var rect = GUILayoutUtility.GetRect(new GUIContent(_navigatedPages[i].NavigationName), GUI.skin.button);
+                //var rect = GUILayoutUtility.GetRect(new GUIContent(_navigatedPages[i].NavigationName), GUI.skin.button);
 
-                if (GUI.Button(rect, _navigatedPages[i].NavigationName, _navigationButtons))
+                //rect.width = 
+                if (GUILayout.Button(/*rect,*/ _navigatedPages[i].NavigationName, _navigationButtons, GUILayout.Width(_navigatedPages[i].NavigationName.Length * 7)))
                 {
-                    
+
                     //Debug.Log($"Go to: {_navigatedPages[i].NavigationName}");
 
                     PopAllNeededToPage(i);
@@ -70,8 +73,6 @@ namespace TalkSystem
                 {
                     _navigationButtons.fontStyle = FontStyle.Normal;
                 }
-
-
             }
 
             GUILayout.EndHorizontal();

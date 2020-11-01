@@ -21,6 +21,7 @@ namespace TalkSystem.Editor
 
         private int _currentGroup = -1;
         public string NavigationName => "Groups";
+        private Language _language;
 
         private struct TalkGroup
         {
@@ -53,6 +54,9 @@ namespace TalkSystem.Editor
         public void OnGUI()
         {
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
+
+            _language = (Language)EditorGUILayout.EnumPopup(_language, GUILayout.Width(_language.ToString().Length * 10));
+
             var search = EditorStyles.toolbarSearchField;
 
             search.margin.left = 5;
@@ -85,10 +89,9 @@ namespace TalkSystem.Editor
         }
 
 
-
         private void AddGroup()
         {
-            Context.ShowContext(TalkEditorWindow.Position, "Group", x =>
+            Context.ShowCreateGroup(TalkEditorWindow.Position, "Group", x =>
             {
                 _group.Add(new TalkGroup() { Name = x });
 

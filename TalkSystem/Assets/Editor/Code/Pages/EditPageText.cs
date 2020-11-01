@@ -66,7 +66,7 @@ namespace TalkSystem.Editor
                 _centeredLabel = new GUIStyle(GUI.skin.label);
                 _centeredLabel.alignment = TextAnchor.MiddleCenter;
                 _centeredLabel.fontSize = 15;
-                _centeredLabel.normal.textColor = Color.cyan;
+                _centeredLabel.normal.textColor = Color.yellow;
 
                 _prevNextButtons = new GUIStyle(GUI.skin.button);
                 _prevNextButtons.margin.left = 30;
@@ -91,6 +91,7 @@ namespace TalkSystem.Editor
             if (_textInfo.TextEditor != null)
             {
                 _textInfo.TextEditor.SelectNone();
+                //_textInfo.TextEditor.cursorIndex = _textInfo.TextEditor.text.Length;
             }
 
             _textInfo = default;
@@ -103,7 +104,6 @@ namespace TalkSystem.Editor
             _textPageIndex = textPageIndex;
 
             _currentTextPage = talkData.GetPage(_textPageIndex);
-
         }
 
         public void OnGUI()
@@ -279,7 +279,7 @@ namespace TalkSystem.Editor
                 //GUILayout.Label("Highlights");
 
                 GUILayout.Space(5);
-                _scrollView = GUILayout.BeginScrollView(_scrollView, GUI.skin.horizontalScrollbar, GUIStyle.none, GUILayout.MaxHeight(90), GUILayout.MinHeight(90));
+                _scrollView = GUILayout.BeginScrollView(_scrollView, true, false, GUI.skin.horizontalScrollbar, GUIStyle.none, GUILayout.MaxHeight(90), GUILayout.MinHeight(90));
 
                 GUILayout.BeginHorizontal();
 
@@ -299,7 +299,7 @@ namespace TalkSystem.Editor
 
                     if (containsKey)
                     {
-                        GUILayout.BeginVertical(EditorStyles.helpBox);
+                        GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.MinWidth(125));
 
                         GUILayout.BeginHorizontal();
                         if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
