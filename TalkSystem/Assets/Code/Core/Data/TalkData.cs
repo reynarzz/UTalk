@@ -186,7 +186,10 @@ namespace TalkSystem
 
         public TalkData()
         {
-            _pages = new List<TextPage>();
+            _pages = new List<TextPage>()
+            {
+                new TextPage("", new SDictionary<int, Highlight>())
+            };
         }
 
         public TextPage GetPage(int pageIndex)

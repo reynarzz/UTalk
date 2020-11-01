@@ -21,7 +21,7 @@ namespace TalkSystem.Editor
 
         private TalkData _talkData;
 
-        private int _textPageIndex = -1;
+        private int _textPageIndex = 0;
 
         public event TextChanged OnTextChanged;
 
@@ -31,8 +31,11 @@ namespace TalkSystem.Editor
 
         private SDictionary<int, Highlight> _temp;
         private GUIUtils.TextEditorInfo _textInfo;
-        private bool _showInfo = false;
         private Color32 _backgroundColor = Color.black;
+
+        private bool _showInfo = false;
+
+        public string NavigationName => nameof(EditPageText);
 
         public EditPageText()
         {
@@ -63,6 +66,19 @@ namespace TalkSystem.Editor
         public void SetCurrentTalkData(TalkData talkData)
         {
             _talkData = talkData;
+            SetTextPageIndex(0, _talkData);
+
+            _temp.Clear();
+            _highlightedText.Clear();
+        }
+
+        private void SetTextPageIndex(int textPageIndex, TalkData talkData)
+        {
+            _textPageIndex = textPageIndex;
+
+            _currentTextPage = talkData.GetPage(_textPageIndex);
+
+            _text = _currentTextPage.Text;
         }
 
         public void OnGUI()
@@ -133,10 +149,10 @@ namespace TalkSystem.Editor
         }
 
         private Vector2 _scrollView;
+
+
         private void UpdateHighlight(GUIUtils.TextEditorInfo textInfo)
         {
-            EditorGUILayout.TextField("", EditorStyles.toolbarSearchField);
-
             //does the TextArea have text?
             if (!string.IsNullOrWhiteSpace(textInfo.SelectedText))
             {
@@ -259,14 +275,7 @@ namespace TalkSystem.Editor
             GUI.Label(rect, text, _labelStyle);
         }
 
-        public void SetTextPageIndex(int textPageIndex, TalkData talkData)
-        {
-            _textPageIndex = textPageIndex;
-
-            _currentTextPage = talkData.GetPage(_textPageIndex);
-
-            _text = _currentTextPage.Text;
-        }
+       
 
         //TODO: Detect if a modified text index was changed.
         private void OnTextChangedHandler(string oldText, string newText, int addedChars, int cursor)
@@ -461,7 +470,7 @@ namespace TalkSystem.Editor
             for (int i = 0; i < page.Highlight.Count; i++)
             {
                 var wordIndex = page.Highlight.Keys.ElementAt(i);
-
+                 
                 //Get a highlight.
                 var highlight = page.Highlight[wordIndex];
 

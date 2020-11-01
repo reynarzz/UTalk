@@ -10,6 +10,7 @@ namespace TalkSystem.Editor
 {
     public interface IPage
     {
+        string NavigationName { get; }
         void OnGUI();
     }
 }

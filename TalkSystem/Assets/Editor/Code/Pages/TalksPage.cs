@@ -12,20 +12,24 @@ namespace TalkSystem.Editor
 {
     public class TalksPage : IPage
     {
+        //private struct TalkData
+        //{
+        //    public string Name { get; set; }
+        //    public List<TextPage> Pages { get; set; }
+        //}
+
+        private readonly PageNavigator _navigator;
         private GUIStyle _groupButtonStyle;
         private Dictionary<string, List<TalkData>> _talkData;
+        public string NavigationName => "TalksPage";
 
-        private struct TalkData
-        {
-            public string Name { get; set; }
-            public int Pages { get; set; }
-        }
-
-        private List<string> _subGroups;
+        private List<string> _subGroupsList;
         private Vector2 _scroll;
 
-        public TalksPage()
+        public TalksPage(PageNavigator navigator)
         {
+            _navigator = navigator;
+
             _groupButtonStyle = new GUIStyle(GUI.skin.button);
             _groupButtonStyle.alignment = TextAnchor.MiddleLeft;
             _groupButtonStyle.margin.left = 20;
@@ -33,28 +37,29 @@ namespace TalkSystem.Editor
             _groupButtonStyle.margin.top = 10;
             _groupButtonStyle.margin.bottom = 10;
             _groupButtonStyle.padding.left = 20;
+            _groupButtonStyle.wordWrap = true;
 
             _talkData = new Dictionary<string, List<TalkData>>()
             {
                 {
-                   "Neighbor House", new List<TalkData>() 
+                   "Neighbor House", new List<TalkData>()
                    {
-                       new TalkData(){ Name = "Calling jhon", Pages = 3 },
-                       new TalkData(){ Name = "Telling jhon i found something", Pages = 12 },
-                       new TalkData(){ Name = "Going to my home", Pages = 5},
+                       new TalkData() { TalkName = "Calling jhon"  },
+                       new TalkData() { TalkName = "Telling jhon i found something" },
+                       new TalkData() { TalkName = "Going to my home" },
                    }
                 },
                 {
                    "", new List<TalkData>()
                    {
-                       new TalkData(){ Name = "Something random", Pages = 2 },
-                       new TalkData(){ Name = "Starting game", Pages = 1 },
-                       new TalkData(){ Name = "Closing a door", Pages = 1},
+                       new TalkData() { TalkName = "Something random" },
+                       new TalkData() { TalkName = "Starting game" },
+                       new TalkData() { TalkName = "Closing a door" },
                    }
                 }
             };
 
-            _subGroups = new List<string>() { "Neighbor House" };
+            _subGroupsList = new List<string>() { "Neighbor House" };
         }
 
         public void OnGUI()
@@ -65,13 +70,14 @@ namespace TalkSystem.Editor
         private void ShowTalks()
         {
             _scroll = GUILayout.BeginScrollView(_scroll);
+
             for (int i = 0; i < _talkData.Count; i++)
             {
                 var key = _talkData.Keys.ElementAt(i);
 
                 var talksOfSubGroup = _talkData[key];
 
-                if (_subGroups.Contains(key))
+                if (_subGroupsList.Contains(key))
                 {
                     GUILayout.Space(5);
                     var color = GUI.color;
@@ -86,10 +92,23 @@ namespace TalkSystem.Editor
 
                 for (int j = 0; j < talksOfSubGroup.Count; j++)
                 {
-                    GUILayout.Button(talksOfSubGroup[j].Name + " | Pages: " + talksOfSubGroup[j].Pages, _groupButtonStyle, GUILayout.MinHeight(40));
+                    if (GUILayout.Button(talksOfSubGroup[j].TalkName + " | Pages: " + talksOfSubGroup[j].PagesCount, _groupButtonStyle, GUILayout.MinHeight(40)))
+                    {
+                        var editPage = _navigator.PushPage<EditPageText>();
+
+
+                        //_test = new TalkData();
+                        //var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius ligula ac dui \nermentum, sed finibus tortor aliquam.ni";
+
+                        //_test.AddPage(new TextPage(text, new SDictionary<int, Highlight> { { 1, new Highlight(1, 1, 3, Color.green) },
+                        //                                                       { 8, new Highlight(8, 0, 8, Color.yellow) },
+                        //                                                       { 16, new Highlight(16, 0, 6, Color.red) }}));
+
+                        editPage.SetCurrentTalkData(talksOfSubGroup[j]);
+                    }
                 }
 
-                if (_subGroups.Contains(key))
+                if (_subGroupsList.Contains(key))
                 {
                     GUILayout.Space(5);
                     GUILayout.EndVertical();

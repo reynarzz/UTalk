@@ -9,10 +9,10 @@ using UnityEngine;
 
 namespace TalkSystem.Editor
 {
-    public class Home : IPage
+    public class TalkGroups : IPage
     {
         private readonly TalkDataContainerScriptable _data;
-        private readonly TalksPage _talksPage;
+        private readonly PageNavigator _navigator;
 
         private string _searchText;
         private GUIStyle _groupButtonStyle;
@@ -20,6 +20,7 @@ namespace TalkSystem.Editor
         private GUIStyle _groupGridButtons;
 
         private int _currentGroup = -1;
+        public string NavigationName => "Groups";
 
         private struct TalkGroup
         {
@@ -31,16 +32,10 @@ namespace TalkSystem.Editor
         private GUIContent[] _groupsTextGrid;
         private bool _deleteGroup;
 
-        public Home(TalkDataContainerScriptable data)
+        public TalkGroups(TalkDataContainerScriptable data, PageNavigator navigator)
         {
             _data = data;
-
-
-            _navigationButtons = new GUIStyle(GUI.skin.label);
-            _navigationButtons.margin.left = 0;
-            _navigationButtons.margin.right = 0;
-            _navigationButtons.font = GUI.skin.font;
-            _navigationButtons.fontStyle = FontStyle.Bold;
+            _navigator = navigator;
 
             _groupGridButtons = new GUIStyle(GUI.skin.button);
             _groupGridButtons.margin.top = 10;
@@ -51,16 +46,12 @@ namespace TalkSystem.Editor
             _groupGridButtons.padding.bottom = 25;
             _groupGridButtons.padding.top = 25;
 
-            _talksPage = new TalksPage();
-
             _group = new List<TalkGroup>();
             _groupsTextGrid = new GUIContent[] { new GUIContent("Default") };
         }
 
         public void OnGUI()
         {
-            Navigator();
-
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
             var search = EditorStyles.toolbarSearchField;
 
@@ -93,41 +84,11 @@ namespace TalkSystem.Editor
             TalksPage();
         }
 
-        private void Navigator()
-        {
-            var color = Color.white;
-            color.a = 0.1f;
-
-            EditorGUI.DrawRect(new Rect(0, 0, Screen.width, 18), color);
-
-            GUILayout.BeginHorizontal();
-
-
-            for (int i = 0; i < 2; i++)
-            {
-                if (GUILayout.Button("Groups", _navigationButtons, GUILayout.MaxWidth(40)))
-                {
-                    Debug.Log("Home clicked");
-                }
-
-                if (i + 1 < 2)
-                {
-                    _navigationButtons.fontStyle = FontStyle.Bold;
-
-                    GUILayout.Label(">", _navigationButtons, GUILayout.MaxWidth(10));
-                }
-                else
-                {
-                    _navigationButtons.fontStyle = FontStyle.Normal;
-                }
-            }
-
-            GUILayout.EndHorizontal();
-        }
+        
 
         private void AddGroup()
         {
-            Context.ShowContext(TalkEditorWindow.Position, "Group", x =>
+            Context.ShowContext(TalkEditorWindow._position, "Group", x =>
             {
                 _group.Add(new TalkGroup() { Name = x });
 
@@ -139,6 +100,7 @@ namespace TalkSystem.Editor
         }
          
         private Vector2 _gridScroll;
+
 
         private void Groups()
         {
@@ -176,7 +138,8 @@ namespace TalkSystem.Editor
         {
             if (_currentGroup > -1)
             {
-                _talksPage.OnGUI();
+                _currentGroup = -1;
+                _navigator.PushPage<TalksPage>();
             }
         }
     }
