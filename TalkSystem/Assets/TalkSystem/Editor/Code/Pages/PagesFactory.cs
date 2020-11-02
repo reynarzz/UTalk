@@ -39,7 +39,7 @@ namespace TalkSystem
             _pages = new Dictionary<Type, IPage>()
             {
                 { typeof(TalkGroupsPage), new TalkGroupsPage(dataContainer, navigator) },
-                { typeof(TalkPage), new TalkPage(dataContainer, navigator) },
+                { typeof(TalksPage), new TalksPage(dataContainer, navigator) },
                 { typeof(EditPageText), new EditPageText() },
 
             };

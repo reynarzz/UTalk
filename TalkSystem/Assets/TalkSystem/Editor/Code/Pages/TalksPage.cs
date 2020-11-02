@@ -36,7 +36,7 @@ namespace TalkSystem.Editor
         Default, Custom
     }
 
-    public class TalkPage : IPage
+    public class TalksPage : IPage
     {
         private readonly TalkDataContainer _dataContainer;
 
@@ -46,13 +46,15 @@ namespace TalkSystem.Editor
 
         private TalksGroupData _talkData;
 
-        public string NavigationName { get; set; }
-
         private List<string> _subGroupsList;
         private Vector2 _scroll;
         private string _searchText;
 
-        public TalkPage(TalkDataContainer dataContainer, PageNavigator navigator)
+        public string NavigationName { get; set; }
+        private const string _default = "Default";
+        private const string _custom = "Custom";
+
+        public TalksPage(TalkDataContainer dataContainer, PageNavigator navigator)
         {
             _dataContainer = dataContainer;
             _navigator = navigator;
@@ -67,38 +69,28 @@ namespace TalkSystem.Editor
             _centeredButtonLabel = new GUIStyle(GUI.skin.button);
             _centeredButtonLabel.alignment = TextAnchor.MiddleCenter;
 
-            var talkData = new TalkData() { TalkName = "Calling jhon" };
-            var talkData2 = new TalkData() { TalkName = "Second talk" };
-            talkData.AddPage(new TextPage("Hello", new SDictionary<int, Highlight>()));
-            talkData2.AddPage(new TextPage("Not way", new SDictionary<int, Highlight>()));
-
-            //_talkData = new Dictionary<string, List<TalkData>>()
-            //{
-            //    {
-            //       "Default", new List<TalkData>()
-            //       {
-            //           talkData,
-            //           talkData2
-            //           //new TalkData() { TalkName = "Telling jhon i found something" },
-            //           //new TalkData() { TalkName = "Going to my home" },
-            //       }
-            //    }//,
-            //    //{
-            //    //   "", new List<TalkData>()
-            //    //   {
-            //    //       new TalkData() { TalkName = "Something random" },
-            //    //       new TalkData() { TalkName = "Starting game" },
-            //    //       new TalkData() { TalkName = "Closing a door" },
-            //    //   }
-            //    //}
-            //};
-
-            _subGroupsList = new List<string>() { "Default", "Custom" };
+            _subGroupsList = new List<string>();
         }
 
         public void SetGroup(TalksGroupData group)
         {
             _talkData = group;
+
+            ReloadSubGroupList();
+        }
+         
+        private void ReloadSubGroupList()
+        {
+            _subGroupsList.Clear();
+
+            _subGroupsList.Add(_default);
+            _subGroupsList.Add(_custom);
+
+            for (int i = 0; i < _talkData.Talks.Count; i++)
+            {
+                var subGroupName = _talkData.Talks.Keys.ElementAt(i);
+                _subGroupsList.Add(subGroupName);
+            }
         }
 
         public void OnGUI()
@@ -166,7 +158,7 @@ namespace TalkSystem.Editor
 
                     if (GUILayout.Button("x", _centeredButtonLabel, GUILayout.Width(22), GUILayout.MaxHeight(22)))
                     {
-                        Context.Delete(TalkEditorWindow.Position, "Delete", key, "Group and all it's data", DeleteGroup);
+                        Context.Delete(TalkEditorWindow.Position, "Delete", key, "Sub-Group and all it's data", DeleteGroup);
 
                         void DeleteGroup()
                         {

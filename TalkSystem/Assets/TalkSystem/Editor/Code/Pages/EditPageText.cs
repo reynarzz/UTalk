@@ -167,6 +167,7 @@ namespace TalkSystem.Editor
 
                 TextPreview(hightligted);
 
+                PageOptions();
                 //TEST
                 //if (_showInfo = EditorGUILayout.Foldout(_showInfo, "Highlight Info"))
                 //{
@@ -376,11 +377,19 @@ namespace TalkSystem.Editor
 
             GUILayout.EndHorizontal();
 
-            var rect = GUILayoutUtility.GetRect(Screen.width, 100);
+            var rect = GUILayoutUtility.GetRect(Screen.width, 100, EditorStyles.helpBox);
 
             EditorGUI.DrawRect(rect, _backgroundColor);
 
             GUI.Label(rect, text, _labelStyle);
+        }
+
+        private void PageOptions()
+        {
+            GUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label("Page options");
+            EditorGUILayout.IntField("Normal write speed ", 0);
+            GUILayout.EndVertical();
         }
 
         //TODO: Detect if a modified text index was changed.

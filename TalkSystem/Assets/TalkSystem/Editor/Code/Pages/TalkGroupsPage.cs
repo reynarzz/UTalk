@@ -56,13 +56,12 @@ namespace TalkSystem.Editor
             _groups.Clear();
             _groupsTextGridList.Clear();
 
-            var count = _dataContainer.GetGroupCount(_language);
-            
             var groups = _dataContainer.GetGroupByIndex(_language).Groups;
             _groups.Add(groups);
 
             for (int i = 0; i < groups.Count; i++)
             {
+                //Maybe i will add icons or something.
                 _groupsTextGridList.Add(new GUIContent(groups.Keys.ElementAt(i)));
             }
 
@@ -75,7 +74,11 @@ namespace TalkSystem.Editor
 
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
 
+            var prevLang = _language;
+
             _language = (Language)EditorGUILayout.EnumPopup(_language, GUILayout.Width(_language.ToString().Length * 10));
+
+            LanguageSwitchedUpdate(_language, prevLang);
 
             var search = EditorStyles.toolbarSearchField;
 
@@ -111,13 +114,21 @@ namespace TalkSystem.Editor
             }
         }
 
+        private void LanguageSwitchedUpdate(Language current, Language compare)
+        {
+            if (current != compare)
+            {
+                SetGroups();
+            }
+        }
+
          
         private void AddGroup()
         {
             Context.ShowCreateGroup(TalkEditorWindow.Position, "Group", x =>
             {
                 _dataContainer.CreateGroup(x, _language);
-                Debug.Log("Creates group: " + x);
+
                 SetGroups();
             });
         }
@@ -160,7 +171,7 @@ namespace TalkSystem.Editor
         {
             if (_currentGroup > -1)
             {
-               var talkPage = _navigator.PushPage<TalkPage>();
+               var talkPage = _navigator.PushPage<TalksPage>();
                 talkPage.NavigationName = _groupsTextGrid[_currentGroup].text;
                 talkPage.SetGroup(_dataContainer.GetGroupByIndex(_language).Groups[_groupsTextGrid[_currentGroup].text]);
 
