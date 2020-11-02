@@ -31,19 +31,7 @@ using UnityEngine;
 
 namespace TalkSystem
 {
-    [Serializable]
-    public struct CharByCharInfo
-    {
-        [SerializeField] private float _normalWriteSpeed;
-        [SerializeField] private float _fastWriteSpeed;
-        [SerializeField] private float _highlightedWordSpeed;
-
-        public float NormalWriteSpeed => _normalWriteSpeed;
-        public float FastWriteSpeed => _fastWriteSpeed;
-        public float HighlightedWordSpeed => _highlightedWordSpeed;
-    }
-
-    public class CharByCharWriter : IWriter
+    public class MoveCharWrite : IWriter
     {
         private WaitForSeconds _normalSpeed;
         private WaitForSeconds _fastSpeed;
@@ -54,15 +42,24 @@ namespace TalkSystem
         private char[] _splitPattern;
 
         public event Action OnPageWriten;
-        public CharByCharWriter(MonoBehaviour mono)
+
+        private TextControl _textControl;
+        private List<List<int>> _highlightedChars;
+
+        private float _speed = 15;
+        private float _freq = 10;
+        private float _amp = 0.1f;
+
+        public MoveCharWrite(MonoBehaviour mono)
         {
             _mono = mono;
-
+            _highlightedChars = new List<List<int>>();
             _splitPattern = new char[] { ' ', '\n' };
         }
 
         public void Write(TextControl control, TextPage page)
         {
+            _textControl = control;
             control.SetText(page.Text);
 
             _normalSpeed = new WaitForSeconds(page.CharByCharInfo.NormalWriteSpeed);
@@ -73,9 +70,30 @@ namespace TalkSystem
             _mono.StartCoroutine(WriteByChar(control, page));
         }
 
+        public void Update()
+        {
+            if (_highlightedChars.Count > 0)
+            {
+
+                for (int i = 0; i < _highlightedChars.Count; i++)
+                {
+                    var unit = 360 / _highlightedChars[i].Count;
+
+                    for (int j = 0; j < _highlightedChars[i].Count; j++)
+                    {
+                        var angle = unit * (j + 1);
+                        //Debug.Log(angle);
+                        _textControl.MoveChar(_highlightedChars[i][j], new Vector2(0, Mathf.Sin(j + Time.time * _freq) * _amp));
+                    }
+                }
+            }
+            
+        }
+
         //this have to be fix. If the text has more inconsisten whitespaces the highlight will not work.
         private IEnumerator WriteByChar(TextControl control, TextPage page)
         {
+            _highlightedChars.Clear();
             //show chars in the next frame.
             yield return 0;
 
@@ -95,9 +113,19 @@ namespace TalkSystem
 
                     i += startChar;
 
+                    var list = new List<int>();
+
+                    for (int j = 0; j < highlightLength; j++)
+                    {
+                        list.Add(i + j);
+                    }
+
+                    _highlightedChars.Add(list.ToList());
+
                     for (int j = 0; j < highlightLength; j++)
                     {
                         control.ShowChar(i + j, highlight.Color);
+
                         yield return _writeSpeed;
                     }
 
@@ -151,9 +179,5 @@ namespace TalkSystem
             control.ClearColors();
         }
 
-        public void Update()
-        {
-
-        }
     }
 }

@@ -36,6 +36,7 @@ namespace TalkSystem
         private readonly TextMeshProUGUI _text;
         private const int _quadPoints = 4;
         private Color32 _startColor;
+        private List<Vector3> _charVertex;
 
         //refactor this.
         public TextControl(TextMeshProUGUI text)
@@ -44,6 +45,8 @@ namespace TalkSystem
             _startColor = _text.color;
 
             _text.OnPreRenderText += UpdateHightlight;
+
+            _charVertex = new List<Vector3>();
         }
 
         public void SetText(string text)
@@ -163,7 +166,23 @@ namespace TalkSystem
 
                 _text.canvasRenderer.SetMesh(_text.mesh);
             }
-            
+        }
+
+        public void MoveChar(int charIndex, Vector2 offset)
+        {
+            var charInfo = _text.textInfo.characterInfo[charIndex];
+
+            _text.mesh.GetVertices(_charVertex);
+
+            var vertexIndex = charInfo.vertexIndex;
+
+            _charVertex[vertexIndex + 0] += new Vector3(offset.x, offset.y);
+            _charVertex[vertexIndex + 1] += new Vector3(offset.x, offset.y);
+            _charVertex[vertexIndex + 2] += new Vector3(offset.x, offset.y);
+            _charVertex[vertexIndex + 3] += new Vector3(offset.x, offset.y);
+
+            _text.mesh.SetVertices(_charVertex);
+            _text.canvasRenderer.SetMesh(_text.mesh);
         }
     }
 }

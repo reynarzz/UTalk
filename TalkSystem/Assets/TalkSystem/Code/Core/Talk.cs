@@ -107,12 +107,19 @@ namespace TalkSystem
         protected override void Awake()
         {
             _charByCharWriter = new CharByCharWriter(this);
+            var moveCharWriter = new MoveCharWrite(this);
 
-            _charByCharWriter.OnPageWriten += OnPageWriten;
+            _currentWriter = moveCharWriter;
 
-            _currentWriter = _charByCharWriter;
+            _currentWriter.OnPageWriten += OnPageWriten;
 
             base.Awake();
+        }
+
+        private void Update()
+        {
+            //if(_talkData)
+            _currentWriter.Update();
         }
 
         public void StartTalk(TalkCloudBase cloud, TalkData talkData)

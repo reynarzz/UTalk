@@ -26,6 +26,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 namespace TalkSystem
 {
@@ -40,6 +41,7 @@ namespace TalkSystem
         /// <param name="page">Current page with the text and information to write.</param>
         void Write(TextControl control, TextPage page);
         void Clear(TextControl control);
+        void Update();
         void OnLanguageChanged(TextPage textPage);
     }
 }
