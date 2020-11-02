@@ -131,7 +131,10 @@ namespace TalkSystem.Editor
             {
                 GUILayout.Space(5);
 
-                AddRemovePageToolbar();
+                //here i'm creating a new text page instance (TextPage was an struct before, but now this need a refactor)
+                var hightligted = HighlightText(new TextPage(_currentTextPage.Text, _currentTextPage.Sprite, _currentTextPage.Event, _currentTextPage.Highlight));
+                TextPreview(hightligted);
+
 
 
                 var oldText = _currentTextPage.Text.ToString();
@@ -149,23 +152,20 @@ namespace TalkSystem.Editor
 
 
                 PagesToolBar();
+                AddRemovePageToolbar();
+
                 GUILayout.Space(5);
 
                 //var selected = Utils.GetSelectedWords(textInfo.StartSelectIndex, textInfo.SelectedText, textInfo.Text);
                 //selected.Print();
                 GUILayout.Space(5);
 
-                var pair = Utils.GetWordIndexPair(_currentTextPage.Text, _textInfo.CursorIndex);
-
-                //Debug.Log(pair);
-
                 UpdateHighlight(_textInfo);
 
-                var hightligted = HighlightText(new TextPage(_currentTextPage.Text, _currentTextPage.Sprite, _currentTextPage.Event, _currentTextPage.Highlight));
+               
 
                 GUILayout.Space(5);
 
-                TextPreview(hightligted);
 
                 PageOptions();
                 //TEST

@@ -73,9 +73,10 @@ namespace TalkSystem
             _mono.StartCoroutine(WriteByChar(control, page));
         }
 
+        //this have to be fix. If the text has more inconsisten whitespaces the highlight will not work.
         private IEnumerator WriteByChar(TextControl control, TextPage page)
         {
-            var splitted = page.Text.Split(_splitPattern, StringSplitOptions.RemoveEmptyEntries);
+            var splitted = page.Text.Split(_splitPattern);
 
             //show chars in the next frame.
             yield return 0;
@@ -85,11 +86,11 @@ namespace TalkSystem
             for (int i = 0; i < splitted.Length; i++)
             {
                 var hasKey = page.Highlight.ContainsKey(i);
-                 
+
                 if (hasKey)
                 {
                     var highlight = page.Highlight[i];
-                     
+
                     for (int j = 0; j < splitted[i].Length; j++)
                     {
                         if (j >= highlight.StartLocalChar && j < highlight.HighlighLength)
