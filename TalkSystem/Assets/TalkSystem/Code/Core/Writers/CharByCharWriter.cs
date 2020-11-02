@@ -51,14 +51,14 @@ namespace TalkSystem
         private WaitForSeconds _writeSpeed;
         private readonly MonoBehaviour _mono;
 
-        private readonly List<string> _words;
+        private char[] _splitPattern;
 
         public event Action OnPageWriten;
         public CharByCharWriter(MonoBehaviour mono)
         {
             _mono = mono;
 
-            _words = new List<string>();
+            _splitPattern = new char[] { ' ', '\n' };
         }
 
         public void Write(TextControl control, TextPage page)
@@ -75,24 +75,24 @@ namespace TalkSystem
 
         private IEnumerator WriteByChar(TextControl control, TextPage page)
         {
-            SplitWords(page.Text, _words);
+            var splitted = page.Text.Split(_splitPattern, StringSplitOptions.RemoveEmptyEntries);
 
             //show chars in the next frame.
             yield return 0;
 
             var charIndex = 0;
 
-            for (int i = 0; i < _words.Count; i++)
+            for (int i = 0; i < splitted.Length; i++)
             {
                 var hasKey = page.Highlight.ContainsKey(i);
-
+                 
                 if (hasKey)
                 {
                     var highlight = page.Highlight[i];
-
-                    for (int j = 0; j < _words[i].Length; j++)
+                     
+                    for (int j = 0; j < splitted[i].Length; j++)
                     {
-                        if (j >= highlight.StartLocalChar && j <= highlight.HighlighLength)
+                        if (j >= highlight.StartLocalChar && j < highlight.HighlighLength)
                         {
                             control.ShowChar(charIndex, highlight.Color);
                         }
@@ -107,7 +107,7 @@ namespace TalkSystem
                 }
                 else
                 {
-                    for (int j = 0; j < _words[i].Length; j++)
+                    for (int j = 0; j < splitted[i].Length; j++)
                     {
                         control.ShowChar(charIndex);
                         charIndex++;
@@ -161,29 +161,6 @@ namespace TalkSystem
             //}
 
             OnPageWriten?.Invoke();
-        }
-
-        private StringBuilder _string = new StringBuilder();
-
-        private void SplitWords(string text, List<string> words)
-        {
-            words.Clear();
-
-            _string.Clear();
-
-            for (int i = 0; i < text.Length; i++)
-            {
-                if (!char.IsWhiteSpace(text[i]) && text[i] != '\n')
-                {
-                    _string.Append(text[i]);
-                }
-                else
-                {
-                    words.Add(_string.ToString());
-
-                    _string.Clear();
-                }
-            }
         }
 
         public void OnLanguageChanged(TextPage textPage)
