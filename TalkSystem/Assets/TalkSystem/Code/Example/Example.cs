@@ -45,7 +45,7 @@ namespace TalkSystem
                 
                 if (!Talk.Inst.IsTalking)
                 {
-                    Talk.Inst.StartTalk(_talkCloud, "Saying Hi!", "Default", "Different", Handler);
+                    Talk.Inst.StartTalk(_talkCloud, "Default", "Different", "Saying Hi!", Handler);
                 }
                 else
                 {

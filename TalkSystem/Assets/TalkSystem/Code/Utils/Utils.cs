@@ -39,5 +39,12 @@ namespace TalkSystem
 
             return indexOf == 1;
         }
+
+        public static bool IsValidChar(this char character)
+        {
+            return character != default &&
+                   character != ' ' &&
+                   character != '\n';
+        }
     }
 }

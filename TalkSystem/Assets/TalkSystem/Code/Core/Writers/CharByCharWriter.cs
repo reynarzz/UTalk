@@ -76,90 +76,65 @@ namespace TalkSystem
         //this have to be fix. If the text has more inconsisten whitespaces the highlight will not work.
         private IEnumerator WriteByChar(TextControl control, TextPage page)
         {
-            var splitted = page.Text.Split(_splitPattern);
-
             //show chars in the next frame.
             yield return 0;
 
-            var charIndex = 0;
+            var wordIndex = 0;
+            var whiteSpacesCount = -1;
+            var highlightedWord = -1;
 
-            for (int i = 0; i < splitted.Length; i++)
+            for (int i = 0; i < page.Text.Length; i++)
             {
-                var hasKey = page.Highlight.ContainsKey(i);
-
-                if (hasKey)
+                if (highlightedWord != wordIndex && page.Highlight.ContainsKey(wordIndex))
                 {
-                    var highlight = page.Highlight[i];
+                    highlightedWord = wordIndex;
 
-                    for (int j = 0; j < splitted[i].Length; j++)
+                    var highlight = page.Highlight[wordIndex];
+                    var highlightLength = highlight.HighlighLength;
+                    var startChar = highlight.StartLocalChar;
+
+                    i += startChar;
+
+                    for (int j = 0; j < highlightLength; j++)
                     {
-                        if (j >= highlight.StartLocalChar && j < highlight.HighlighLength)
+                        control.ShowChar(i + j, highlight.Color);
+                        yield return _writeSpeed;
+                    }
+
+                    var target = i + highlightLength;
+
+                    while (page.Text.ElementAtOrDefault(i).IsValidChar())
+                    {
+                        if (i >= target)
                         {
-                            control.ShowChar(charIndex, highlight.Color);
-                        }
-                        else
-                        {
-                            control.ShowChar(charIndex);
+                            control.ShowChar(i);
+                            yield return _writeSpeed;
                         }
 
-                        charIndex++;
-                        yield return _writeSpeed;
+                        i++;
+
+                        whiteSpacesCount = 0;
                     }
                 }
                 else
                 {
-                    for (int j = 0; j < splitted[i].Length; j++)
+                    while (page.Text.ElementAtOrDefault(i).IsValidChar())
                     {
-                        control.ShowChar(charIndex);
-                        charIndex++;
-
+                        control.ShowChar(i);
                         yield return _writeSpeed;
+                        i++;
+
+                        whiteSpacesCount = 0;
                     }
                 }
 
-                charIndex++;
+                whiteSpacesCount++;
+
+                if (whiteSpacesCount == 1)
+                {
+                    wordIndex++;
+                }
             }
-
-            //var i = 0;
-
-            //var applyColor = false;
-            //var highlightIndex = 0;
-            //var coloredCharCount = 0;
-
-            //while (i < page.Text.Length)
-            //{
-            //    if (page.Highlight.ContainsKey(i))
-            //    {
-            //        applyColor = true;
-            //        highlightIndex = i;
-            //        coloredCharCount = 0;
-            //    }
-
-            //    if (applyColor)
-            //    {
-            //        var highlight = page.Highlight[highlightIndex];
-
-            //        //FIX
-            //        applyColor = coloredCharCount++ < highlight.HighlighLength;
-
-            //        if (applyColor)
-            //        {
-            //            control.ShowChar(i, highlight.Color);
-            //        }
-            //        else
-            //        {
-            //            control.ShowChar(i);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        control.ShowChar(i);
-            //    }
-
-            //    i++;
-
-            //    yield return _writeSpeed;
-            //}
 
             OnPageWriten?.Invoke();
         }
