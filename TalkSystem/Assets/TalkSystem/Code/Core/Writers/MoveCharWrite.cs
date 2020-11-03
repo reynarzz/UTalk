@@ -39,8 +39,6 @@ namespace TalkSystem
         private WaitForSeconds _writeSpeed;
         private readonly MonoBehaviour _mono;
 
-        private char[] _splitPattern;
-
         public event Action OnPageWriten;
 
         private TextControl _textControl;
@@ -48,24 +46,38 @@ namespace TalkSystem
 
         private float _speed = 15;
         private float _freq = 10;
-        private float _amp = 0.1f;
+        private float _amp = 0.04f;
+
+        private float _startPosOffset = -1;
+        private List<TextControl.CharQuad> _startPos;
+        private bool _setOffset;
+        private List<int> _charsToMove;
 
         public MoveCharWrite(MonoBehaviour mono)
         {
             _mono = mono;
             _highlightedChars = new List<List<int>>();
-            _splitPattern = new char[] { ' ', '\n' };
+            _startPos = new List<TextControl.CharQuad>();
+            _charsToMove = new List<int>();
+            //offset
         }
 
         public void Write(TextControl control, TextPage page)
         {
-            _textControl = control;
+            if (!_setOffset)
+            {
+                _setOffset = true;
+
+                control.OffsetText(new Vector2(10, 10));
+            }
+
             control.SetText(page.Text);
 
-            _normalSpeed = new WaitForSeconds(page.CharByCharInfo.NormalWriteSpeed);
+            _normalSpeed = new WaitForSeconds(/*page.CharByCharInfo.NormalWriteSpeed*/0.02f);
             _fastSpeed = new WaitForSeconds(page.CharByCharInfo.FastWriteSpeed);
 
             _writeSpeed = _normalSpeed;
+            _charsToMove.Clear();
 
             _mono.StartCoroutine(WriteByChar(control, page));
         }
@@ -74,27 +86,45 @@ namespace TalkSystem
         {
             if (_highlightedChars.Count > 0)
             {
-
                 for (int i = 0; i < _highlightedChars.Count; i++)
                 {
-                    var unit = 360 / _highlightedChars[i].Count;
-
                     for (int j = 0; j < _highlightedChars[i].Count; j++)
                     {
-                        var angle = unit * (j + 1);
-                        //Debug.Log(angle);
-                        _textControl.MoveChar(_highlightedChars[i][j], new Vector2(0, Mathf.Sin(j + Time.time * _freq) * _amp));
+                        _textControl.OffsetChar(_highlightedChars[i][j], new Vector2(0, Mathf.Sin(j + Time.time * _freq) * _amp));
                     }
                 }
             }
-            
+
+            NormalCharShowAnim();
         }
 
-        //this have to be fix. If the text has more inconsisten whitespaces the highlight will not work.
+        private void NormalCharShowAnim()
+        {
+            for (int i = 0; i < _charsToMove.Count; i++)
+            {
+                var index = _charsToMove[i];
+                var targetPos = _textControl.OffsetVectors(_startPos[index], new Vector2(0, -10));
+
+                _textControl.SetCharPos(index, _textControl.LerpCharPos(_textControl.GetCharPos(index), targetPos, 30 * Time.deltaTime));
+            }
+        }
+
         private IEnumerator WriteByChar(TextControl control, TextPage page)
         {
             _highlightedChars.Clear();
-            //show chars in the next frame.
+            _startPos.Clear();
+
+            //Starts showing chars in the next frame.
+            yield return 0;
+
+            _textControl = control;
+            _textControl.ReloadCharsVertices();
+
+            for (int i = 0; i < page.Text.Length; i++)
+            {
+                _startPos.Add(control.GetCharPos(i));
+            }
+
             yield return 0;
 
             var wordIndex = 0;
@@ -126,18 +156,22 @@ namespace TalkSystem
                     {
                         control.ShowChar(i + j, highlight.Color);
 
+                        _charsToMove.Add(i + j);
                         yield return _writeSpeed;
                     }
 
                     var target = i + highlightLength;
 
-                    //When is could be possible to write normal chars in a highlighted word
+                    //When is in a highllighted word, but not all chars were chosen to be highligted.
                     while (page.Text.ElementAtOrDefault(i).IsValidChar())
                     {
                         if (i >= target)
                         {
                             control.ShowChar(i);
-                            yield return _writeSpeed;
+
+                            _charsToMove.Add(i);
+
+                             yield return _writeSpeed;
                         }
 
                         i++;
@@ -147,10 +181,13 @@ namespace TalkSystem
                 }
                 else
                 {
-                    //When is not in highlight
+                    //When is not in a highlighted word.
                     while (page.Text.ElementAtOrDefault(i).IsValidChar())
                     {
                         control.ShowChar(i);
+
+                        _charsToMove.Add(i);
+
                         yield return _writeSpeed;
                         i++;
 
@@ -178,6 +215,7 @@ namespace TalkSystem
         {
             control.ClearColors();
         }
+
 
     }
 }

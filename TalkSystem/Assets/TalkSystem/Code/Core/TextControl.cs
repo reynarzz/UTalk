@@ -34,9 +34,25 @@ namespace TalkSystem
     public class TextControl
     {
         private readonly TextMeshProUGUI _text;
-        private const int _quadPoints = 4;
         private Color32 _startColor;
-        private List<Vector3> _charVertex;
+        private List<Vector3> _charVertices;
+        private List<Color32> _clearColors;
+
+        public struct CharQuad
+        {
+            public Vector3 BL { get; set; }
+            public Vector3 TL { get; set; }
+            public Vector3 TR { get; set; }
+            public Vector3 BR { get; set; }
+
+            public CharQuad(Vector3 bl, Vector3 tl, Vector3 tr, Vector3 br)
+            {
+                BL = bl;
+                TL = tl;
+                TR = tr;
+                BR = br;
+            }
+        }
 
         //refactor this.
         public TextControl(TextMeshProUGUI text)
@@ -46,7 +62,8 @@ namespace TalkSystem
 
             _text.OnPreRenderText += UpdateHightlight;
 
-            _charVertex = new List<Vector3>();
+            _charVertices = new List<Vector3>();
+            _clearColors = new List<Color32>();
         }
 
         public void SetText(string text)
@@ -58,89 +75,26 @@ namespace TalkSystem
 
         public void ClearColors()
         {
-            var colors = new List<Color32>();
+            _clearColors.Clear();
 
-            _text.mesh.GetColors(colors);
+            _text.mesh.GetColors(_clearColors);
 
-            for (int i = 0; i < colors.Count; i++)
+            for (int i = 0; i < _clearColors.Count; i++)
             {
-                colors[i] = Color.clear;
+                _clearColors[i] = Color.clear;
             }
 
-            _text.mesh.SetColors(colors);
+            _text.mesh.SetColors(_clearColors);
 
             _text.canvasRenderer.SetMesh(_text.mesh);
 
-            _text.color = Color.clear;
+            _text.color = Color.clear;//new Color(0,0,0, 1);
         }
 
+        //If you change text position, you will have to update the mesh!
         private void UpdateHightlight(TMP_TextInfo textInfo)
         {
             //TODO: update mesh.
-        }
-
-        public void HighlightWords(string[] words, Highlight[] hightlight)
-        {
-            var textInfo = _text.textInfo;
-
-            var colors = _text.mesh.colors;
-
-            int wordCount = textInfo.wordCount;
-
-            //for (int i = 0; i < _text.text.Length; i++)
-            //{
-            //    var wordInfo = textInfo.wordInfo[i];
-
-            //    if (Array.Exists(hightlight, x => x.WordIndex == i))
-            //    {
-            //        for (int j = 0; j < words[i].Length; j++)
-            //        {
-            //            var character = textInfo.characterInfo[wordInfo.firstCharacterIndex];
-
-            //            int vertIndex = character.vertexIndex;
-
-            //            int quadIndex = j * _quadPoints;
-
-            //            var color = hightlight[i].Color;
-
-            //            colors[vertIndex + 0 + quadIndex] = color;
-            //            colors[vertIndex + 1 + quadIndex] = color;
-            //            colors[vertIndex + 2 + quadIndex] = color;
-            //            colors[vertIndex + 3 + quadIndex] = color;
-            //        }
-            //    }
-            //}
-
-            //_text.mesh.SetColors(colors);
-
-            //_text.canvasRenderer.SetMesh(_text.mesh);
-        }
-
-        public void ShowChar(int wordIndex, int charIndex, Highlight hightlight)
-        {
-            var textInfo = _text.textInfo;
-            var colors = _text.mesh.colors;
-
-            var wordInfo = textInfo.wordInfo[wordIndex];
-
-            var character = textInfo.characterInfo[wordInfo.firstCharacterIndex];
-
-            int vIndex = character.vertexIndex;
-
-            int quadIndex = charIndex * _quadPoints;
-
-            var color = hightlight != default ? hightlight.Color : _startColor;
-
-            //If the text is not enabled, this will throw an error.
-
-            colors[vIndex + 0 + quadIndex] = color;
-            colors[vIndex + 1 + quadIndex] = color;
-            colors[vIndex + 2 + quadIndex] = color;
-            colors[vIndex + 3 + quadIndex] = color;
-
-            _text.mesh.SetColors(colors);
-
-            _text.canvasRenderer.SetMesh(_text.mesh);
         }
 
         public void ShowChar(int charIndex)
@@ -168,21 +122,76 @@ namespace TalkSystem
             }
         }
 
-        public void MoveChar(int charIndex, Vector2 offset)
+        public void OffsetChar(int charIndex, Vector2 offset)
         {
-            var charInfo = _text.textInfo.characterInfo[charIndex];
+            var vIndex = _text.textInfo.characterInfo[charIndex].vertexIndex;
 
-            _text.mesh.GetVertices(_charVertex);
+            var pos = new Vector3(offset.x, offset.y);
 
-            var vertexIndex = charInfo.vertexIndex;
+            _charVertices[vIndex + 0] += pos;
+            _charVertices[vIndex + 1] += pos;
+            _charVertices[vIndex + 2] += pos;
+            _charVertices[vIndex + 3] += pos;
 
-            _charVertex[vertexIndex + 0] += new Vector3(offset.x, offset.y);
-            _charVertex[vertexIndex + 1] += new Vector3(offset.x, offset.y);
-            _charVertex[vertexIndex + 2] += new Vector3(offset.x, offset.y);
-            _charVertex[vertexIndex + 3] += new Vector3(offset.x, offset.y);
+            _text.mesh.SetVertices(_charVertices);
 
-            _text.mesh.SetVertices(_charVertex);
             _text.canvasRenderer.SetMesh(_text.mesh);
+        }
+
+        public void SetCharPos(int charIndex, CharQuad pos)
+        {
+            var vIndex = _text.textInfo.characterInfo[charIndex].vertexIndex;
+
+            _charVertices[vIndex + 0] = pos.BL;
+            _charVertices[vIndex + 1] = pos.TL;
+            _charVertices[vIndex + 2] = pos.TR;
+            _charVertices[vIndex + 3] = pos.BR;
+
+            _text.mesh.SetVertices(_charVertices);
+            _text.canvasRenderer.SetMesh(_text.mesh);
+        }
+
+        public CharQuad GetCharPos(int charIndex)
+        {
+            var vIndex = _text.textInfo.characterInfo[charIndex].vertexIndex;
+
+            var point1 = _charVertices[vIndex + 0];
+            var point2 = _charVertices[vIndex + 1];
+            var point3 = _charVertices[vIndex + 2];
+            var point4 = _charVertices[vIndex + 3];
+
+            return new CharQuad(point1, point2, point3, point4);
+        }
+
+        /// <summary>Call this function after setting the text, and before showing the text.</summary>
+        public void ReloadCharsVertices()
+        {
+            _text.mesh.GetVertices(_charVertices);
+        }
+
+        public void OffsetText(Vector2 offset)
+        {
+            _text.rectTransform.anchoredPosition += offset;
+        }
+
+        public CharQuad OffsetVectors(CharQuad charVertices, Vector3 offset)
+        {
+            charVertices.BL += offset;
+            charVertices.TL += offset;
+            charVertices.TR += offset;
+            charVertices.BR += offset;
+
+            return charVertices;
+        }
+
+        public CharQuad LerpCharPos(CharQuad a, CharQuad b, float t)
+        {
+            a.BL = Vector3.Lerp(a.BL, b.BL, t);
+            a.TL = Vector3.Lerp(a.TL, b.TL, t);
+            a.TR = Vector3.Lerp(a.TR, b.TR, t);
+            a.BR = Vector3.Lerp(a.BR, b.BR, t);
+
+            return a;
         }
     }
 }
