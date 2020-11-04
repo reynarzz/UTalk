@@ -36,49 +36,35 @@ namespace TalkSystem
     {
         [SerializeField] private float _normalWriteSpeed;
         [SerializeField] private float _fastWriteSpeed;
-        [SerializeField] private float _highlightedWordSpeed;
+        [SerializeField] private CharByCharAnim _animation;
 
-        public float NormalWriteSpeed => _normalWriteSpeed;
-        public float FastWriteSpeed => _fastWriteSpeed;
-        public float HighlightedWordSpeed => _highlightedWordSpeed;
+        public enum CharByCharAnim
+        {
+            None,
+            FromTop,
+            FromTopLeft,
+            FromTopRigh,
+
+            FromBottom,
+            FromBottomLeft,
+            FromBottomRigh,
+        }
+
+        public float NormalWriteSpeed { get => _normalWriteSpeed; set => _normalWriteSpeed = value; }
+        public float FastWriteSpeed { get => _fastWriteSpeed; set => _fastWriteSpeed = value; }
+        public CharByCharAnim Animation { get => _animation; set => _animation = value; }
     }
 
-    public class CharByCharWriter : IWriter
+    public class CharByCharWriter : WriterBase
     {
-        private WaitForSeconds _normalSpeed;
-        private WaitForSeconds _fastSpeed;
+        public override event Action OnPageWriten;
 
-        private WaitForSeconds _writeSpeed;
-        private readonly MonoBehaviour _mono;
+        public CharByCharWriter(MonoBehaviour mono) : base(mono) { }
 
-        private char[] _splitPattern;
+        public override void Update() { }
 
-        public event Action OnPageWriten;
-        public CharByCharWriter(MonoBehaviour mono)
+        protected override IEnumerator Write(TextControl control, TextPage page)
         {
-            _mono = mono;
-
-            _splitPattern = new char[] { ' ', '\n' };
-        }
-
-        public void Write(TextControl control, TextPage page)
-        {
-            control.SetText(page.Text);
-
-            _normalSpeed = new WaitForSeconds(page.CharByCharInfo.NormalWriteSpeed);
-            _fastSpeed = new WaitForSeconds(page.CharByCharInfo.FastWriteSpeed);
-
-            _writeSpeed = _normalSpeed;
-
-            _mono.StartCoroutine(WriteByChar(control, page));
-        }
-
-        //this have to be fix. If the text has more inconsisten whitespaces the highlight will not work.
-        private IEnumerator WriteByChar(TextControl control, TextPage page)
-        {
-            //show chars in the next frame.
-            yield return 0;
-
             var wordIndex = 0;
             var whiteSpacesCount = -1;
             var highlightedWord = -1;
@@ -139,21 +125,6 @@ namespace TalkSystem
             }
 
             OnPageWriten?.Invoke();
-        }
-
-        public void OnLanguageChanged(TextPage textPage)
-        {
-
-        }
-
-        public void Clear(TextControl control)
-        {
-            control.ClearColors();
-        }
-
-        public void Update()
-        {
-
         }
     }
 }

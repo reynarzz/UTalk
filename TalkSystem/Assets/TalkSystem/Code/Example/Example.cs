@@ -30,20 +30,16 @@ using UnityEngine;
 
 namespace TalkSystem
 {
-    public class Example : MonoBehaviour, ISerializeThis
+    public class Example : MonoBehaviour
     {
         [SerializeField] private TalkCloudBase _talkCloud;
 
         [SerializeField] private TextMeshProUGUI _spaceText;
-        
-        [ISerialize(typeof(ISerializeThis))]
-        public IWrapper<ISerializeThis> _in;
 
         public string Name => name;
-
+        
         private void Awake()
         {
-            Debug.Log(_in.Interface.Name);
         }
 
         private void Update()
@@ -78,17 +74,5 @@ namespace TalkSystem
                     break;
             }
         }
-    }
-    
-    [Serializable]
-    public class IWrapper<T> where T: class
-    {
-        [SerializeField] private UnityEngine.Object _inst;
-        public T Interface => _inst as T;
-    }
-
-    public interface ISerializeThis
-    {
-        string Name { get; }
     }
 }

@@ -125,12 +125,15 @@ namespace TalkSystem.Editor
             _currentTextPage = talkData.GetPage(_textPageIndex);
         }
 
+        private Vector2 _entireScroll;
+
         public void OnGUI()
         {
             if (_textPageIndex >= 0)
             {
                 GUILayout.Space(5);
 
+                _entireScroll = GUILayout.BeginScrollView(_entireScroll, GUIStyle.none, GUI.skin.verticalScrollbar);
                 //here i'm creating a new text page instance (TextPage was an struct before, but now this need a refactor)
                 var hightligted = HighlightText(new TextPage(_currentTextPage.Text, _currentTextPage.Sprite, _currentTextPage.Event, _currentTextPage.Highlight));
                 TextPreview(hightligted);
@@ -152,7 +155,6 @@ namespace TalkSystem.Editor
 
 
                 PagesToolBar();
-                AddRemovePageToolbar();
 
                 GUILayout.Space(5);
 
@@ -162,12 +164,14 @@ namespace TalkSystem.Editor
 
                 UpdateHighlight(_textInfo);
 
-               
-
                 GUILayout.Space(5);
 
-
                 PageOptions();
+
+                AddRemovePageToolbar();
+
+                GUILayout.EndScrollView();
+
                 //TEST
                 //if (_showInfo = EditorGUILayout.Foldout(_showInfo, "Highlight Info"))
                 //{
@@ -210,7 +214,7 @@ namespace TalkSystem.Editor
             }
             GUILayout.EndHorizontal();
         }
-         
+
         private void AddRemovePageToolbar()
         {
             GUILayout.BeginHorizontal(EditorStyles.helpBox);
@@ -226,7 +230,7 @@ namespace TalkSystem.Editor
 
             if (GUILayout.Button("Delete This", buttonSkin))
             {
-                if(_talkData.PagesCount > 1)
+                if (_talkData.PagesCount > 1)
                 {
                     _talkData.DeletePage(_textPageIndex);
 
@@ -236,7 +240,6 @@ namespace TalkSystem.Editor
                 }
             }
             GUILayout.EndHorizontal();
-
         }
 
         private void SetToClipboard(GUIUtils.TextOperation operation, string clipboardText, int selectIndex, int cursor)
@@ -386,10 +389,33 @@ namespace TalkSystem.Editor
 
         private void PageOptions()
         {
+            GUILayout.Label("Page Options");
+
             GUILayout.BeginVertical(EditorStyles.helpBox);
-            GUILayout.Label("Page options");
-            EditorGUILayout.IntField("Normal write speed ", 0);
+            _currentTextPage.WriteType = (WriteType)EditorGUILayout.EnumPopup("Write Type", _currentTextPage.WriteType);
+
+            switch (_currentTextPage.WriteType)
+            {
+                case WriteType.CharByChar:
+
+                    CharByCharPageOpt();
+                    break;
+                case WriteType.Instant:
+                    break;
+            }
+
             GUILayout.EndVertical();
+        }
+
+        private void CharByCharPageOpt()
+        {
+            var charByCharWriteInfo = _currentTextPage.CharByCharInfo;
+
+            charByCharWriteInfo.Animation = (CharByCharInfo.CharByCharAnim)EditorGUILayout.EnumPopup("Anim", charByCharWriteInfo.Animation);
+            charByCharWriteInfo.NormalWriteSpeed = EditorGUILayout.FloatField("Normal write delay ", charByCharWriteInfo.NormalWriteSpeed);
+            charByCharWriteInfo.FastWriteSpeed = EditorGUILayout.FloatField("Fast write delay ", charByCharWriteInfo.FastWriteSpeed);
+
+            _currentTextPage.CharByCharInfo = charByCharWriteInfo;
         }
 
         //TODO: Detect if a modified text index was changed.

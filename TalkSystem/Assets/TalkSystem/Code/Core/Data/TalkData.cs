@@ -33,9 +33,8 @@ namespace TalkSystem
 {
     public enum WriteType
     {
-        CharByChar,
-        Fade,
-        CharByCharAnimated
+        Instant,
+        CharByChar
     }
 
     public enum HighlightAnimation
@@ -71,6 +70,7 @@ namespace TalkSystem
         [SerializeField, HideInInspector] private Sprite _sprite; //later
         [SerializeField] private SDictionary<int, Highlight> _highlight;
         [SerializeField] private WordEvent _wordEvent;
+        [SerializeField] private WriteType _writeType;
 
         [Header("Write Styles")]
         [SerializeField] private CharByCharInfo _charByChar;
@@ -80,8 +80,10 @@ namespace TalkSystem
         public SDictionary<int, Highlight> Highlight => _highlight;
         public WordEvent Event => _wordEvent;
 
-        #region WriteStyleInfo
-        public CharByCharInfo CharByCharInfo => _charByChar;
+        public WriteType WriteType { get => _writeType; set => _writeType = value; }
+
+        #region WriteStyleInfo 
+        public CharByCharInfo CharByCharInfo { get => _charByChar; set => _charByChar = value; }
         #endregion
 
         public TextPage(string text, Sprite sprite, WordEvent wEvent)

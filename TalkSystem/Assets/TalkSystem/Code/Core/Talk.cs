@@ -61,7 +61,7 @@ namespace TalkSystem
 
         public bool IsTalking => _isTalking;
 
-        private IWriter _currentWriter;
+        private WriterBase _currentWriter;
 
         #region Writers
         private CharByCharWriter _charByCharWriter;
@@ -107,9 +107,9 @@ namespace TalkSystem
         protected override void Awake()
         {
             _charByCharWriter = new CharByCharWriter(this);
-            var moveCharWriter = new MoveCharWrite(this);
+            //var moveCharWriter = new MoveCharAnimator(this);
 
-            _currentWriter = moveCharWriter;
+            _currentWriter = _charByCharWriter;//moveCharWriter;
 
             _currentWriter.OnPageWriten += OnPageWriten;
 
@@ -243,7 +243,7 @@ namespace TalkSystem
 
                         _currentPage = _talkData.GetPage(_pageIndex);
 
-                        _currentWriter.Write(_talkCloud.TextControl, _currentPage);
+                        _currentWriter.InitWriter(_talkCloud.TextControl, _currentPage);
                     }
                     else
                     {
@@ -265,7 +265,7 @@ namespace TalkSystem
 
         private void OnCloudShown()
         {
-            _currentWriter.Write(_talkCloud.TextControl, _currentPage);
+            _currentWriter.InitWriter(_talkCloud.TextControl, _currentPage);
         }
 
         private void OnCloudHidden()

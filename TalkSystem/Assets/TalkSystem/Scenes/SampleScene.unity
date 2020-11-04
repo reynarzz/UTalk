@@ -664,8 +664,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _talkCloud: {fileID: 60215773}
   _spaceText: {fileID: 2069833959}
-  _in:
-    _inst: {fileID: 1644287006}
 --- !u!1 &1987416003
 GameObject:
   m_ObjectHideFlags: 0
