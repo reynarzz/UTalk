@@ -4,7 +4,7 @@ A talk system that highlights words in your paragraphs very easy.
 ## How it looks?
 Let's choose colors for some important words!
 
-![](ReadmeFiles/TalkCloudDemo.gif)
+![](ReadmeFiles/TalkCloudDemo2.gif)
 
 ## Simple to use
 Just a few method calls and you will be ready to show some awesome text!

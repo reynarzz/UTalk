@@ -54,7 +54,6 @@ namespace TalkSystem
             }
         }
 
-        //refactor this.
         public TextControl(TextMeshProUGUI text)
         {
             _text = text;

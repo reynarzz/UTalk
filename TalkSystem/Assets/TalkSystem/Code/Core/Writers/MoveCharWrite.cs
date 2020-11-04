@@ -46,7 +46,7 @@ namespace TalkSystem
 
         private float _speed = 15;
         private float _freq = 10;
-        private float _amp = 0.04f;
+        private float _amp = 0.09f;
 
         private float _startPosOffset = -1;
         private List<TextControl.CharQuad> _startPos;
@@ -84,6 +84,24 @@ namespace TalkSystem
 
         public void Update()
         {
+            ShowNormalCharAnim();
+
+            ShowHighlightedCharAnim();
+        }
+
+        private void ShowNormalCharAnim()
+        {
+            for (int i = 0; i < _charsToMove.Count; i++)
+            {
+                var index = _charsToMove[i];
+                var targetPos = _textControl.OffsetVectors(_startPos[index], new Vector2(0, -10));
+
+                _textControl.SetCharPos(index, _textControl.LerpCharPos(_textControl.GetCharPos(index), targetPos, 30 * Time.deltaTime));
+            }
+        }
+
+        private void ShowHighlightedCharAnim()
+        {
             if (_highlightedChars.Count > 0)
             {
                 for (int i = 0; i < _highlightedChars.Count; i++)
@@ -93,19 +111,6 @@ namespace TalkSystem
                         _textControl.OffsetChar(_highlightedChars[i][j], new Vector2(0, Mathf.Sin(j + Time.time * _freq) * _amp));
                     }
                 }
-            }
-
-            NormalCharShowAnim();
-        }
-
-        private void NormalCharShowAnim()
-        {
-            for (int i = 0; i < _charsToMove.Count; i++)
-            {
-                var index = _charsToMove[i];
-                var targetPos = _textControl.OffsetVectors(_startPos[index], new Vector2(0, -10));
-
-                _textControl.SetCharPos(index, _textControl.LerpCharPos(_textControl.GetCharPos(index), targetPos, 30 * Time.deltaTime));
             }
         }
 
