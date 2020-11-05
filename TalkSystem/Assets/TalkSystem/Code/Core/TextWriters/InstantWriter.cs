@@ -35,6 +35,7 @@ namespace TalkSystem
                     for (int j = 0; j < highlightLength; j++)
                     {
                         control.ShowChar(i + j, highlight.Color);
+                        textAnimationControl.HighlightedChar(i + j, highlight);
                     }
 
                     var target = i + highlightLength;
@@ -45,6 +46,7 @@ namespace TalkSystem
                         if (i >= target)
                         {
                             control.ShowChar(i);
+                            textAnimationControl.NormalChar(i);
                         }
 
                         i++;
@@ -58,6 +60,8 @@ namespace TalkSystem
                     while (page.Text.ElementAtOrDefault(i).IsValidChar())
                     {
                         control.ShowChar(i);
+                        textAnimationControl.NormalChar(i);
+
                         i++;
 
                         whiteSpacesCount = 0;

@@ -135,8 +135,8 @@ namespace TalkSystem.Editor
             {
                 GUILayout.Space(5);
 
-               // _entireScroll = GUILayout.BeginScrollView(_entireScroll);
-                //here i'm creating a new text page instance (TextPage was an struct before, but now this need a refactor)
+                // _entireScroll = GUILayout.BeginScrollView(_entireScroll);
+                //here i'm creating a new text page instance!! (TextPage was an struct before, but now this need a refactor!!!)
                 var hightligted = HighlightText(new TextPage(_currentTextPage.Text, _currentTextPage.Sprite, _currentTextPage.Event, _currentTextPage.Highlight));
                 AddRemovePageToolbar();
 
@@ -359,7 +359,7 @@ namespace TalkSystem.Editor
                             GUILayout.Label("Anim", GUILayout.MaxWidth(70));
                             var type = (HighlightAnimation)EditorGUILayout.EnumPopup(highlight.Type);
                             GUILayout.EndHorizontal();
-                             
+
                             GUILayout.BeginHorizontal();
                             GUILayout.Label("Write Speed", GUILayout.MaxWidth(80));
                             var writeSpeedType = (Highlight.WriteSpeed)EditorGUILayout.EnumPopup(highlight.WriteSpeedType);
@@ -431,7 +431,19 @@ namespace TalkSystem.Editor
         {
             var charByCharWriteInfo = _currentTextPage.CharByCharInfo;
 
-            charByCharWriteInfo.Animation = (CharByCharInfo.OffsetStartPos)EditorGUILayout.EnumPopup("Anim", charByCharWriteInfo.Animation);
+            charByCharWriteInfo.AnimationType = (CharByCharInfo.CharByCharAnimation)EditorGUILayout.EnumPopup("Animation", charByCharWriteInfo.AnimationType);
+
+            switch (charByCharWriteInfo.AnimationType)
+            {
+                case CharByCharInfo.CharByCharAnimation.None:
+                    charByCharWriteInfo.OffsetType = default;
+                    break;
+                case CharByCharInfo.CharByCharAnimation.OffsetToPos:
+                    charByCharWriteInfo.OffsetType = (CharByCharInfo.OffsetStartPos)EditorGUILayout.EnumPopup("Start Pos", charByCharWriteInfo.OffsetType);
+                    charByCharWriteInfo.Offset = EditorGUILayout.FloatField("Offset", charByCharWriteInfo.Offset);
+                    break;
+            }
+
             charByCharWriteInfo.NormalWriteSpeed = EditorGUILayout.FloatField("Normal write delay ", charByCharWriteInfo.NormalWriteSpeed);
             charByCharWriteInfo.FastWriteSpeed = EditorGUILayout.FloatField("Fast write delay ", charByCharWriteInfo.FastWriteSpeed);
 
@@ -499,7 +511,7 @@ namespace TalkSystem.Editor
 
                 var index = highlight.WordIndex >= wordIndex ? highlight.WordIndex + wordsAdded : highlight.WordIndex;
 
-                _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar, 
+                _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar,
                     highlight.HighlighLength, highlight.Color, highlight.Type, highlight.WriteSpeedType, highlight.NormalWriteSpeed));
             }
         }
@@ -561,7 +573,7 @@ namespace TalkSystem.Editor
                 //If you are mixing two highligted words, for now the created word will have the highligh values of the first one.
                 if (!_currentTextPage.Highlight.ContainsKey(index))
                 {
-                    _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar, 
+                    _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar,
                                                    highlight.HighlighLength, highlight.Color, highlight.Type, highlight.WriteSpeedType, highlight.NormalWriteSpeed));
                 }
             }
@@ -665,7 +677,7 @@ namespace TalkSystem.Editor
 
                     if (length > 0)
                     {
-                        page.Highlight[wordIndex] = new Highlight(hightlight.WordIndex, hightlight.StartLocalChar, length, hightlight.Color, hightlight.Type, 
+                        page.Highlight[wordIndex] = new Highlight(hightlight.WordIndex, hightlight.StartLocalChar, length, hightlight.Color, hightlight.Type,
                                                                   highlight.WriteSpeedType, highlight.NormalWriteSpeed);
 
                         modified = modified.Insert(modified.Length, colorClose);

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace TalkSystem
 {
-    public class TextAnimationControl 
+    public class TextAnimationControl
     {
         private TextPage _textPage;
         private TextControl _textControl;
@@ -20,6 +20,7 @@ namespace TalkSystem
         public TextAnimationControl()
         {
             _animatorsFactory = new TextAnimatorFactory();
+            _animators = new List<TextAnimationBase>();
         }
 
         public void Init(TextControl textControl, TextPage textPage)
@@ -50,16 +51,23 @@ namespace TalkSystem
                 case WriteType.Instant:
                     break;
                 case WriteType.CharByChar:
-                    CharByCharSetUp();
+                    CharByCharAnim(charIndex);
                     break;
             }
-
         }
 
-        private void CharByCharSetUp()
+        private void CharByCharAnim(int charIndex)
         {
-            //_textPage.CharByCharInfo
+            switch (_textPage.CharByCharInfo.AnimationType)
+            {
+                case CharByCharInfo.CharByCharAnimation.None:
 
+                    break;
+                case CharByCharInfo.CharByCharAnimation.OffsetToPos:
+                    var offset = GetAnimator<OffsetCharAnimation>();
+                    offset.AddChar(charIndex);
+                    break;
+            }
         }
 
         public void Update()
@@ -70,12 +78,13 @@ namespace TalkSystem
             }
         }
 
-        private TextAnimationBase GetAnimator<T>() where T: TextAnimationBase
+        private TextAnimationBase GetAnimator<T>() where T : TextAnimationBase
         {
-            var animator = _animatorsFactory.GetAnimator<T>(_textControl, _textPage);
+            var animator = _animatorsFactory.GetAnimator<T>();
 
             if (!_animators.Contains(animator))
             {
+                animator.Init(_textControl, _textPage);
                 _animators.Add(animator);
             }
 

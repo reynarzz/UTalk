@@ -21,13 +21,11 @@ namespace TalkSystem
             };
         }
 
-        public TextAnimationBase GetAnimator<T>(TextControl textControl, TextPage textPage) where T : TextAnimationBase
+        public TextAnimationBase GetAnimator<T>() where T : TextAnimationBase
         {
             if (_animations.ContainsKey(typeof(T)))
             {
-                var animator = _animations[typeof(T)];
-                animator.Init(textControl, textPage);
-                return animator;
+                return _animations[typeof(T)];
             }
             else
             {

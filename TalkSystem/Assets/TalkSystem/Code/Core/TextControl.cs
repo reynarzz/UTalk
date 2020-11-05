@@ -38,6 +38,8 @@ namespace TalkSystem
         private List<Vector3> _charVertices;
         private List<Color32> _clearColors;
 
+        private Vector2 _textConstAnchoredPosition;
+
         public struct CharQuad
         {
             public Vector3 BL { get; set; }
@@ -59,6 +61,8 @@ namespace TalkSystem
             _text = text;
             _startColor = _text.color;
 
+            _textConstAnchoredPosition = _text.rectTransform.anchoredPosition;
+
             _text.OnPreRenderText += UpdateHightlight;
 
             _charVertices = new List<Vector3>();
@@ -69,6 +73,7 @@ namespace TalkSystem
         {
             ClearColors();
 
+            _text.rectTransform.anchoredPosition = _textConstAnchoredPosition;
             _text.text = text;
         }
 

@@ -10,7 +10,6 @@ namespace TalkSystem
 {
     public class SineCharAnimation : TextAnimationBase
     {
-        private float _speed = 15;
         private float _freq = 10;
         private float _amp = 0.09f;
 
@@ -20,6 +19,7 @@ namespace TalkSystem
             {
                 for (int i = 0; i < CharIndexesToAnimate.Count; i++)
                 {
+                    //this needs work, is not consistent.
                     TextControl.OffsetChar(CharIndexesToAnimate[i], new Vector2(0, Mathf.Sin(i + Time.time * _freq) * _amp));
                 }
             }

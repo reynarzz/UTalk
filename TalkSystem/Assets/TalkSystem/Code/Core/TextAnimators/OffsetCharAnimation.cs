@@ -33,7 +33,7 @@ namespace TalkSystem
     public class OffsetCharAnimation : TextAnimationBase
     {
         private List<TextControl.CharQuad> _startPos;
-        private bool _setOffset;
+        private Vector2 _offsetToMoveBack;
 
         public OffsetCharAnimation() : base()
         {
@@ -61,13 +61,11 @@ namespace TalkSystem
 
         private void SetOffset(TextControl textControl, TextPage page)
         {
-            if (!_setOffset)
-            {
-                _setOffset = true;
+            var dir = GetStartOffsetDir(page.CharByCharInfo.OffsetType, page.CharByCharInfo.Offset);
+            _offsetToMoveBack = -dir;
 
-                var dir = GetStartOffsetDir(page.CharByCharInfo.Animation, page.CharByCharInfo.Offset);
-                textControl.OffsetText(dir);
-            }
+            //i have to find a way to offset the chars individually and not moving the entire rectTransform.
+            textControl.OffsetText(dir);
         }
 
         public override void Update()
@@ -75,7 +73,7 @@ namespace TalkSystem
             for (int i = 0; i < CharIndexesToAnimate.Count; i++)
             {
                 var index = CharIndexesToAnimate[i];
-                var targetPos = TextControl.OffsetVectors(_startPos[index], new Vector2(0, -10));
+                var targetPos = TextControl.OffsetVectors(_startPos[index], _offsetToMoveBack);
 
                 TextControl.SetCharPos(index, TextControl.LerpCharPos(TextControl.GetCharPos(index), targetPos, 30 * Time.deltaTime));
             }

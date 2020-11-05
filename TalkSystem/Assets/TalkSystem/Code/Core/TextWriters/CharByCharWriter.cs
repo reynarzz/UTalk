@@ -60,6 +60,9 @@ namespace TalkSystem
                         control.ShowChar(charIndex, highlight.Color);
                         animationControl.HighlightedChar(charIndex, highlight);
 
+                        //maybe a fix for the sine animation (continuous) but i have to find a way, maybe not moving the entire rectTransform, but the chars
+                        animationControl.NormalChar(charIndex);
+
                         yield return _writeSpeed;
                     }
 
