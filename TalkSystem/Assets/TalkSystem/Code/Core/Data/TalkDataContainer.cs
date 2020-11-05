@@ -242,6 +242,11 @@ namespace TalkSystem
             }
         }
 
+        public void DeleteGroup(string groupName, Language language)
+        {
+            _groups[language].Groups.Remove(groupName);
+        }
+
         public TalkGroupsByNameData GetGroupByIndex(Language language)
         {
             if (!_groups.ContainsKey(language))

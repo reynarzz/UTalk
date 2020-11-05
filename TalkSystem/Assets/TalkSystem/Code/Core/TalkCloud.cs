@@ -61,7 +61,7 @@ namespace TalkSystem
 
         protected override void OnPageChanged(string talkerName, int pageIndex, int maxPages)
         {
-
+            //Debug.Log("Page changed");
         }
     }
 }

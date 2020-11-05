@@ -34,8 +34,11 @@ namespace TalkSystem
     public abstract class TalkCloudBase : MonoBehaviour
     {
         [SerializeField] protected TextMeshProUGUI _text;
-        [SerializeField] protected TextMeshProUGUI _talkerNameText;
-        [SerializeField] protected Image[] _talkerImages;
+        [SerializeField] private TextMeshProUGUI _talkerNameText;
+        [SerializeField] private Image[] _talkerImages;
+
+        protected Image[] TalkerImages => _talkerImages;
+        protected TextMeshProUGUI TalkerNameText => _talkerNameText;
 
         private string _talkerName;
         private TextControl _texControl;
@@ -50,7 +53,7 @@ namespace TalkSystem
 
         private int _pagesCount;
 
-       
+
         public void Init(int pagesCount)
         {
             _pagesCount = pagesCount;
@@ -63,7 +66,8 @@ namespace TalkSystem
             Clear();
         }
 
-        protected abstract void OnPageChanged(string talkerName, int pageIndex, int maxPages);
+        /// <summary>Called everytime the page is changed.</summary>
+        protected virtual void OnPageChanged(string talkerName, int pageIndex, int maxPages) { }
 
         public void SetPage(TextPage currentPage, int pageIndex)
         {
@@ -71,7 +75,7 @@ namespace TalkSystem
 
             for (int i = 0; i < currentPage.Sprites.Count; i++)
             {
-                if(i < _talkerImages.Length)
+                if (i < _talkerImages.Length)
                 {
                     bool hasSprite = currentPage.Sprites[i];
 
@@ -113,7 +117,7 @@ namespace TalkSystem
 
         private void ClearSprites()
         {
-            if(_talkerImages != null)
+            if (_talkerImages != null)
             {
                 for (int i = 0; i < _talkerImages.Length; i++)
                 {

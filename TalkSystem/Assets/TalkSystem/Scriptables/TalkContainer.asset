@@ -21,7 +21,6 @@ MonoBehaviour:
       - _groups:
           _keys:
           - Default
-          - Second group
           _values:
           - _groupName: Default
             _language: 0
@@ -187,11 +186,6 @@ MonoBehaviour:
                       _offset: 0
                     _instantInfo:
                       _TextAnimation: 0
-          - _groupName: Second group
-            _language: 0
-            _talks:
-              _keys: []
-              _values: []
       - _groups:
           _keys:
           - Default

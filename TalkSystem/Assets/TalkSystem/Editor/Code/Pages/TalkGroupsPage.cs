@@ -50,7 +50,7 @@ namespace TalkSystem.Editor
 
             SetGroups();
         }
-         
+
         private void SetGroups()
         {
             _groups.Clear();
@@ -95,14 +95,11 @@ namespace TalkSystem.Editor
                 return;
             }
 
-            if (GUILayout.Button("x", EditorStyles.toolbarButton, GUILayout.MaxWidth(30)))
-            {
-                _deleteGroup = true;
-            }
+            _deleteGroup = GUILayout.Toggle(_deleteGroup, "x", EditorStyles.toolbarButton, GUILayout.MaxWidth(30));
 
             GUILayout.EndHorizontal();
 
-            if(_groups.Count > 0)
+            if (_groups.Count > 0)
             {
                 if (_currentGroup < 0)
                 {
@@ -122,7 +119,7 @@ namespace TalkSystem.Editor
             }
         }
 
-         
+
         private void AddGroup()
         {
             Context.ShowCreateGroup(TalkEditorWindow.Position, "Group", x =>
@@ -155,14 +152,26 @@ namespace TalkSystem.Editor
                         {
                             if (GUI.Button(new Rect(j * Screen.width / 2, i * 80, 20, 20), "X"))
                             {
-                                Debug.Log("Delete: " + selectedGroup);
+                                Context.Delete(TalkEditorWindow.Position, "Group", _groupsTextGrid[selectedGroup].text, "Entire group", DeleteGroup);
+
+                                //Debug.Log("Delete: " + selectedGroup);
+
+                                void DeleteGroup()
+                                {
+                                    _dataContainer.DeleteGroup(_groupsTextGrid[selectedGroup].text, _language);
+
+                                    _deleteGroup = false;
+                                }
+
+                                SetGroups();
+                                return;
                             }
                         }
 
                         selectedGroup++;
                     }
                 }
-            } 
+            }
 
             GUILayout.EndScrollView();
         }
@@ -171,7 +180,7 @@ namespace TalkSystem.Editor
         {
             if (_currentGroup > -1)
             {
-               var talkPage = _navigator.PushPage<TalksPage>();
+                var talkPage = _navigator.PushPage<TalksPage>();
                 talkPage.NavigationName = _groupsTextGrid[_currentGroup].text;
                 talkPage.SetGroup(_dataContainer.GetGroupByIndex(_language).Groups[_groupsTextGrid[_currentGroup].text]);
 
