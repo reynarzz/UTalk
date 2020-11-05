@@ -27,27 +27,100 @@ using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
- 
+using UnityEngine.UI;
+
 namespace TalkSystem
 {
     public abstract class TalkCloudBase : MonoBehaviour
     {
         [SerializeField] protected TextMeshProUGUI _text;
+        [SerializeField] protected TextMeshProUGUI _talkerNameText;
+        [SerializeField] protected Image[] _talkerImages;
 
+        private string _talkerName;
         private TextControl _texControl;
+
         public TextControl TextControl => _texControl;
+
 
         public event Action OnCloudShown;
         public event Action OnCloudHidden;
 
-        public void Init()
+        private bool _turnOffOnNoSpriteFound;
+
+        private int _pagesCount;
+
+       
+        public void Init(int pagesCount)
         {
-            if(_texControl == null)
+            _pagesCount = pagesCount;
+
+            if (_texControl == null)
             {
                 _texControl = new TextControl(_text);
             }
 
             Clear();
+        }
+
+        protected abstract void OnPageChanged(string talkerName, int pageIndex, int maxPages);
+
+        public void SetPage(TextPage currentPage, int pageIndex)
+        {
+            ClearSprites();
+
+            for (int i = 0; i < currentPage.Sprites.Count; i++)
+            {
+                if(i < _talkerImages.Length)
+                {
+                    bool hasSprite = currentPage.Sprites[i];
+
+                    if (_turnOffOnNoSpriteFound && !hasSprite)
+                    {
+                        _talkerImages[i].enabled = false;
+                    }
+                    else
+                    {
+                        _talkerImages[i].enabled = true;
+                    }
+
+                    _talkerImages[i].sprite = currentPage.Sprites[i];
+                }
+            }
+
+            if (_talkerNameText)
+            {
+                if (string.IsNullOrEmpty(currentPage.TalkerName))
+                {
+                    _talkerNameText.enabled = false;
+                }
+                else
+                {
+                    _talkerNameText.enabled = true;
+
+                    _talkerNameText.text = currentPage.TalkerName;
+                }
+
+            }
+
+            OnPageChanged(currentPage.TalkerName, pageIndex, _pagesCount);
+        }
+
+        protected void TurnImageOffWhenNotSpriteIsFound(bool value)
+        {
+            _turnOffOnNoSpriteFound = value;
+        }
+
+        private void ClearSprites()
+        {
+            if(_talkerImages != null)
+            {
+                for (int i = 0; i < _talkerImages.Length; i++)
+                {
+                    _talkerImages[i].sprite = default;
+                    _talkerImages[i].enabled = false;
+                }
+            }
         }
 
         /// <summary>Triggers the event "OnCloudShown"</summary>
@@ -59,6 +132,7 @@ namespace TalkSystem
         /// <summary>Triggers the event "OnCloudHidden"</summary>
         protected void OnCloudHidde()
         {
+            _talkerNameText.enabled = false;
             OnCloudHidden?.Invoke();
         }
 

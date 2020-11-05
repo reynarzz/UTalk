@@ -108,7 +108,8 @@ namespace TalkSystem
     public class TextPage
     {
         [SerializeField, TextArea] private string _pageText;
-        [SerializeField, HideInInspector] private Sprite _sprite; //later
+        [SerializeField] private string _talkerName;
+        [SerializeField] private List<Sprite> _sprites;
         [SerializeField] private SDictionary<int, Highlight> _highlight;
         [SerializeField] private WordEvent _wordEvent;
         [SerializeField] private WriteType _writeType;
@@ -118,7 +119,7 @@ namespace TalkSystem
         [SerializeField] private InstantInfo _instantInfo;
 
         public string Text { get => _pageText; set => _pageText = value; }
-        public Sprite Sprite => _sprite;
+        public string TalkerName { get => _talkerName; set => _talkerName = value; }
         public SDictionary<int, Highlight> Highlight => _highlight;
         public WordEvent Event => _wordEvent;
 
@@ -127,23 +128,24 @@ namespace TalkSystem
         #region WriteStyleInfo 
         public CharByCharInfo CharByCharInfo { get => _charByChar; set => _charByChar = value; }
         public InstantInfo InstantInfo { get => _instantInfo; set => _instantInfo = value; }
+        public List<Sprite> Sprites => _sprites;
         #endregion
 
-        public TextPage(string text, Sprite sprite, WordEvent wEvent)
+        public TextPage(string text, List<Sprite> sprites)
         {
             _pageText = text;
-            _sprite = sprite;
-            _wordEvent = wEvent;
+            _sprites = sprites;
+            _wordEvent = default;
 
             _highlight = new SDictionary<int, Highlight>();
 
             _charByChar = default;
         }
 
-        public TextPage(string text, Sprite sprite, WordEvent wEvent, SDictionary<int, Highlight> highlights)
+        public TextPage(string text, List<Sprite> sprites, WordEvent wEvent, SDictionary<int, Highlight> highlights)
         {
             _pageText = text;
-            _sprite = sprite;
+            _sprites = sprites;
             _wordEvent = wEvent;
             _highlight = highlights;
 
@@ -153,7 +155,7 @@ namespace TalkSystem
         public TextPage(string text, SDictionary<int, Highlight> highlights)
         {
             _pageText = text;
-            _sprite = default;
+            _sprites = new List<Sprite>() { default };//test
             _wordEvent = default;
             _highlight = highlights;
 
@@ -300,6 +302,27 @@ namespace TalkSystem
         public void CreateEmptyPage()
         {
             _pages.Add(new TextPage("", new SDictionary<int, Highlight>()));
+        }
+
+        public void CreateEmptyPageWithLastPageOptions()
+        {
+            var lastPage = _pages.ElementAt(_pages.Count - 1);
+            var newPage = new TextPage("", lastPage.Sprites.ToList());
+
+            newPage.WriteType = lastPage.WriteType;
+
+            switch (lastPage.WriteType)
+            {
+                case WriteType.Instant:
+                    newPage.InstantInfo = lastPage.InstantInfo;
+                    break;
+                case WriteType.CharByChar:
+                    newPage.CharByCharInfo = lastPage.CharByCharInfo;
+                    break;
+            }
+
+            newPage.TalkerName = lastPage.TalkerName;
+            _pages.Add(newPage);
         }
 
         public static implicit operator bool(TalkData a)

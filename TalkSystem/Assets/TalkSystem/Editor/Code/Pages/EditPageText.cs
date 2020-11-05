@@ -23,6 +23,7 @@ using NUnit.Framework.Constraints;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -32,7 +33,7 @@ using UnityEngine;
 
 namespace TalkSystem.Editor
 {
-    //This class needs a huge refactor.
+    //This class needs a huge refactorization.
     public class EditPageText : IPage
     {
         public delegate void TextChanged(string oldText, string newText, int charsAdded, int cursor);
@@ -137,11 +138,10 @@ namespace TalkSystem.Editor
 
                 // _entireScroll = GUILayout.BeginScrollView(_entireScroll);
                 //here i'm creating a new text page instance!! (TextPage was an struct before, but now this need a refactor!!!)
-                var hightligted = HighlightText(new TextPage(_currentTextPage.Text, _currentTextPage.Sprite, _currentTextPage.Event, _currentTextPage.Highlight));
+                var hightligted = HighlightText(new TextPage(_currentTextPage.Text, _currentTextPage.Sprites, _currentTextPage.Event, _currentTextPage.Highlight));
                 AddRemovePageToolbar();
 
-
-                TextPreview(hightligted);
+               
 
 
 
@@ -151,6 +151,9 @@ namespace TalkSystem.Editor
 
                 _textInfo = GUIUtils.SmartTextArea(ref text, SetToClipboard, GUILayout.MinHeight(100));
 
+               
+                TextPreview(hightligted);
+
                 _currentTextPage.Text = text;
 
                 if (_textInfo.TextLengthChanged)
@@ -158,18 +161,18 @@ namespace TalkSystem.Editor
                     OnTextChanged(oldText, _textInfo.Text, _textInfo.AddedChars, _textInfo.CursorIndex);
                 }
 
+                UpdateHighlight(_textInfo);
 
+                GUILayout.Space(5);
                 PagesToolBar();
 
                 GUILayout.Space(5);
 
                 //var selected = Utils.GetSelectedWords(textInfo.StartSelectIndex, textInfo.SelectedText, textInfo.Text);
                 //selected.Print();
-                GUILayout.Space(5);
+                //GUILayout.Space(5);
 
-                UpdateHighlight(_textInfo);
-
-                GUILayout.Space(5);
+                
 
                 PageOptions();
 
@@ -225,7 +228,7 @@ namespace TalkSystem.Editor
 
             if (GUILayout.Button("Add Page"))
             {
-                _talkData.CreateEmptyPage();
+                _talkData.CreateEmptyPageWithLastPageOptions();
                 _textPageIndex = _talkData.PagesCount - 1;
                 _currentTextPage = _talkData.GetPage(_textPageIndex);
             }
@@ -306,7 +309,7 @@ namespace TalkSystem.Editor
                 //GUILayout.Label("Highlights");
 
                 GUILayout.Space(4);
-                _scrollView = GUILayout.BeginScrollView(_scrollView, true, false, GUI.skin.horizontalScrollbar, GUIStyle.none/*, GUILayout.MaxHeight(120), GUILayout.MinHeight(90)*/);
+                _scrollView = GUILayout.BeginScrollView(_scrollView, true, false, GUI.skin.horizontalScrollbar, GUIStyle.none, GUILayout.MinHeight(130));
 
                 GUILayout.BeginHorizontal();
 
@@ -412,19 +415,79 @@ namespace TalkSystem.Editor
             GUILayout.Label("Page Options");
 
             GUILayout.BeginVertical(EditorStyles.helpBox);
+            _currentTextPage.TalkerName = EditorGUILayout.TextField("Talker Name", _currentTextPage.TalkerName);
+            EditorGUILayout.Separator();
             _currentTextPage.WriteType = (WriteType)EditorGUILayout.EnumPopup("Write Type", _currentTextPage.WriteType);
 
             switch (_currentTextPage.WriteType)
             {
                 case WriteType.Instant:
+                    _currentTextPage.CharByCharInfo = default;
                     InstantInfoPageOpt();
                     break;
                 case WriteType.CharByChar:
-
+                    _currentTextPage.InstantInfo = default;
                     CharByCharPageOpt();
                     break;
             }
 
+            EditorGUILayout.Separator();
+
+            SpritesOption();
+
+            GUILayout.EndVertical();
+        }
+
+        private Vector2 _spritesScroll;
+
+        private void SpritesOption()
+        {
+            GUILayout.BeginVertical();
+
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Sprites", GUILayout.MaxWidth(135));
+            GUILayout.Space(10);
+            if (GUILayout.Button("Add"))
+            {
+                _currentTextPage.Sprites.Add(default);
+            }
+
+            GUILayout.EndHorizontal();
+
+
+            if(_currentTextPage.Sprites.Count > 0)
+            {
+                GUILayout.Space(5);
+
+                _spritesScroll = GUILayout.BeginScrollView(_spritesScroll, false, false, GUI.skin.horizontalScrollbar, GUIStyle.none, EditorStyles.helpBox, GUILayout.Height(100));
+                _spritesScroll.y = 0;
+
+                GUILayout.BeginHorizontal();
+
+                for (int i = 0; i < _currentTextPage.Sprites.Count; i++)
+                {
+                    GUILayout.BeginVertical(GUILayout.MaxWidth(60));
+
+                    //Sprite index
+                    //GUILayout.Label(i.ToString(), _centeredLabel, GUILayout.MaxWidth(20));
+
+                    if (GUILayout.Button("Remove", GUILayout.MaxWidth(60)))
+                    {
+                        _currentTextPage.Sprites.RemoveAt(i);
+                        break;
+                    }
+                    _currentTextPage.Sprites[i] = (Sprite)EditorGUILayout.ObjectField("", _currentTextPage.Sprites[i], typeof(Sprite), false, GUILayout.MaxWidth(60));
+
+
+
+
+                    GUILayout.EndVertical();
+                }
+
+                GUILayout.EndHorizontal();
+                GUILayout.EndScrollView();
+            }
+            
             GUILayout.EndVertical();
         }
 
@@ -446,6 +509,7 @@ namespace TalkSystem.Editor
             switch (charByCharWriteInfo.AnimationType)
             {
                 case CharByCharInfo.CharByCharAnimation.None:
+                    charByCharWriteInfo.Offset = 0;
                     charByCharWriteInfo.OffsetType = default;
                     break;
                 case CharByCharInfo.CharByCharAnimation.OffsetToPos:

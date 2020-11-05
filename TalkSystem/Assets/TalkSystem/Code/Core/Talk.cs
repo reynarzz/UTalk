@@ -120,7 +120,7 @@ namespace TalkSystem
             {
                 _talkCloud = cloud;
 
-                _talkCloud.Init();
+                _talkCloud.Init(talkData.PagesCount);
 
                 _talkCloud.OnCloudShown += OnCloudShown;
                 _talkCloud.OnCloudHidden += OnCloudHidden;
@@ -128,6 +128,7 @@ namespace TalkSystem
                 _talkData = talkData;
 
                 _currentPage = _talkData.GetPage(_firstPage);
+                _talkCloud.SetPage(_currentPage, _firstPage);
 
                 if (_talkData)
                 {
@@ -238,6 +239,7 @@ namespace TalkSystem
                         _currentPage = _talkData.GetPage(_pageIndex);
 
                         _writerControl.SetPage(_currentPage, _talkCloud.TextControl);
+                        _talkCloud.SetPage(_currentPage, _pageIndex);
 
                         _writerControl.Writer.InitWriter(_talkCloud.TextControl, _currentPage);
 

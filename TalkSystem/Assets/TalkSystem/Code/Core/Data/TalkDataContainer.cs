@@ -83,7 +83,7 @@ namespace TalkSystem
         public Language RuntimeLanguage { get => _runtimeLanguge; set => _runtimeLanguge = value; }
 
         [SerializeField] private SDictionary<Language, TalkGroupsByNameData> _groups;
-         
+
         public List<List<string>> Groups { get; set; }
 
         public TalkDataContainer()
@@ -126,6 +126,12 @@ namespace TalkSystem
                 {
                     Debug.LogError("Group: " + groupName + " doesn't exist!");
                 }
+
+                if (!talkData)
+                {
+                    Debug.LogError("Talk: " + talkName + " doesn't exist!");
+                }
+
                 return talkData;
             }
 
@@ -137,16 +143,8 @@ namespace TalkSystem
             return _groups.ContainsKey(language);
         }
 
-        public bool ContainsTalk(Language language, string talkName)
-        {
-            //if (ContainsLanguage(language))
-            //{
-            //    return _talks[language].Talks.ContainsKey(talkName);
-            //}
 
-            return false;
-        }
-         
+
         /// <summary>Returns true if had the subGroup name already</summary>
         /// <returns></returns>
         public bool CreateTalkData(string groupName, string subGroup, string talkName, Language language)
@@ -176,6 +174,22 @@ namespace TalkSystem
             }
         }
 
+        public bool ContainsTalk(string groupName, string subGroup, string talkName, Language language)
+        {
+            var subGroupTalks = _groups[language].Groups[groupName].Talks;
+
+            if (subGroupTalks.ContainsKey(subGroup))
+            {
+                return subGroupTalks[subGroup].Talks.Exists(x => x.TalkName == talkName);
+            }
+            //if (ContainsLanguage(language))
+            //{
+            //    return _talks[language].Talks.ContainsKey(talkName);
+            //}
+
+            return false;
+        }
+
         public void AddTalkData(TalkData talkAsset)
         {
             //if (!_talks.ContainsKey(talkAsset.Language))
@@ -196,8 +210,8 @@ namespace TalkSystem
             //    Debug.Log(talkAsset);
             //    dict.Talks[talkAsset.TalkName] = talkAsset;
             //}
-        } 
-          
+        }
+
         public void CreateGroup(string groupName, Language language)
         {
             var groupData = new TalksGroupData(groupName, language, new SDictionary<string, TalksGroupData.TalksSubGroupsData>());
@@ -215,7 +229,7 @@ namespace TalkSystem
                 _groups.Add(language, talksByNameGroup);
             }
         }
-        
+
         public int GetGroupCount(Language language)
         {
             if (_groups.ContainsKey(language))

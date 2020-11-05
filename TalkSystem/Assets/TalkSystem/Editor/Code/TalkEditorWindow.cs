@@ -17,7 +17,7 @@ public class TalkEditorWindow : EditorWindow
         var window = GetWindow<TalkEditorWindow>();
 
         window.titleContent = new GUIContent("Talk Editor");
-
+        window.minSize = new Vector2(275, 275);
         window.Show();
     }
 

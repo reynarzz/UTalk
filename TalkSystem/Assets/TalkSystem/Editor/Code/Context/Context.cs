@@ -31,6 +31,7 @@ namespace TalkSystem.Editor
         private string _name;
         private static string _thingToDeleteName;
         private static string _typeNameToDelete;
+        private bool _itsNameDuplicated;
 
         public enum ContextMenuType
         {

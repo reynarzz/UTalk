@@ -36,7 +36,9 @@ MonoBehaviour:
                   _language: 0
                   _pages:
                   - _pageText: This text have some higlighted words.
-                    _sprite: {fileID: 0}
+                    _talkerName: Person1
+                    _sprites:
+                    - {fileID: 21300000, guid: a391ba2915f122b4ebf583431ede1c4d, type: 3}
                     _highlight:
                       _keys: 0300000005000000
                       _values:
@@ -45,7 +47,7 @@ MonoBehaviour:
                         _highlightLength: 4
                         _color:
                           serializedVersion: 2
-                          rgba: 4294938656
+                          rgba: 4294476815
                         _animationType: 1
                         _writeSpeed: 1
                         _normalSpeed: 0
@@ -62,16 +64,18 @@ MonoBehaviour:
                       _wordIndex: 0
                     _writeType: 1
                     _charByChar:
-                      _normalWriteSpeed: 0.024
-                      _fastWriteSpeed: 0.01
-                      _offsetType: 3
-                      _animationType: 1
-                      _offset: 15
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _offsetType: 0
+                      _animationType: 0
+                      _offset: 0
                     _instantInfo:
                       _TextAnimation: 0
                   - _pageText: "And this page have multiline text \nwith another
                       animation!"
-                    _sprite: {fileID: 0}
+                    _talkerName: Person2
+                    _sprites:
+                    - {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
                     _highlight:
                       _keys: 040000000200000007000000
                       _values:
@@ -115,7 +119,8 @@ MonoBehaviour:
                       _TextAnimation: 0
                   - _pageText: "The current page is using the instant write type
                       \nand the \"sine\" animation."
-                    _sprite: {fileID: 0}
+                    _talkerName: Person3
+                    _sprites: []
                     _highlight:
                       _keys: 06000000
                       _values:
@@ -126,7 +131,7 @@ MonoBehaviour:
                           serializedVersion: 2
                           rgba: 4283452657
                         _animationType: 0
-                        _writeSpeed: 0
+                        _writeSpeed: 1
                         _normalSpeed: 0
                     _wordEvent:
                       _wordIndex: 0
@@ -143,14 +148,15 @@ MonoBehaviour:
                   _subGroup: Default
                   _language: 0
                   _pages:
-                  - _pageText: 
-                    _sprite: {fileID: 0}
+                  - _pageText: This
+                    _talkerName: 
+                    _sprites: []
                     _highlight:
                       _keys: 
                       _values: []
                     _wordEvent:
                       _wordIndex: 0
-                    _writeType: 0
+                    _writeType: 1
                     _charByChar:
                       _normalWriteSpeed: 0
                       _fastWriteSpeed: 0
@@ -165,7 +171,8 @@ MonoBehaviour:
                   _language: 0
                   _pages:
                   - _pageText: 
-                    _sprite: {fileID: 0}
+                    _talkerName: 
+                    _sprites: []
                     _highlight:
                       _keys: 
                       _values: []
@@ -201,7 +208,8 @@ MonoBehaviour:
                   _language: 0
                   _pages:
                   - _pageText: 
-                    _sprite: {fileID: 0}
+                    _talkerName: 
+                    _sprites: []
                     _highlight:
                       _keys: 
                       _values: []

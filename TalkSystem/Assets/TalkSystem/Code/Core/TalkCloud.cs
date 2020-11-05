@@ -26,6 +26,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace TalkSystem
 {
@@ -36,6 +37,8 @@ namespace TalkSystem
 
         public override void ShowCloud()
         {
+            TurnImageOffWhenNotSpriteIsFound(true);
+
             _animator.Play("Show");
         }
 
@@ -44,16 +47,21 @@ namespace TalkSystem
             _animator.Play("Hide");
         }
 
-        //A = Animation
+        //A = Animation, this is called from a frame in the animation window.
         private void A_OnCloudShown()
         {
             OnCloudShow();
         }
 
-        //A = Animation
+        //A = Animation, this is called from a frame in the animation window.
         private void A_OnCloudHidden()
         {
             OnCloudHidde();
+        }
+
+        protected override void OnPageChanged(string talkerName, int pageIndex, int maxPages)
+        {
+
         }
     }
 }

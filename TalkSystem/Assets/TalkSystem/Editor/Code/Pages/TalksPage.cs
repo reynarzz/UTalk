@@ -129,11 +129,18 @@ namespace TalkSystem.Editor
         {
             Context.ShowCreateTalk(TalkEditorWindow.Position, "Talk", _subGroupsList, (sGroup, tName) =>
             {
-               var hadSubGroup = _dataContainer.CreateTalkData(_talkData.GroupName, sGroup, tName, _talkData.Language);
-
-                if (!hadSubGroup)
+                if(_dataContainer.ContainsTalk(_talkData.GroupName, sGroup, tName, _talkData.Language))
                 {
-                    _subGroupsList.Add(sGroup);
+                    var hadSubGroup = _dataContainer.CreateTalkData(_talkData.GroupName, sGroup, tName, _talkData.Language);
+
+                    if (!hadSubGroup)
+                    {
+                        _subGroupsList.Add(sGroup);
+                    }
+                }
+                else
+                {
+                    Debug.Log("Contains talk with this name, can't create another one within the same group.");
                 }
             });
         }
