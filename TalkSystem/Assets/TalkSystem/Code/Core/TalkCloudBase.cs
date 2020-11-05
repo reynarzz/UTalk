@@ -104,7 +104,6 @@ namespace TalkSystem
 
                     _talkerNameText.text = currentPage.TalkerName;
                 }
-
             }
 
             OnPageChanged(currentPage.TalkerName, pageIndex, _pagesCount);

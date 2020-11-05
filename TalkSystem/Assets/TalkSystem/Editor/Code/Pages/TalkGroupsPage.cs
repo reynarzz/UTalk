@@ -154,8 +154,6 @@ namespace TalkSystem.Editor
                             {
                                 Context.Delete(TalkEditorWindow.Position, "Group", _groupsTextGrid[selectedGroup].text, "Entire group", DeleteGroup);
 
-                                //Debug.Log("Delete: " + selectedGroup);
-
                                 void DeleteGroup()
                                 {
                                     _dataContainer.DeleteGroup(_groupsTextGrid[selectedGroup].text, _language);
@@ -184,6 +182,7 @@ namespace TalkSystem.Editor
                 talkPage.NavigationName = _groupsTextGrid[_currentGroup].text;
                 talkPage.SetGroup(_dataContainer.GetGroupByIndex(_language).Groups[_groupsTextGrid[_currentGroup].text]);
 
+                _deleteGroup = false;
                 _currentGroup = -1;
             }
         }
