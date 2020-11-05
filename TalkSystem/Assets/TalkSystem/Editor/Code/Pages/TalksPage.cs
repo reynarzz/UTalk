@@ -129,7 +129,7 @@ namespace TalkSystem.Editor
         {
             Context.ShowCreateTalk(TalkEditorWindow.Position, "Talk", _subGroupsList, (sGroup, tName) =>
             {
-               var hadSubGroup = _dataContainer.CreateTalkData(tName, _talkData.GroupName, sGroup, _talkData.Language);
+               var hadSubGroup = _dataContainer.CreateTalkData(_talkData.GroupName, sGroup, tName, _talkData.Language);
 
                 if (!hadSubGroup)
                 {

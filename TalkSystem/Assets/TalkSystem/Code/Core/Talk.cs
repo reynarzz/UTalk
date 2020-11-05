@@ -36,8 +36,7 @@ namespace TalkSystem
         PageChanged
     }
 
-
-    /// <summary>Entry point to control the talk system.</summary>
+    /// <summary>Entry point to control the talk system. put this in your GM object.</summary>
     public class Talk : MonoSingleton<Talk>
     {
         [SerializeField] private TalkDataContainerScriptable _scriptableContainer;
@@ -61,11 +60,7 @@ namespace TalkSystem
 
         public bool IsTalking => _isTalking;
 
-        private WriterBase _currentWriter;
-
-        #region Writers
-        private CharByCharWriter _charByCharWriter;
-        #endregion
+        private WriterControl _writerControl;
 
         private TextPage _currentPage;
 
@@ -93,7 +88,7 @@ namespace TalkSystem
 
                     if (_talkData)
                     {
-                        _currentWriter.OnLanguageChanged(_currentPage);
+                        _writerControl.Writer.OnLanguageChanged(_currentPage);
                     }
                 }
                 else
@@ -106,20 +101,17 @@ namespace TalkSystem
 
         protected override void Awake()
         {
-            _charByCharWriter = new CharByCharWriter(this);
-            //var moveCharWriter = new MoveCharAnimator(this);
-
-            _currentWriter = _charByCharWriter;//moveCharWriter;
-
-            _currentWriter.OnPageWriten += OnPageWriten;
+            _writerControl = new WriterControl(this, OnPageWriten);
 
             base.Awake();
         }
 
         private void Update()
         {
-            //if(_talkData)
-            _currentWriter.Update();
+            if (_talkData)
+            {
+                _writerControl.Writer.Update();
+            }
         }
 
         public void StartTalk(TalkCloudBase cloud, TalkData talkData)
@@ -145,7 +137,7 @@ namespace TalkSystem
                     _isLastPage = default;
                     _canShowNextPage = default;
 
-                    _currentWriter.Clear(_talkCloud.TextControl);
+                    _writerControl.SetPage(_currentPage, _talkCloud.TextControl);
 
                     _talkCloud.ShowCloud();
                     _talkCallback?.Invoke(TalkEvent.Started);
@@ -227,7 +219,9 @@ namespace TalkSystem
             }
         }
 
-        public void NextPage()
+        /// <summary>Advance to the next page if all the text was writen.</summary>
+        /// <returns>True if advanced to the next page.</returns>
+        public bool NextPage()
         {
             if (_isTalking)
             {
@@ -243,7 +237,11 @@ namespace TalkSystem
 
                         _currentPage = _talkData.GetPage(_pageIndex);
 
-                        _currentWriter.InitWriter(_talkCloud.TextControl, _currentPage);
+                        _writerControl.SetPage(_currentPage, _talkCloud.TextControl);
+
+                        _writerControl.Writer.InitWriter(_talkCloud.TextControl, _currentPage);
+
+                        return true;
                     }
                     else
                     {
@@ -252,7 +250,7 @@ namespace TalkSystem
                 }
                 else
                 {
-                    _currentWriter.Clear(_talkCloud.TextControl);
+                    _writerControl.Writer.Clear(_talkCloud.TextControl);
 
                     _talkCloud.CloseCloud();
                 }
@@ -261,11 +259,13 @@ namespace TalkSystem
             {
                 Debug.LogError("Trying to advance to a next page without starting the conversation.");
             }
+
+            return false;
         }
 
         private void OnCloudShown()
         {
-            _currentWriter.InitWriter(_talkCloud.TextControl, _currentPage);
+            _writerControl.Writer.InitWriter(_talkCloud.TextControl, _currentPage);
         }
 
         private void OnCloudHidden()
@@ -277,6 +277,8 @@ namespace TalkSystem
 
             _talkCallback = null;
             _onWordEventCallBack = null;
+
+            _writerControl.Clear();
 
             _talkCloud.OnCloudShown -= OnCloudShown;
             _talkCloud.OnCloudHidden -= OnCloudHidden;

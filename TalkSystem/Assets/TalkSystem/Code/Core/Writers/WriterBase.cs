@@ -22,12 +22,14 @@ namespace TalkSystem
 
         private MonoBehaviour _mono;
 
-        public abstract void Update();
+        private List<Highlight> _highlightedChars;
 
         public WriterBase(MonoBehaviour mono)
         {
             _mono = mono;
+            _highlightedChars = new List<Highlight>();
         }
+        public abstract void Update();
 
         public void SetWriteSpeed(WriteSpeed speed)
         {
@@ -58,10 +60,11 @@ namespace TalkSystem
 
             _writeSpeed = _normalSpeed;
 
-            _mono.StartCoroutine(Init(control, page));
+            _mono.StartCoroutine(StartWriter(control, page));
         }
 
-        private IEnumerator Init(TextControl control, TextPage page)
+        /// <summary>This does the necessary pre-work to start writing properly.</summary>
+        private IEnumerator StartWriter(TextControl control, TextPage page)
         {
             control.SetText(page.Text);
 
@@ -72,6 +75,7 @@ namespace TalkSystem
             yield return Write(control, page);
         }
 
+        /// <summary>Write the page.</summary>
         protected abstract IEnumerator Write(TextControl control, TextPage page);
 
         public virtual void Clear(TextControl control)

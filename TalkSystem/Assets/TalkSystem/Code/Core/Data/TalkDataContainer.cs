@@ -147,7 +147,7 @@ namespace TalkSystem
          
         /// <summary>Returns true if had the subGroup name already</summary>
         /// <returns></returns>
-        public bool CreateTalkData(string talkName, string groupName, string subGroup, Language language)
+        public bool CreateTalkData(string groupName, string subGroup, string talkName, Language language)
         {
             var subGroupTalks = _groups[language].Groups[groupName].Talks;
 
