@@ -90,7 +90,7 @@ namespace TalkSystem
             _text.color = Color.clear;//new Color(0,0,0, 1);
         }
 
-        //If you change text position, you will have to update the mesh!
+        //If you change text position, you will have to update the mesh, because it will disappear!
         private void UpdateHightlight(TMP_TextInfo textInfo)
         {
             //TODO: update mesh.

@@ -63,6 +63,32 @@ namespace TalkSystem
         }
     }
 
+
+    [Serializable]
+    public struct CharByCharInfo
+    {
+        [SerializeField] private float _normalWriteSpeed;
+        [SerializeField] private float _fastWriteSpeed;
+        [SerializeField] private OffsetStartPos _animation;
+        [SerializeField] private float _offset;
+
+        public enum OffsetStartPos
+        {
+            Top,
+            TopLeft,
+            TopRight,
+
+            Bottom,
+            BottomLeft,
+            BottomRight,
+        }
+
+        public float NormalWriteSpeed { get => _normalWriteSpeed; set => _normalWriteSpeed = value; }
+        public float FastWriteSpeed { get => _fastWriteSpeed; set => _fastWriteSpeed = value; }
+        public OffsetStartPos Animation { get => _animation; set => _animation = value; }
+        public float Offset { get => _offset; set => _offset = value; }
+    }
+
     [Serializable]
     public class TextPage
     {
@@ -237,10 +263,6 @@ namespace TalkSystem
         public TalkData()
         {
             _pages = new List<TextPage>();
-
-            //{
-            //    
-            //};
         }
 
         public TextPage GetPage(int pageIndex)

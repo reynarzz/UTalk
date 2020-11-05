@@ -11,11 +11,14 @@ namespace TalkSystem
     public class WriterFactory 
     {
         private Dictionary<Type, WriterBase> _writers;
+        private TextAnimationControl _animationControl;
 
         public WriterFactory(MonoBehaviour mono, Action onPageWriten)
         {
-            var instant = new InstantWriter(mono);
-            var charByChar = new CharByCharWriter(mono);
+            _animationControl = new TextAnimationControl();
+
+            var instant = new InstantWriter(mono, _animationControl);
+            var charByChar = new CharByCharWriter(mono, _animationControl);
 
             instant.OnPageWriten += onPageWriten;
             charByChar.OnPageWriten += onPageWriten;

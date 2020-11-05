@@ -24,46 +24,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
 namespace TalkSystem
 {
-    [Serializable]
-    public struct CharByCharInfo
-    {
-        [SerializeField] private float _normalWriteSpeed;
-        [SerializeField] private float _fastWriteSpeed;
-        [SerializeField] private CharByCharAnim _animation;
-
-        public enum CharByCharAnim
-        {
-            None,
-            FromTop,
-            FromTopLeft,
-            FromTopRigh,
-
-            FromBottom,
-            FromBottomLeft,
-            FromBottomRigh,
-        }
-
-        public float NormalWriteSpeed { get => _normalWriteSpeed; set => _normalWriteSpeed = value; }
-        public float FastWriteSpeed { get => _fastWriteSpeed; set => _fastWriteSpeed = value; }
-        public CharByCharAnim Animation { get => _animation; set => _animation = value; }
-    }
-
     public class CharByCharWriter : WriterBase
     {
         public override event Action OnPageWriten;
 
-        public CharByCharWriter(MonoBehaviour mono) : base(mono) { }
+        public CharByCharWriter(MonoBehaviour mono, TextAnimationControl animationControl) : base(mono, animationControl) { }
 
-        public override void Update() { }
-
-        protected override IEnumerator Write(TextControl control, TextPage page)
+        protected override IEnumerator Write(TextControl control, TextPage page, TextAnimationControl animationControl)
         {
             var wordIndex = 0;
             var whiteSpacesCount = -1;
@@ -83,7 +56,10 @@ namespace TalkSystem
 
                     for (int j = 0; j < highlightLength; j++)
                     {
-                        control.ShowChar(i + j, highlight.Color);
+                        var charIndex = i + j;
+                        control.ShowChar(charIndex, highlight.Color);
+                        animationControl.HighlightedChar(charIndex, highlight);
+
                         yield return _writeSpeed;
                     }
 
@@ -95,6 +71,7 @@ namespace TalkSystem
                         if (i >= target)
                         {
                             control.ShowChar(i);
+                            animationControl.NormalChar(i);
                             yield return _writeSpeed;
                         }
 
@@ -109,6 +86,7 @@ namespace TalkSystem
                     while (page.Text.ElementAtOrDefault(i).IsValidChar())
                     {
                         control.ShowChar(i);
+                        animationControl.NormalChar(i);
                         yield return _writeSpeed;
                         i++;
 

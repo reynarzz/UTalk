@@ -1,6 +1,6 @@
 ﻿//MIT License
 
-//Copyright (c) 2020 Reynardo Perez (Reynarz)
+//Copyright (c) 2020 Reynardo Perez(Reynarz)
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
 //of this software and associated documentation files (the "Software"), to deal
@@ -24,114 +24,89 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
 namespace TalkSystem
 {
-    public enum WriteSpeed
+    public class OffsetCharAnimation : TextAnimationBase
     {
-        Normal, Fast
-    }
+        private List<TextControl.CharQuad> _startPos;
+        private bool _setOffset;
 
-    //Refactor this class architecture
-    public class MoveCharAnimator 
-    {
-        //private WaitForSeconds _normalSpeed;
-        //private WaitForSeconds _fastSpeed;
+        public OffsetCharAnimation() : base()
+        {
+            _startPos = new List<TextControl.CharQuad>();
+        }
 
-        //private WaitForSeconds _writeSpeed;
-        //private readonly MonoBehaviour _mono;
+        public override void Init(TextControl textControl, TextPage page)
+        {
+            base.Init(textControl, page);
 
-        //public event Action OnPageWriten;
+            _startPos.Clear();
 
-        //private TextControl _textControl;
-        //private List<List<int>> _highlightedChars;
+            SetCharsStartPositions(textControl, page);
 
-        //private float _speed = 15;
-        //private float _freq = 10;
-        //private float _amp = 0.09f;
+            SetOffset(textControl, page);
+        }
 
-        //private float _startPosOffset = -1;
-        //private List<TextControl.CharQuad> _startPos;
-        //private bool _setOffset;
-        //private List<int> _charsToMove;
+        private void SetCharsStartPositions(TextControl textControl, TextPage page)
+        {
+            for (int i = 0; i < page.Text.Length; i++)
+            {
+                _startPos.Add(textControl.GetCharPos(i));
+            }
+        }
 
-        //public MoveCharAnimator(MonoBehaviour mono)
-        //{
-        //    _mono = mono;
-        //    _highlightedChars = new List<List<int>>();
-        //    _startPos = new List<TextControl.CharQuad>();
-        //    _charsToMove = new List<int>();
-        //    //offset
-        //}
+        private void SetOffset(TextControl textControl, TextPage page)
+        {
+            if (!_setOffset)
+            {
+                _setOffset = true;
 
-        //public void Write(TextControl control, TextPage page)
-        //{
-        //    if (!_setOffset)
-        //    {
-        //        _setOffset = true;
+                var dir = GetStartOffsetDir(page.CharByCharInfo.Animation, page.CharByCharInfo.Offset);
+                textControl.OffsetText(dir);
+            }
+        }
 
-        //        control.OffsetText(new Vector2(10, 10));
-        //    }
+        public override void Update()
+        {
+            for (int i = 0; i < CharIndexesToAnimate.Count; i++)
+            {
+                var index = CharIndexesToAnimate[i];
+                var targetPos = TextControl.OffsetVectors(_startPos[index], new Vector2(0, -10));
 
-        //    control.SetText(page.Text);
+                TextControl.SetCharPos(index, TextControl.LerpCharPos(TextControl.GetCharPos(index), targetPos, 30 * Time.deltaTime));
+            }
+        }
 
-        //    _normalSpeed = new WaitForSeconds(page.CharByCharInfo.NormalWriteSpeed);
-        //    _fastSpeed = new WaitForSeconds(page.CharByCharInfo.FastWriteSpeed);
+        public Vector2 GetStartOffsetDir(CharByCharInfo.OffsetStartPos animType, float offset)
+        {
+            switch (animType)
+            {
+                case CharByCharInfo.OffsetStartPos.Top:
+                    return new Vector2(0, offset);
 
-        //    _writeSpeed = _normalSpeed;
-        //    _charsToMove.Clear();
+                case CharByCharInfo.OffsetStartPos.TopLeft:
+                    return new Vector2(-offset, offset);
 
-        //    _mono.StartCoroutine(WriteByChar(control, page));
-        //}
+                case CharByCharInfo.OffsetStartPos.TopRight:
+                    return new Vector2(offset, offset);
 
-        //public void SetWriteSpeed(WriteSpeed speed)
-        //{
-        //    switch (speed)
-        //    {
-        //        case WriteSpeed.Normal:
-        //            _writeSpeed = _normalSpeed;
-        //            break;
-        //        case WriteSpeed.Fast:
-        //            _writeSpeed = _fastSpeed;
-        //            break;
-        //    }
-        //}
+                case CharByCharInfo.OffsetStartPos.Bottom:
+                    return new Vector2(0, -offset);
 
-        //public void Update()
-        //{
-        //    ShowNormalCharAnim();
+                case CharByCharInfo.OffsetStartPos.BottomLeft:
+                    return new Vector2(-offset, -offset);
 
-        //    ShowHighlightedCharAnim();
-        //}
+                case CharByCharInfo.OffsetStartPos.BottomRight:
+                    return new Vector2(offset, -offset);
+            }
 
-        //private void ShowNormalCharAnim()
-        //{
-        //    for (int i = 0; i < _charsToMove.Count; i++)
-        //    {
-        //        var index = _charsToMove[i];
-        //        var targetPos = _textControl.OffsetVectors(_startPos[index], new Vector2(0, -10));
+            return default;
+        }
 
-        //        _textControl.SetCharPos(index, _textControl.LerpCharPos(_textControl.GetCharPos(index), targetPos, 30 * Time.deltaTime));
-        //    }
-        //}
-
-        //private void ShowHighlightedCharAnim()
-        //{
-        //    if (_highlightedChars.Count > 0)
-        //    {
-        //        for (int i = 0; i < _highlightedChars.Count; i++)
-        //        {
-        //            for (int j = 0; j < _highlightedChars[i].Count; j++)
-        //            {
-        //                _textControl.OffsetChar(_highlightedChars[i][j], new Vector2(0, Mathf.Sin(j + Time.time * _freq) * _amp));
-        //            }
-        //        }
-        //    }
-        //}
 
         //private IEnumerator WriteByChar(TextControl control, TextPage page)
         //{
@@ -167,7 +142,7 @@ namespace TalkSystem
 
         //            i += startChar;
 
-        //            if(highlight.Type == HighlightAnimation.Sine)
+        //            if (highlight.Type == HighlightAnimation.Sine)
         //            {
         //                var list = new List<int>();
 
@@ -198,7 +173,7 @@ namespace TalkSystem
 
         //                    _charsToMove.Add(i);
 
-        //                     yield return _writeSpeed;
+        //                    yield return _writeSpeed;
         //                }
 
         //                i++;
@@ -231,16 +206,6 @@ namespace TalkSystem
         //    }
 
         //    OnPageWriten?.Invoke();
-        //}
-
-        //public void OnLanguageChanged(TextPage textPage)
-        //{
-
-        //}
-
-        //public void Clear(TextControl control)
-        //{
-        //    control.ClearColors();
         //}
     }
 }

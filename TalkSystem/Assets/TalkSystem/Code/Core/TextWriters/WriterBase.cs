@@ -9,6 +9,11 @@ using UnityEngine;
 
 namespace TalkSystem
 {
+    public enum WriteSpeed
+    {
+        Normal, Fast
+    }
+
     public abstract class WriterBase
     {
         public abstract event Action OnPageWriten;
@@ -20,29 +25,17 @@ namespace TalkSystem
         private WaitForSeconds _fastSpeed;
         protected WaitForSeconds _writeSpeed;
 
-        private MonoBehaviour _mono;
+        private readonly MonoBehaviour _mono;
+        private readonly TextAnimationControl _animationControl;
 
-        private List<Highlight> _highlightedChars;
-
-        public WriterBase(MonoBehaviour mono)
+        public WriterBase(MonoBehaviour mono, TextAnimationControl animationControl)
         {
             _mono = mono;
-            _highlightedChars = new List<Highlight>();
+            _animationControl = animationControl;
         }
-        public abstract void Update();
 
-        public void SetWriteSpeed(WriteSpeed speed)
-        {
-            switch (speed)
-            {
-                case WriteSpeed.Normal:
-                    _writeSpeed = _normalSpeed;
-                    break;
-                case WriteSpeed.Fast:
-                    _writeSpeed = _fastSpeed;
-                    break;
-            }
-        }
+        /// <summary>Write the page.</summary>
+        protected abstract IEnumerator Write(TextControl control, TextPage page, TextAnimationControl animationControl);
 
         public void InitWriter(TextControl control, TextPage page)
         {
@@ -67,25 +60,42 @@ namespace TalkSystem
         private IEnumerator StartWriter(TextControl control, TextPage page)
         {
             control.SetText(page.Text);
+            _animationControl.Init(control, page);
 
+            //The next code have to be done in a different frame, that's the reason of this line.
             yield return 0;
-            //this has to be done in the next frame.
+            
             control.ReloadCharsVertices();
 
-            yield return Write(control, page);
+            yield return Write(control, page, _animationControl);
         }
 
-        /// <summary>Write the page.</summary>
-        protected abstract IEnumerator Write(TextControl control, TextPage page);
+        public void Update()
+        {
+            _animationControl.Update();
+        }
 
+        public void SetWriteSpeed(WriteSpeed speed)
+        {
+            switch (speed)
+            {
+                case WriteSpeed.Normal:
+                    _writeSpeed = _normalSpeed;
+                    break;
+                case WriteSpeed.Fast:
+                    _writeSpeed = _fastSpeed;
+                    break;
+            }
+        }
+        
+        public void OnLanguageChanged(TextPage textPage)
+        {
+
+        }
         public virtual void Clear(TextControl control)
         {
             control.ClearColors();
         }
 
-        public void OnLanguageChanged(TextPage textPage)
-        {
-
-        }
     }
 }

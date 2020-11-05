@@ -41,5 +41,5 @@ public class TalkEditorWindow : EditorWindow
         Position = new Rect(position.x + Screen.width / 2, position.y + Screen.height / 2, position.width, position.height);
 
         _pageNavigator.OnGUI();
-    }  
+    }
 }

@@ -12,14 +12,9 @@ namespace TalkSystem
     {
         public override event Action OnPageWriten;
 
-        public InstantWriter(MonoBehaviour mono) : base(mono) { }
+        public InstantWriter(MonoBehaviour mono, TextAnimationControl textAnimationControl) : base(mono, textAnimationControl) { }
 
-        public override void Update()
-        {
-
-        }
-
-        protected override IEnumerator Write(TextControl control, TextPage page)
+        protected override IEnumerator Write(TextControl control, TextPage page, TextAnimationControl textAnimationControl)
         {
             var wordIndex = 0;
             var whiteSpacesCount = -1;

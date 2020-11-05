@@ -431,7 +431,7 @@ namespace TalkSystem.Editor
         {
             var charByCharWriteInfo = _currentTextPage.CharByCharInfo;
 
-            charByCharWriteInfo.Animation = (CharByCharInfo.CharByCharAnim)EditorGUILayout.EnumPopup("Anim", charByCharWriteInfo.Animation);
+            charByCharWriteInfo.Animation = (CharByCharInfo.OffsetStartPos)EditorGUILayout.EnumPopup("Anim", charByCharWriteInfo.Animation);
             charByCharWriteInfo.NormalWriteSpeed = EditorGUILayout.FloatField("Normal write delay ", charByCharWriteInfo.NormalWriteSpeed);
             charByCharWriteInfo.FastWriteSpeed = EditorGUILayout.FloatField("Fast write delay ", charByCharWriteInfo.FastWriteSpeed);
 

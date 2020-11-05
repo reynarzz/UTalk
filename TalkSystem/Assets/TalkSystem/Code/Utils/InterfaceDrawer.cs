@@ -13,42 +13,10 @@ namespace TalkSystem
     [CustomPropertyDrawer(typeof(ISerializeField))]
     public class InterfaceDrawer : PropertyDrawer
     {
-        private Texture2D _white;
-        private Array _array;
         private bool _foldOut = false;
-        private int _arraySize;
-
-        private class Array
-        {
-            public int Size;
-            public object[] _objects;
-        }
-
-        public InterfaceDrawer() : base()
-        {
-            _array = new Array();
-        }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            //var targetObj = property.serializedObject.targetObject.GetType();
-
-            //var field = targetObj.GetField(property.name, BindingFlags.Instance | BindingFlags.NonPublic);
-
-            //if (field == null)
-            //{
-            //    //Debug.Log(property.name);
-            //    field = targetObj.GetField(property.name);
-            //}
-            ////Debug.Log(field == null);
-            //var type = field.FieldType.GetGenericArguments()[0];
-            //var heigh = base.GetPropertyHeight(property, label);
-            //if (type.IsArray)
-            //{
-            //    var inst = property.FindPropertyRelative("_instances");
-            //    //heigh = inst.arraySize * 10;
-            //}
-
             return base.GetPropertyHeight(property, label);
         }
 
@@ -80,8 +48,6 @@ namespace TalkSystem
                 }
 
                 indent = 1;
-                //EditorGUI.PropertyField(position, inst, true);
-
                 if (_foldOut = EditorGUI.Foldout(position, _foldOut, label))
                 {
                     for (int i = 0; i < inst.arraySize; i++)
@@ -91,9 +57,7 @@ namespace TalkSystem
                      
                         label.text = "Element " + i;
 
-                        EditorGUI.PropertyField(position, element, true);
-                        //  element.objectReferenceValue = EditorGUI.ObjectField(position, label, element.objectReferenceValue, type.GetElementType(), true);
-
+                         element.objectReferenceValue = EditorGUI.ObjectField(position, label, element.objectReferenceValue, type.GetElementType(), true);
                     }
                 }
                
@@ -105,6 +69,7 @@ namespace TalkSystem
 
                 inst.objectReferenceValue = EditorGUI.ObjectField(position, label, inst.objectReferenceValue, type, true);
             }
+
             EditorGUI.indentLevel = indent;
 
             EditorGUI.EndProperty();
