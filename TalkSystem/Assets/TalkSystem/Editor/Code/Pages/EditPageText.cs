@@ -476,10 +476,8 @@ namespace TalkSystem.Editor
                         _currentTextPage.Sprites.RemoveAt(i);
                         break;
                     }
+
                     _currentTextPage.Sprites[i] = (Sprite)EditorGUILayout.ObjectField("", _currentTextPage.Sprites[i], typeof(Sprite), false, GUILayout.MaxWidth(60));
-
-
-
 
                     GUILayout.EndVertical();
                 }
