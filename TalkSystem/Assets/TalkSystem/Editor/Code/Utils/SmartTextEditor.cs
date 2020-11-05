@@ -111,6 +111,7 @@ namespace TalkSystem.Editor
             return false;
         }
 
+        
 
         private bool PerformOperation(TextEditOp operation, bool textIsReadOnly)
         {
@@ -290,11 +291,18 @@ namespace TalkSystem.Editor
             CursorIndexLate = cursorIndex;
             TextLate = text;
         }
+
         public void Clear()
         {
             OnCopy = null;
             OnCut = null;
             OnPaste = null;
+        }
+
+        public void ClearSelectedText()
+        {
+            selectIndex = 0;
+            cursorIndex = 0;
         }
 
         private enum TextEditOp

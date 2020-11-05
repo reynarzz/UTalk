@@ -206,17 +206,27 @@ namespace TalkSystem.Editor
 
             var nextSkin = _textPageIndex + 1 < _talkData.PagesCount ? _prevNextButtons : _prevNextButtonsDisabled;
             var prevSkin = _textPageIndex > 0 ? _prevNextButtons : _prevNextButtonsDisabled;
-
+            
+            GUI.SetNextControlName("Prev");
             if (GUILayout.Button("Prev", prevSkin) && _textPageIndex > 0)
             {
+                GUI.FocusControl("Prev");
+                
                 _textPageIndex--;
+                _textInfo.TextEditor.ClearSelectedText();
+
                 _currentTextPage = _talkData.GetPage(_textPageIndex);
             }
+
             GUILayout.Label((_textPageIndex + 1).ToString() + "/" + _talkData.PagesCount, _centeredLabel, GUILayout.Width(40));
 
+            GUI.SetNextControlName("Next");
             if (GUILayout.Button("Next", nextSkin) && _textPageIndex + 1 < _talkData.PagesCount)
             {
+                GUI.FocusControl("Next");
+
                 _textPageIndex++;
+                _textInfo.TextEditor.ClearSelectedText();
                 _currentTextPage = _talkData.GetPage(_textPageIndex);
             }
             GUILayout.EndHorizontal();
@@ -330,6 +340,8 @@ namespace TalkSystem.Editor
                     if (containsKey)
                     {
                         GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Width(150));
+
+                        GUILayout.Space(1);
 
                         GUILayout.BeginHorizontal();
                         if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
