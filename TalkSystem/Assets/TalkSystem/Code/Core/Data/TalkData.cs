@@ -37,7 +37,7 @@ namespace TalkSystem
         CharByChar
     }
 
-    public enum HighlightAnimation
+    public enum TextAnimation
     {
         None,
         Sine
@@ -98,6 +98,13 @@ namespace TalkSystem
     }
 
     [Serializable]
+    public struct InstantInfo
+    {
+        [SerializeField] private TextAnimation _TextAnimation;
+        public TextAnimation TextAnimation { get => _TextAnimation; set => _TextAnimation = value; }
+    }
+
+    [Serializable]
     public class TextPage
     {
         [SerializeField, TextArea] private string _pageText;
@@ -108,6 +115,7 @@ namespace TalkSystem
 
         [Header("Write Styles")]
         [SerializeField] private CharByCharInfo _charByChar;
+        [SerializeField] private InstantInfo _instantInfo;
 
         public string Text { get => _pageText; set => _pageText = value; }
         public Sprite Sprite => _sprite;
@@ -118,6 +126,7 @@ namespace TalkSystem
 
         #region WriteStyleInfo 
         public CharByCharInfo CharByCharInfo { get => _charByChar; set => _charByChar = value; }
+        public InstantInfo InstantInfo { get => _instantInfo; set => _instantInfo = value; }
         #endregion
 
         public TextPage(string text, Sprite sprite, WordEvent wEvent)
@@ -170,7 +179,7 @@ namespace TalkSystem
         [SerializeField] private int _wordStartCharIndex;
         [SerializeField] private int _highlightLength;
         [SerializeField] private Color32 _color;
-        [SerializeField] private HighlightAnimation _animationType;
+        [SerializeField] private TextAnimation _animationType;
         [SerializeField] private WriteSpeed _writeSpeed;
         [SerializeField] private float _normalSpeed;
 
@@ -179,13 +188,13 @@ namespace TalkSystem
         public int HighlighLength => _highlightLength;
 
         public Color32 Color => _color;
-        public HighlightAnimation Type => _animationType;
+        public TextAnimation Type => _animationType;
         public WriteSpeed WriteSpeedType => _writeSpeed;
         public float NormalWriteSpeed => _normalSpeed;
 
         public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color) : this(wordIndex, startChar, highlightLength, color, default, default, default) { }
 
-        public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color, HighlightAnimation type,
+        public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color, TextAnimation type,
                          WriteSpeed writeSpeedType, float normalSpeed)
         {
             _wordIndex = wordIndex;

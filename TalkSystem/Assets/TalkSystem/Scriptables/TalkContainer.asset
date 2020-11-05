@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _talkDataContainer:
     _language: 0
+    _runtimeLanguge: 0
     _groups:
       _keys: 000000000100000002000000
       _values:
@@ -66,6 +67,8 @@ MonoBehaviour:
                       _offsetType: 3
                       _animationType: 1
                       _offset: 15
+                    _instantInfo:
+                      _TextAnimation: 0
                   - _pageText: "And this page have multiline text \nwith another
                       animation!"
                     _sprite: {fileID: 0}
@@ -108,6 +111,34 @@ MonoBehaviour:
                       _offsetType: 2
                       _animationType: 1
                       _offset: 10
+                    _instantInfo:
+                      _TextAnimation: 0
+                  - _pageText: "The current page is using the instant write type
+                      \nand the \"sine\" animation."
+                    _sprite: {fileID: 0}
+                    _highlight:
+                      _keys: 06000000
+                      _values:
+                      - _wordIndex: 6
+                        _wordStartCharIndex: 0
+                        _highlightLength: 7
+                        _color:
+                          serializedVersion: 2
+                          rgba: 4283452657
+                        _animationType: 0
+                        _writeSpeed: 0
+                        _normalSpeed: 0
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 0
+                    _charByChar:
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _offsetType: 0
+                      _animationType: 0
+                      _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 1
                 - _talkName: Another
                   _subGroup: Default
                   _language: 0
@@ -126,6 +157,8 @@ MonoBehaviour:
                       _offsetType: 0
                       _animationType: 0
                       _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 0
               - _talks:
                 - _talkName: Default HI
                   _subGroup: Default
@@ -145,6 +178,8 @@ MonoBehaviour:
                       _offsetType: 0
                       _animationType: 0
                       _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 0
           - _groupName: Second group
             _language: 0
             _talks:
@@ -179,6 +214,8 @@ MonoBehaviour:
                       _offsetType: 0
                       _animationType: 0
                       _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 0
       - _groups:
           _keys:
           - Default

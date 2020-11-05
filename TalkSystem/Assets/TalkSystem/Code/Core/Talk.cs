@@ -71,7 +71,7 @@ namespace TalkSystem
             {
                 if (_scriptableContainer)
                 {
-                    return _scriptableContainer.Container.Language;
+                    return _scriptableContainer.Container.RuntimeLanguage;
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace TalkSystem
             {
                 if (_scriptableContainer)
                 {
-                    _scriptableContainer.Container.Language = value;
+                    _scriptableContainer.Container.RuntimeLanguage = value;
 
                     if (_talkData)
                     {

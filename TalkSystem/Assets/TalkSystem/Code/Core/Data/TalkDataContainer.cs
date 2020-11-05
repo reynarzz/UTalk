@@ -77,8 +77,10 @@ namespace TalkSystem
     public class TalkDataContainer
     {
         [SerializeField, HideInInspector] private Language _language;
+        [SerializeField, HideInInspector] private Language _runtimeLanguge;
 
         public Language Language { get => _language; set => _language = value; }
+        public Language RuntimeLanguage { get => _runtimeLanguge; set => _runtimeLanguge = value; }
 
         [SerializeField] private SDictionary<Language, TalkGroupsByNameData> _groups;
          

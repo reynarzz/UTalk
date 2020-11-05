@@ -357,7 +357,7 @@ namespace TalkSystem.Editor
 
                             GUILayout.BeginHorizontal();
                             GUILayout.Label("Anim", GUILayout.MaxWidth(70));
-                            var type = (HighlightAnimation)EditorGUILayout.EnumPopup(highlight.Type);
+                            var type = (TextAnimation)EditorGUILayout.EnumPopup(highlight.Type);
                             GUILayout.EndHorizontal();
 
                             GUILayout.BeginHorizontal();
@@ -416,15 +416,25 @@ namespace TalkSystem.Editor
 
             switch (_currentTextPage.WriteType)
             {
+                case WriteType.Instant:
+                    InstantInfoPageOpt();
+                    break;
                 case WriteType.CharByChar:
 
                     CharByCharPageOpt();
                     break;
-                case WriteType.Instant:
-                    break;
             }
 
             GUILayout.EndVertical();
+        }
+
+        private void InstantInfoPageOpt()
+        {
+            var instantInfo = _currentTextPage.InstantInfo;
+
+            instantInfo.TextAnimation = (TextAnimation)EditorGUILayout.EnumPopup("Animation", instantInfo.TextAnimation);
+
+            _currentTextPage.InstantInfo = instantInfo;
         }
 
         private void CharByCharPageOpt()

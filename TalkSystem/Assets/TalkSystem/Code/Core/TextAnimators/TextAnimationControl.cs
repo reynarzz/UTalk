@@ -35,9 +35,9 @@ namespace TalkSystem
         {
             switch (highlight.Type)
             {
-                case HighlightAnimation.None:
+                case TextAnimation.None:
                     break;
-                case HighlightAnimation.Sine:
+                case TextAnimation.Sine:
                     var sine = GetAnimator<SineCharAnimation>();
                     sine.AddChar(charIndex);
                     break;
@@ -49,9 +49,24 @@ namespace TalkSystem
             switch (_textPage.WriteType)
             {
                 case WriteType.Instant:
+                    IntantAnim(charIndex);
+                   
                     break;
                 case WriteType.CharByChar:
                     CharByCharAnim(charIndex);
+                    break;
+            }
+        }
+
+        private void IntantAnim(int charIndex)
+        {
+            switch (_textPage.InstantInfo.TextAnimation)
+            {
+                case TextAnimation.None:
+                    break;
+                case TextAnimation.Sine:
+                    var sine = GetAnimator<SineCharAnimation>();
+                    sine.AddChar(charIndex);
                     break;
             }
         }
