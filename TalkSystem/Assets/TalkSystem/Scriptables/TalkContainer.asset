@@ -34,7 +34,10 @@ MonoBehaviour:
                   _subGroup: Different
                   _language: 0
                   _pages:
-                  - _pageText: This text have some  higlighted words.
+                  - _pageText: 'This text have some higlighted words.
+
+                      This
+                      should be deleted!'
                     _sprite: {fileID: 0}
                     _highlight:
                       _keys: 0300000005000000
@@ -46,19 +49,24 @@ MonoBehaviour:
                           serializedVersion: 2
                           rgba: 4294938656
                         _animationType: 0
+                        _writeSpeed: 1
+                        _normalSpeed: 0
                       - _wordIndex: 5
                         _wordStartCharIndex: 0
-                        _highlightLength: 6
+                        _highlightLength: 5
                         _color:
                           serializedVersion: 2
                           rgba: 4282861823
-                        _animationType: 0
+                        _animationType: 1
+                        _writeSpeed: 1
+                        _normalSpeed: 0
                     _wordEvent:
                       _wordIndex: 0
+                    _writeType: 1
                     _charByChar:
-                      _normalWriteSpeed: 0
-                      _fastWriteSpeed: 0
-                      _highlightedWordSpeed: 0
+                      _normalWriteSpeed: 0.03
+                      _fastWriteSpeed: 0.01
+                      _animation: 4
                   - _pageText: 'And this page have multiline text
 
                       with
@@ -74,6 +82,8 @@ MonoBehaviour:
                           serializedVersion: 2
                           rgba: 4283532031
                         _animationType: 0
+                        _writeSpeed: 0
+                        _normalSpeed: 0
                       - _wordIndex: 4
                         _wordStartCharIndex: 0
                         _highlightLength: 9
@@ -81,6 +91,8 @@ MonoBehaviour:
                           serializedVersion: 2
                           rgba: 4294942793
                         _animationType: 0
+                        _writeSpeed: 0
+                        _normalSpeed: 0
                       - _wordIndex: 10
                         _wordStartCharIndex: 0
                         _highlightLength: 3
@@ -88,6 +100,8 @@ MonoBehaviour:
                           serializedVersion: 2
                           rgba: 4294901870
                         _animationType: 0
+                        _writeSpeed: 0
+                        _normalSpeed: 0
                       - _wordIndex: 2
                         _wordStartCharIndex: 0
                         _highlightLength: 4
@@ -95,12 +109,15 @@ MonoBehaviour:
                           serializedVersion: 2
                           rgba: 4294915782
                         _animationType: 0
+                        _writeSpeed: 0
+                        _normalSpeed: 0
                     _wordEvent:
                       _wordIndex: 0
+                    _writeType: 0
                     _charByChar:
                       _normalWriteSpeed: 0
                       _fastWriteSpeed: 0
-                      _highlightedWordSpeed: 0
+                      _animation: 0
                 - _talkName: Another
                   _subGroup: Default
                   _language: 0
@@ -112,10 +129,11 @@ MonoBehaviour:
                       _values: []
                     _wordEvent:
                       _wordIndex: 0
+                    _writeType: 0
                     _charByChar:
                       _normalWriteSpeed: 0
                       _fastWriteSpeed: 0
-                      _highlightedWordSpeed: 0
+                      _animation: 0
               - _talks:
                 - _talkName: Default HI
                   _subGroup: Default
@@ -128,10 +146,11 @@ MonoBehaviour:
                       _values: []
                     _wordEvent:
                       _wordIndex: 0
+                    _writeType: 0
                     _charByChar:
                       _normalWriteSpeed: 0
                       _fastWriteSpeed: 0
-                      _highlightedWordSpeed: 0
+                      _animation: 0
           - _groupName: Second group
             _language: 0
             _talks:
@@ -143,6 +162,18 @@ MonoBehaviour:
                   _subGroup: Default
                   _language: 0
                   _pages:
+                  - _pageText: Will this be serialized?
+                    _sprite: {fileID: 0}
+                    _highlight:
+                      _keys: 
+                      _values: []
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 1
+                    _charByChar:
+                      _normalWriteSpeed: 1
+                      _fastWriteSpeed: 4.3
+                      _animation: 2
                   - _pageText: 
                     _sprite: {fileID: 0}
                     _highlight:
@@ -150,10 +181,35 @@ MonoBehaviour:
                       _values: []
                     _wordEvent:
                       _wordIndex: 0
+                    _writeType: 0
                     _charByChar:
                       _normalWriteSpeed: 0
                       _fastWriteSpeed: 0
-                      _highlightedWordSpeed: 0
+                      _animation: 0
+                  - _pageText: 
+                    _sprite: {fileID: 0}
+                    _highlight:
+                      _keys: 
+                      _values: []
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 0
+                    _charByChar:
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _animation: 0
+                  - _pageText: 
+                    _sprite: {fileID: 0}
+                    _highlight:
+                      _keys: 
+                      _values: []
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 0
+                    _charByChar:
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _animation: 0
       - _groups:
           _keys:
           - Default
@@ -176,10 +232,11 @@ MonoBehaviour:
                       _values: []
                     _wordEvent:
                       _wordIndex: 0
+                    _writeType: 0
                     _charByChar:
                       _normalWriteSpeed: 0
                       _fastWriteSpeed: 0
-                      _highlightedWordSpeed: 0
+                      _animation: 0
       - _groups:
           _keys:
           - Default

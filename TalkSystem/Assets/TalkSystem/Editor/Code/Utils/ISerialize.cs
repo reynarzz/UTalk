@@ -16,6 +16,13 @@ namespace TalkSystem
         [SerializeField] private UnityEngine.Object _instance;
         [SerializeField] private UnityEngine.Object[] _instances;
 
+        public ISerialize()
+        {
+            //it will not print a caution message in unity.
+            _instance = default;
+            _instances = default;
+        }
+         
         private T _implementationInst;
         public T Type
         {

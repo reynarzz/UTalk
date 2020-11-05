@@ -19,6 +19,7 @@
 //LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
+using NUnit.Framework.Constraints;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,6 +32,7 @@ using UnityEngine;
 
 namespace TalkSystem.Editor
 {
+    //This class needs a huge refactor.
     public class EditPageText : IPage
     {
         public delegate void TextChanged(string oldText, string newText, int charsAdded, int cursor);
@@ -133,9 +135,12 @@ namespace TalkSystem.Editor
             {
                 GUILayout.Space(5);
 
-                _entireScroll = GUILayout.BeginScrollView(_entireScroll, GUIStyle.none, GUI.skin.verticalScrollbar);
+               // _entireScroll = GUILayout.BeginScrollView(_entireScroll);
                 //here i'm creating a new text page instance (TextPage was an struct before, but now this need a refactor)
                 var hightligted = HighlightText(new TextPage(_currentTextPage.Text, _currentTextPage.Sprite, _currentTextPage.Event, _currentTextPage.Highlight));
+                AddRemovePageToolbar();
+
+
                 TextPreview(hightligted);
 
 
@@ -168,9 +173,8 @@ namespace TalkSystem.Editor
 
                 PageOptions();
 
-                AddRemovePageToolbar();
 
-                GUILayout.EndScrollView();
+                //GUILayout.EndScrollView();
 
                 //TEST
                 //if (_showInfo = EditorGUILayout.Foldout(_showInfo, "Highlight Info"))
@@ -291,7 +295,7 @@ namespace TalkSystem.Editor
                             var localStartCharIndex = Utils.ToLocalStartChar(globalStartingChar, textInfo.Text, word);
                             var highlightLength = textInfo.SelectedText.Length;
 
-                            var highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, Color.white, HighlightAnimation.None);
+                            var highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, Color.white);
 
                             _currentTextPage.Highlight.Add(wordIndex, highlight);
                         }
@@ -301,8 +305,8 @@ namespace TalkSystem.Editor
                 GUILayout.BeginVertical(EditorStyles.helpBox);
                 //GUILayout.Label("Highlights");
 
-                GUILayout.Space(5);
-                _scrollView = GUILayout.BeginScrollView(_scrollView, true, false, GUI.skin.horizontalScrollbar, GUIStyle.none, GUILayout.MaxHeight(90), GUILayout.MinHeight(90));
+                GUILayout.Space(4);
+                _scrollView = GUILayout.BeginScrollView(_scrollView, true, false, GUI.skin.horizontalScrollbar, GUIStyle.none/*, GUILayout.MaxHeight(120), GUILayout.MinHeight(90)*/);
 
                 GUILayout.BeginHorizontal();
 
@@ -322,7 +326,7 @@ namespace TalkSystem.Editor
 
                     if (containsKey)
                     {
-                        GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.MinWidth(125));
+                        GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Width(150));
 
                         GUILayout.BeginHorizontal();
                         if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
@@ -344,7 +348,6 @@ namespace TalkSystem.Editor
                         if (highlight != default)
                         {
                             GUILayout.BeginHorizontal();
-
                             GUILayout.Label("Color", GUILayout.MaxWidth(70));
                             var color = EditorGUILayout.ColorField(highlight.Color);
                             color.a = 1;
@@ -356,13 +359,30 @@ namespace TalkSystem.Editor
                             GUILayout.Label("Anim", GUILayout.MaxWidth(70));
                             var type = (HighlightAnimation)EditorGUILayout.EnumPopup(highlight.Type);
                             GUILayout.EndHorizontal();
+                             
+                            GUILayout.BeginHorizontal();
+                            GUILayout.Label("Write Speed", GUILayout.MaxWidth(80));
+                            var writeSpeedType = (Highlight.WriteSpeed)EditorGUILayout.EnumPopup(highlight.WriteSpeedType);
+                            GUILayout.EndHorizontal();
 
-                            highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, color, type);
+                            var normalWriteSpeed = 0f;
+
+                            if (writeSpeedType == Highlight.WriteSpeed.Custom)
+                            {
+                                GUILayout.BeginHorizontal();
+                                GUILayout.Label("Speed", GUILayout.MaxWidth(70));
+                                normalWriteSpeed = EditorGUILayout.FloatField(highlight.NormalWriteSpeed);
+                                GUILayout.EndHorizontal();
+                            }
+
+                            highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, color, type, writeSpeedType, normalWriteSpeed);
 
                             _currentTextPage.Highlight[wordIndex] = highlight;
                         }
 
                         GUILayout.EndVertical();
+                        GUILayout.Space(4);
+
                     }
                 }
 
@@ -479,7 +499,8 @@ namespace TalkSystem.Editor
 
                 var index = highlight.WordIndex >= wordIndex ? highlight.WordIndex + wordsAdded : highlight.WordIndex;
 
-                _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar, highlight.HighlighLength, highlight.Color, highlight.Type));
+                _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar, 
+                    highlight.HighlighLength, highlight.Color, highlight.Type, highlight.WriteSpeedType, highlight.NormalWriteSpeed));
             }
         }
 
@@ -490,7 +511,7 @@ namespace TalkSystem.Editor
             if (!string.IsNullOrEmpty(_textInfo.TextEditor.SelectedTextLate))
             {
                 var wIndexes = Utils.GetSelectedWords(_textInfo.TextEditor.StartSelectIndexLate, _textInfo.TextEditor.SelectedTextLate, oldText);
-                wIndexes.Print();
+                //wIndexes.Print();
                 for (int i = 0; i < wIndexes.Count; i++)
                 {
                     var wIndex = wIndexes[i].WordIndex;
@@ -540,7 +561,8 @@ namespace TalkSystem.Editor
                 //If you are mixing two highligted words, for now the created word will have the highligh values of the first one.
                 if (!_currentTextPage.Highlight.ContainsKey(index))
                 {
-                    _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar, highlight.HighlighLength, highlight.Color, highlight.Type));
+                    _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar, 
+                                                   highlight.HighlighLength, highlight.Color, highlight.Type, highlight.WriteSpeedType, highlight.NormalWriteSpeed));
                 }
             }
         }
@@ -643,7 +665,8 @@ namespace TalkSystem.Editor
 
                     if (length > 0)
                     {
-                        page.Highlight[wordIndex] = new Highlight(hightlight.WordIndex, hightlight.StartLocalChar, length, hightlight.Color, hightlight.Type);
+                        page.Highlight[wordIndex] = new Highlight(hightlight.WordIndex, hightlight.StartLocalChar, length, hightlight.Color, hightlight.Type, 
+                                                                  highlight.WriteSpeedType, highlight.NormalWriteSpeed);
 
                         modified = modified.Insert(modified.Length, colorClose);
                     }

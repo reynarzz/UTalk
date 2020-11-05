@@ -25,7 +25,10 @@ public class TalkEditorWindow : EditorWindow
     {
         if (_pageNavigator == null)
         {
-            _pageNavigator = new PageNavigator(Utils.GetTalkScriptable().Container);
+            var scriptable = Utils.GetTalkScriptable();
+            EditorUtility.SetDirty(scriptable);
+
+            _pageNavigator = new PageNavigator(scriptable.Container);
 
             _pageNavigator.PushPage<TalkGroupsPage>();
         }

@@ -137,6 +137,8 @@ namespace TalkSystem
         [SerializeField] private int _highlightLength;
         [SerializeField] private Color32 _color;
         [SerializeField] private HighlightAnimation _animationType;
+        [SerializeField] private WriteSpeed _writeSpeed;
+        [SerializeField] private float _normalSpeed;
 
         public int WordIndex => _wordIndex;
         public int StartLocalChar => _wordStartCharIndex;
@@ -144,14 +146,20 @@ namespace TalkSystem
 
         public Color32 Color => _color;
         public HighlightAnimation Type => _animationType;
+        public WriteSpeed WriteSpeedType => _writeSpeed;
+        public float NormalWriteSpeed => _normalSpeed;
 
-        public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color) : this(wordIndex, startChar, highlightLength, color, default) { }
+        public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color) : this(wordIndex, startChar, highlightLength, color, default, default, default) { }
 
-        public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color, HighlightAnimation type)
+        public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color, HighlightAnimation type,
+                         WriteSpeed writeSpeedType, float normalSpeed)
         {
             _wordIndex = wordIndex;
             _wordStartCharIndex = startChar;
             _highlightLength = highlightLength;
+            _writeSpeed = writeSpeedType;
+
+            _normalSpeed = normalSpeed;
 
             _color = color;
             _animationType = type;
@@ -198,6 +206,11 @@ namespace TalkSystem
             hashCode = hashCode * -1521134295 + Color.GetHashCode();
             hashCode = hashCode * -1521134295 + Type.GetHashCode();
             return hashCode;
+        }
+
+        public enum WriteSpeed
+        {
+            Default, Custom
         }
     }
 

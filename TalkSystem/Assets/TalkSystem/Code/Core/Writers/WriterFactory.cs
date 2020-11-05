@@ -11,7 +11,6 @@ namespace TalkSystem
     public class WriterFactory 
     {
         private Dictionary<Type, WriterBase> _writers;
-        private WriterBase _writer;
 
         public WriterFactory(MonoBehaviour mono, Action onPageWriten)
         {
