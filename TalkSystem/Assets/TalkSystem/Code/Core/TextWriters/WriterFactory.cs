@@ -20,8 +20,8 @@ namespace TalkSystem
             var instant = new InstantWriter(mono, _animationControl);
             var charByChar = new CharByCharWriter(mono, _animationControl);
 
-            instant.OnPageWriten += onPageWriten;
-            charByChar.OnPageWriten += onPageWriten;
+            instant.OnPageWritten += onPageWriten;
+            charByChar.OnPageWritten += onPageWriten;
 
             _writers = new Dictionary<Type, WriterBase>()
             {

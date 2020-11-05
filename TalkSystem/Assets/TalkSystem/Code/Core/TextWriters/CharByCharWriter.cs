@@ -32,7 +32,7 @@ namespace TalkSystem
 {
     public class CharByCharWriter : WriterBase
     {
-        public override event Action OnPageWriten;
+        public override event Action OnPageWritten;
 
         public CharByCharWriter(MonoBehaviour mono, TextAnimationControl animationControl) : base(mono, animationControl) { }
 
@@ -105,7 +105,7 @@ namespace TalkSystem
                 }
             }
 
-            OnPageWriten?.Invoke();
+            OnPageWritten?.Invoke();
         }
     }
 }

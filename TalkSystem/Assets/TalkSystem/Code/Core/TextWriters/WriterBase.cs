@@ -16,7 +16,7 @@ namespace TalkSystem
 
     public abstract class WriterBase
     {
-        public abstract event Action OnPageWriten;
+        public abstract event Action OnPageWritten;
 
         private TextControl _control;
         protected TextControl Control => _control;

@@ -10,7 +10,7 @@ namespace TalkSystem
 {
     public class InstantWriter : WriterBase
     {
-        public override event Action OnPageWriten;
+        public override event Action OnPageWritten;
 
         public InstantWriter(MonoBehaviour mono, TextAnimationControl textAnimationControl) : base(mono, textAnimationControl) { }
 
@@ -76,7 +76,7 @@ namespace TalkSystem
                 }
             }
 
-            OnPageWriten?.Invoke();
+            OnPageWritten?.Invoke();
 
             yield return null;
         }
