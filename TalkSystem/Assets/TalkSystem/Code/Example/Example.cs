@@ -50,7 +50,7 @@ namespace TalkSystem
                 
                 if (!Talk.Inst.IsTalking)
                 {
-                    Talk.Inst.StartTalk(_talkCloud, "Default", "Different", "Saying Hi!", Handler);
+                    Talk.Inst.StartTalk(_talkCloud, "Default", "SubGroup", "Talk1", Handler);
                 }
                 else
                 {
@@ -62,7 +62,7 @@ namespace TalkSystem
         private void Handler(TalkEvent talkEvent)
         {
             switch (talkEvent)
-            {
+            { 
                 case TalkEvent.Started:
                     _spaceText.enabled = false;
                     break;

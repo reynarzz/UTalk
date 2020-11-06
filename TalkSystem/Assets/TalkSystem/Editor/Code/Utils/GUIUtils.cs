@@ -138,12 +138,13 @@ namespace TalkSystem.Editor
         {
             int controlID = GUIUtility.GetControlID(FocusType.Keyboard);
 
-            style = EditorStyles.helpBox;
-            style.fontSize = 12;
+            //style = EditorStyles.helpBox;
+            //style.fontSize = 12;
 
             _guiContent.text = text;
             style.richText = true;
-            style.wordWrap = false;
+            style.wordWrap = true;
+            
             //gUIContent = ((GUIUtility.keyboardControl == controlID) ? _guiContent.text /*+ GUIUtility.compositionString*/ : te);
             var rect = GUILayoutUtility.GetRect(_guiContent, style, options);
 

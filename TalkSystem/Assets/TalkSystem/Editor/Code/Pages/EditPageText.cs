@@ -29,6 +29,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.Hardware;
 using UnityEngine;
 
 namespace TalkSystem.Editor
@@ -75,7 +76,7 @@ namespace TalkSystem.Editor
         {
             if (_labelStyle == null)
             {
-                _labelStyle = new GUIStyle(GUI.skin.label);
+                _labelStyle = new GUIStyle(EditorStyles.helpBox);
                 _labelStyle.active.textColor = Color.white;
                 _labelStyle.normal.textColor = Color.white;
                 _labelStyle.richText = true;
@@ -136,14 +137,11 @@ namespace TalkSystem.Editor
             {
                 GUILayout.Space(5);
 
-                // _entireScroll = GUILayout.BeginScrollView(_entireScroll);
+                _entireScroll = EditorGUILayout.BeginScrollView(_entireScroll);
+
                 //here i'm creating a new text page instance!! (TextPage was an struct before, but now this need a refactor!!!)
                 var hightligted = HighlightText(new TextPage(_currentTextPage.Text, _currentTextPage.Sprites, _currentTextPage.Event, _currentTextPage.Highlight));
                 AddRemovePageToolbar();
-
-               
-
-
 
                 var oldText = _currentTextPage.Text.ToString();
 
@@ -151,7 +149,6 @@ namespace TalkSystem.Editor
 
                 _textInfo = GUIUtils.SmartTextArea(ref text, SetToClipboard, GUILayout.MinHeight(100));
 
-               
                 TextPreview(hightligted);
 
                 _currentTextPage.Text = text;
@@ -172,12 +169,12 @@ namespace TalkSystem.Editor
                 //selected.Print();
                 //GUILayout.Space(5);
 
-                
+
 
                 PageOptions();
 
+                EditorGUILayout.EndScrollView();
 
-                //GUILayout.EndScrollView();
 
                 //TEST
                 //if (_showInfo = EditorGUILayout.Foldout(_showInfo, "Highlight Info"))
@@ -316,9 +313,9 @@ namespace TalkSystem.Editor
                 }
 
                 GUILayout.BeginVertical(EditorStyles.helpBox);
-                //GUILayout.Label("Highlights");
 
                 GUILayout.Space(4);
+                //GUILayout.HorizontalSlider(5, 0, 10, GUI.skin.horizontalScrollbar, GUI.skin.button);
                 _scrollView = GUILayout.BeginScrollView(_scrollView, true, false, GUI.skin.horizontalScrollbar, GUIStyle.none, GUILayout.MinHeight(130));
 
                 GUILayout.BeginHorizontal();
@@ -409,17 +406,18 @@ namespace TalkSystem.Editor
 
         private void TextPreview(string text)
         {
+            GUILayout.Space(5);
             GUILayout.BeginHorizontal();
             GUILayout.Label("Preview");
             //_backgroundColor = EditorGUILayout.ColorField(_backgroundColor, GUILayout.MaxWidth(100));
 
             GUILayout.EndHorizontal();
 
-            var rect = GUILayoutUtility.GetRect(Screen.width, 100, EditorStyles.helpBox);
+            //var rect = GUILayoutUtility.GetRect(Screen.width, 100, EditorStyles.helpBox);
 
-            EditorGUI.DrawRect(rect, _backgroundColor);
+            //EditorGUI.DrawRect(rect, _backgroundColor);
 
-            GUI.Label(rect, text, _labelStyle);
+            GUILayout.Label(/*rect,*/ text, _labelStyle);
         }
 
         private void PageOptions()

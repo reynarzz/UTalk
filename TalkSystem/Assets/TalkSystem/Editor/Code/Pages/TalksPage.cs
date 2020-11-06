@@ -129,7 +129,8 @@ namespace TalkSystem.Editor
         {
             Context.ShowCreateTalk(TalkEditorWindow.Position, "Talk", _subGroupsList, (sGroup, tName) =>
             {
-                if(_dataContainer.ContainsTalk(_talkData.GroupName, sGroup, tName, _talkData.Language))
+                Debug.Log("Talk name: " + tName);
+                if(!_dataContainer.ContainsTalk(_talkData.GroupName, sGroup, tName, _talkData.Language))
                 {
                     var hadSubGroup = _dataContainer.CreateTalkData(_talkData.GroupName, sGroup, tName, _talkData.Language);
 
