@@ -33,11 +33,8 @@ public class TalkEditorWindow : EditorWindow
             _pageNavigator = new PageNavigator(_scriptable.Container);
 
             _pageNavigator.PushPage<TalkGroupsPage>();
-            Undo.undoRedoPerformed += OnUndoRedoPerform;
         }
     }
-
-    
 
     public void OnGUI()
     {
@@ -47,21 +44,15 @@ public class TalkEditorWindow : EditorWindow
 
         _pageNavigator.OnGUI();
 
+        EditorUndoRedo.GUI();
+
         Repaint();
-    }
+    } 
 
-    private void OnUndoRedoPerform()
+    public static void RecordToUndo(string name)
     {
-        Debug.Log("Undo");
-        //Undo.PerformUndo();
-    }
+        Undo.SetCurrentGroupName(name);
 
-    public static void RecordUndo(string undoName)
-    {
-        Undo.RegisterCompleteObjectUndo(_scriptable, undoName);
-
-        //Debug.Log("Record: " + undoName);
-        //Undo.RecordObject(_scriptable, undoName);
-        //Undo.IncrementCurrentGroup();
+        Undo.RecordObject(_scriptable, _scriptable.name);
     }
 }

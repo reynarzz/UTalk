@@ -117,6 +117,24 @@ namespace TalkSystem
         public OffsetStartPos OffsetType { get => _offsetType; set => _offsetType = value; }
         public CharByCharAnimation AnimationType { get => _animationType; set => _animationType = value; }
         public float Offset { get => _offset; set => _offset = value; }
+
+        public static bool operator ==(CharByCharInfo a, CharByCharInfo b)
+        {
+            return a._animationType == b._animationType &&
+                   a._fastWriteSpeed == b._fastWriteSpeed &&
+                   a._normalWriteSpeed == b._normalWriteSpeed &&
+                   a._offset == b._offset &&
+                   a._offsetType == b._offsetType;
+        }
+
+        public static bool operator !=(CharByCharInfo a, CharByCharInfo b)
+        {
+            return a._animationType != b._animationType ||
+                  a._fastWriteSpeed != b._fastWriteSpeed ||
+                  a._normalWriteSpeed != b._normalWriteSpeed ||
+                  a._offset != b._offset ||
+                  a._offsetType != b._offsetType;
+        }
     }
 
     [Serializable]
@@ -124,6 +142,16 @@ namespace TalkSystem
     {
         [SerializeField] private TextAnimation _TextAnimation;
         public TextAnimation TextAnimation { get => _TextAnimation; set => _TextAnimation = value; }
+
+        public static bool operator ==(InstantInfo a, InstantInfo b)
+        {
+            return a._TextAnimation == b._TextAnimation;
+        }
+
+        public static bool operator !=(InstantInfo a, InstantInfo b)
+        {
+            return a._TextAnimation != b._TextAnimation;
+        }
     }
 
     [Serializable]
@@ -161,6 +189,28 @@ namespace TalkSystem
         public List<Sprite> Sprites => _sprites;
         #endregion
 
+        public TextPage GetDeepCopy()
+        {
+            var copyPage = MemberwiseClone() as TextPage;
+
+            copyPage._sprites = new List<Sprite>();
+            copyPage._highlight = new SDictionary<int, Highlight>();
+
+            for (int i = 0; i < _sprites.Count; i++)
+            {
+                copyPage._sprites.Add(_sprites[i]);
+            }
+
+            for (int i = 0; i < _highlight.Count; i++)
+            {
+                var key = _highlight.ElementAt(i).Key;
+
+                copyPage._highlight.Add(key, _highlight[key]);
+            }
+
+            return copyPage;
+        }
+
         public TextPage(string text, List<Sprite> sprites)
         {
             _pageText = text;
@@ -191,6 +241,7 @@ namespace TalkSystem
 
             _charByChar = default;
         }
+
 
         //public static bool operator ==(TextPage a, TextPage b)
         //{
@@ -313,6 +364,20 @@ namespace TalkSystem
             _talkInfo = talkInfo;
 
             _pages = new List<TextPage>();
+        }
+
+        public TalkData GetDeepCopy()
+        {
+            var copy = MemberwiseClone() as TalkData;
+
+            copy._pages = new List<TextPage>();
+
+            for (int i = 0; i < _pages.Count; i++)
+            {
+                copy._pages.Add(_pages[i].GetDeepCopy());
+            }
+
+            return copy;
         }
 
         public TextPage GetPage(int pageIndex)

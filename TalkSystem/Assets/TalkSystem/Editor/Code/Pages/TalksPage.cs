@@ -78,7 +78,7 @@ namespace TalkSystem.Editor
 
             ReloadSubGroupList();
         }
-         
+
         private void ReloadSubGroupList()
         {
             _subGroupsList.Clear();
@@ -86,9 +86,9 @@ namespace TalkSystem.Editor
             _subGroupsList.Add(_default);
             _subGroupsList.Add(_custom);
 
-            for (int i = 0; i < _talkData.Talks.Count; i++)
+            for (int i = 0; i < _talkData.SubGroups.Count; i++)
             {
-                var subGroupName = _talkData.Talks.Keys.ElementAt(i);
+                var subGroupName = _talkData.SubGroups.Keys.ElementAt(i);
                 _subGroupsList.Add(subGroupName);
             }
         }
@@ -130,7 +130,7 @@ namespace TalkSystem.Editor
             Context.ShowCreateTalk(TalkEditorWindow.Position, "Talk", _subGroupsList, (sGroup, tName) =>
             {
                 Debug.Log("Talk name: " + tName);
-                if(!_dataContainer.ContainsTalk(_talkData.GroupName, sGroup, tName, _talkData.Language))
+                if (!_dataContainer.ContainsTalk(_talkData.GroupName, sGroup, tName, _talkData.Language))
                 {
                     var hadSubGroup = _dataContainer.CreateTalkData(_talkData.GroupName, sGroup, tName, _talkData.Language);
 
@@ -150,11 +150,11 @@ namespace TalkSystem.Editor
         {
             _scroll = GUILayout.BeginScrollView(_scroll);
 
-            for (int i = 0; i < _talkData.Talks.Count; i++)
+            for (int i = 0; i < _talkData.SubGroups.Count; i++)
             {
-                var key = _talkData.Talks.Keys.ElementAt(i);
+                var key = _talkData.SubGroups.Keys.ElementAt(i);
 
-                var talksOfSubGroup = _talkData.Talks[key];
+                var talksOfSubGroup = _talkData.SubGroups[key];
 
                 if (_subGroupsList.Contains(key))
                 {
@@ -170,7 +170,7 @@ namespace TalkSystem.Editor
 
                         void DeleteGroup()
                         {
-                            _talkData.Talks.Remove(key);
+                            _talkData.SubGroups.Remove(key);
                         }
 
                         return;

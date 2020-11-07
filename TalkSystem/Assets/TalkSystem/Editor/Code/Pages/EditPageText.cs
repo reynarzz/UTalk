@@ -46,14 +46,12 @@ namespace TalkSystem.Editor
         private GUIStyle _prevNextButtons;
         private GUIStyle _prevNextButtonsDisabled;
 
-
         private int _textPageIndex = 0;
 
         public event TextChanged OnTextChanged;
 
         private TextPage _currentTextPage;
         private StringBuilder _highlightedText;
-
 
         private SDictionary<int, Highlight> _temp;
         private GUIUtils.TextEditorInfo _textInfo;
@@ -157,8 +155,6 @@ namespace TalkSystem.Editor
 
                 if (_textInfo.TextLengthChanged)
                 {
-                    TalkEditorWindow.RecordUndo("OnTexChanged");
-
                     OnTextChanged(oldText, _textInfo.Text, _textInfo.AddedChars, _textInfo.CursorIndex);
                 }
 
@@ -211,6 +207,8 @@ namespace TalkSystem.Editor
             GUI.SetNextControlName("Prev");
             if (GUILayout.Button("Prev", prevSkin) && _textPageIndex > 0)
             {
+                TalkEditorWindow.RecordToUndo("go prev page");
+
                 GUI.FocusControl("Prev");
 
                 _textPageIndex--;
@@ -224,6 +222,8 @@ namespace TalkSystem.Editor
             GUI.SetNextControlName("Next");
             if (GUILayout.Button("Next", nextSkin) && _textPageIndex + 1 < _talkData.PagesCount)
             {
+                TalkEditorWindow.RecordToUndo("advance next page");
+
                 GUI.FocusControl("Next");
 
                 _textPageIndex++;
@@ -239,6 +239,9 @@ namespace TalkSystem.Editor
 
             if (GUILayout.Button("Add Page"))
             {
+                TalkEditorWindow.RecordToUndo("PageAdded");
+
+
                 _talkData.CreateEmptyPageWithLastPageOptions();
                 _textPageIndex = _talkData.PagesCount - 1;
                 _currentTextPage = _talkData.GetPage(_textPageIndex);
@@ -250,6 +253,7 @@ namespace TalkSystem.Editor
             {
                 if (_talkData.PagesCount > 1)
                 {
+                    TalkEditorWindow.RecordToUndo("DeletedPage");
                     _talkData.DeletePage(_textPageIndex);
 
                     if (_textPageIndex - 1 > -1)
@@ -299,6 +303,8 @@ namespace TalkSystem.Editor
 
                 if (!string.IsNullOrEmpty(wordsToHighlight) && GUILayout.Button($"Add Hightlight to: {wordsToHighlight}", _buttonWrapStyle))
                 {
+                    TalkEditorWindow.RecordToUndo("add highlight");
+
                     for (int i = 0; i < selectedWords.Count; i++)
                     {
                         if (!_currentTextPage.Highlight.ContainsKey(selectedWords[i].WordIndex))
@@ -347,7 +353,8 @@ namespace TalkSystem.Editor
                         GUILayout.BeginHorizontal();
                         if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
                         {
-                            TalkEditorWindow.RecordUndo("On higlight removed");
+                            TalkEditorWindow.RecordToUndo("HRemoved");
+
 
                             _currentTextPage.Highlight.Remove(wordIndex);
 
@@ -371,6 +378,12 @@ namespace TalkSystem.Editor
                             color.a = 1;
                             GUILayout.EndHorizontal();
 
+                            if (highlight.Color != color)
+                            {
+                                TalkEditorWindow.RecordToUndo("HColor");
+
+                            }
+
                             GUILayout.Space(3);
 
                             GUILayout.BeginHorizontal();
@@ -378,10 +391,22 @@ namespace TalkSystem.Editor
                             var type = (TextAnimation)EditorGUILayout.EnumPopup(highlight.Type);
                             GUILayout.EndHorizontal();
 
+                            if (highlight.Type != type)
+                            {
+                                TalkEditorWindow.RecordToUndo("HAnim");
+
+                            }
+
                             GUILayout.BeginHorizontal();
                             GUILayout.Label("Write Speed", GUILayout.MaxWidth(80));
                             var writeSpeedType = (Highlight.HighlightWriteSpeed)EditorGUILayout.EnumPopup(highlight.WriteSpeedType);
                             GUILayout.EndHorizontal();
+
+                            if (highlight.WriteSpeedType != writeSpeedType)
+                            {
+                                TalkEditorWindow.RecordToUndo("HwriteSpeedType");
+
+                            }
 
                             var normalWriteSpeed = 0f;
 
@@ -391,6 +416,11 @@ namespace TalkSystem.Editor
                                 GUILayout.Label("Speed", GUILayout.MaxWidth(70));
                                 normalWriteSpeed = EditorGUILayout.FloatField(highlight.NormalWriteSpeed);
                                 GUILayout.EndHorizontal();
+                            }
+
+                            if (highlight.NormalWriteSpeed != normalWriteSpeed)
+                            {
+                                TalkEditorWindow.RecordToUndo("HNWriteSpeed");
                             }
 
                             highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, color, type, writeSpeedType, normalWriteSpeed);
@@ -431,20 +461,44 @@ namespace TalkSystem.Editor
             GUILayout.Label("Page Options");
 
             GUILayout.BeginVertical(EditorStyles.helpBox);
-            _currentTextPage.TalkerName = EditorGUILayout.TextField("Talker Name", _currentTextPage.TalkerName);
+            var talkerName = EditorGUILayout.TextField("Talker Name", _currentTextPage.TalkerName);
             EditorGUILayout.Separator();
-            _currentTextPage.WriteType = (WriteType)EditorGUILayout.EnumPopup("Write Type", _currentTextPage.WriteType);
+            var writerType = (WriteType)EditorGUILayout.EnumPopup("Write Type", _currentTextPage.WriteType);
 
-            switch (_currentTextPage.WriteType)
+            switch (writerType)
             {
                 case WriteType.Instant:
-                    _currentTextPage.CharByCharInfo = default;
+                    if (_currentTextPage.CharByCharInfo != default)
+                    {
+                        TalkEditorWindow.RecordToUndo("char by char default");
+                        _currentTextPage.CharByCharInfo = default;
+                    }
                     InstantInfoPageOpt();
                     break;
                 case WriteType.CharByChar:
-                    _currentTextPage.InstantInfo = default;
+                    if (_currentTextPage.InstantInfo != default)
+                    {
+                        TalkEditorWindow.RecordToUndo("set instant default");
+
+                        _currentTextPage.InstantInfo = default;
+
+                    }
                     CharByCharPageOpt();
                     break;
+            }
+
+            if (_currentTextPage.WriteType != writerType)
+            {
+                TalkEditorWindow.RecordToUndo("writer name");
+
+                _currentTextPage.WriteType = writerType;
+            }
+
+            if (_currentTextPage.TalkerName != talkerName)
+            {
+                TalkEditorWindow.RecordToUndo("Talker name " + talkerName);
+
+                _currentTextPage.TalkerName = talkerName;
             }
 
             EditorGUILayout.Separator();
@@ -465,6 +519,8 @@ namespace TalkSystem.Editor
             GUILayout.Space(10);
             if (GUILayout.Button("Add"))
             {
+                TalkEditorWindow.RecordToUndo("add sprite");
+
                 _currentTextPage.Sprites.Add(default);
             }
 
@@ -489,6 +545,8 @@ namespace TalkSystem.Editor
 
                     if (GUILayout.Button("Remove", GUILayout.MaxWidth(60)))
                     {
+                        TalkEditorWindow.RecordToUndo("remove sprite");
+
                         _currentTextPage.Sprites.RemoveAt(i);
                         break;
                     }
@@ -509,7 +567,13 @@ namespace TalkSystem.Editor
         {
             var instantInfo = _currentTextPage.InstantInfo;
 
-            instantInfo.TextAnimation = (TextAnimation)EditorGUILayout.EnumPopup("Animation", instantInfo.TextAnimation);
+            var animType = (TextAnimation)EditorGUILayout.EnumPopup("Animation", instantInfo.TextAnimation);
+
+            if (instantInfo.TextAnimation != animType)
+            {
+                TalkEditorWindow.RecordToUndo("n write speed");
+                instantInfo.TextAnimation = animType;
+            }
 
             _currentTextPage.InstantInfo = instantInfo;
         }
@@ -527,13 +591,41 @@ namespace TalkSystem.Editor
                     charByCharWriteInfo.OffsetType = default;
                     break;
                 case CharByCharInfo.CharByCharAnimation.OffsetToPos:
-                    charByCharWriteInfo.OffsetType = (CharByCharInfo.OffsetStartPos)EditorGUILayout.EnumPopup("Start Pos", charByCharWriteInfo.OffsetType);
-                    charByCharWriteInfo.Offset = EditorGUILayout.FloatField("Offset", charByCharWriteInfo.Offset);
+                    var offsetType = (CharByCharInfo.OffsetStartPos)EditorGUILayout.EnumPopup("Start Pos", charByCharWriteInfo.OffsetType);
+
+                    if (charByCharWriteInfo.OffsetType != offsetType)
+                    {
+                        TalkEditorWindow.RecordToUndo("Offset type");
+
+                        charByCharWriteInfo.OffsetType = offsetType;
+                    }
+
+
+                    var offsetValue = EditorGUILayout.FloatField("Offset", charByCharWriteInfo.Offset);
+
+                    if (charByCharWriteInfo.Offset != offsetValue)
+                    {
+                        TalkEditorWindow.RecordToUndo("Offset Value");
+                        charByCharWriteInfo.Offset = offsetValue;
+                    }
+
                     break;
             }
 
-            charByCharWriteInfo.NormalWriteSpeed = EditorGUILayout.FloatField("Normal write delay ", charByCharWriteInfo.NormalWriteSpeed);
-            charByCharWriteInfo.FastWriteSpeed = EditorGUILayout.FloatField("Fast write delay ", charByCharWriteInfo.FastWriteSpeed);
+            var normalWriteSpeed = EditorGUILayout.FloatField("Normal write delay ", charByCharWriteInfo.NormalWriteSpeed);
+            var fastWriteSpeed = EditorGUILayout.FloatField("Fast write delay ", charByCharWriteInfo.FastWriteSpeed);
+
+            if (charByCharWriteInfo.NormalWriteSpeed != normalWriteSpeed)
+            {
+                TalkEditorWindow.RecordToUndo("n write speed");
+                charByCharWriteInfo.NormalWriteSpeed = normalWriteSpeed;
+            }
+
+            if (charByCharWriteInfo.FastWriteSpeed != fastWriteSpeed)
+            {
+                TalkEditorWindow.RecordToUndo("f write speed");
+                charByCharWriteInfo.FastWriteSpeed = fastWriteSpeed;
+            }
 
             _currentTextPage.CharByCharInfo = charByCharWriteInfo;
         }
@@ -548,6 +640,9 @@ namespace TalkSystem.Editor
             //removes duplicated white spaces.
             //oldText = Regex.Replace(oldText, @"\s+", " ");
             //newText = Regex.Replace(newText, @"\s+", " ");
+
+            //TalkEditorWindow.RecordUndo("OnTexChanged");
+            TalkEditorWindow.RecordToUndo("thing1");
 
             if (charAdded)
             {

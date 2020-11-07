@@ -26,6 +26,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace TalkSystem
 {
@@ -39,6 +40,22 @@ namespace TalkSystem
         {
             _groups = new SDictionary<string, TalksGroupData>();
         }
+
+        public TalkGroupsByNameData GetDeepCopy()
+        {
+            var copy = MemberwiseClone() as TalkGroupsByNameData;
+
+            copy._groups = new SDictionary<string, TalksGroupData>();
+
+            for (int i = 0; i < _groups.Count; i++)
+            {
+                var key = _groups.ElementAt(i).Key;
+
+                copy._groups.Add(key, _groups[key].GetDeepCopy());
+            }
+
+            return copy;
+        }
     }
 
     [Serializable]
@@ -49,7 +66,7 @@ namespace TalkSystem
         [SerializeField] private SDictionary<string, TalksSubGroupsData> _talks; //K: SubGroup, V: Talks
 
         public Language Language => _language;
-        public SDictionary<string, TalksSubGroupsData> Talks => _talks;
+        public SDictionary<string, TalksSubGroupsData> SubGroups => _talks;
         public string GroupName { get => _groupName; set => _groupName = value; }
 
         public TalksGroupData(string name, Language language, SDictionary<string, TalksSubGroupsData> talkDictionary)
@@ -57,6 +74,22 @@ namespace TalkSystem
             _groupName = name;
             _language = language;
             _talks = talkDictionary;
+        }
+
+        public TalksGroupData GetDeepCopy()
+        {
+            var copy = MemberwiseClone() as TalksGroupData;
+
+            copy._talks = new SDictionary<string, TalksSubGroupsData>();
+
+            for (int i = 0; i < _talks.Count; i++)
+            {
+                var key = _talks.ElementAt(i).Key;
+
+                copy._talks.Add(key, _talks[key].GetDeepCopy());
+            }
+
+            return copy;
         }
 
         [Serializable]
@@ -68,6 +101,20 @@ namespace TalkSystem
             public TalksSubGroupsData()
             {
                 _talks = new List<TalkData>();
+            }
+
+            public TalksSubGroupsData GetDeepCopy()
+            {
+                var copy = MemberwiseClone() as TalksSubGroupsData;
+
+                copy._talks = new List<TalkData>();
+
+                for (int i = 0; i < _talks.Count; i++)
+                {
+                    copy._talks.Add(_talks[i].GetDeepCopy());
+                }
+
+                return copy;
             }
         }
     }
@@ -82,11 +129,25 @@ namespace TalkSystem
 
         [SerializeField] private SDictionary<Language, TalkGroupsByNameData> _groups;
 
-        public List<List<string>> Groups { get; set; }
-
         public TalkDataContainer()
         {
             _groups = new SDictionary<Language, TalkGroupsByNameData>();
+        }
+
+        public TalkDataContainer GetDeepCopy()
+        {
+            var copy = MemberwiseClone() as TalkDataContainer;
+
+            copy._groups = new SDictionary<Language, TalkGroupsByNameData>();
+
+            for (int i = 0; i < _groups.Count; i++)
+            {
+                var key = _groups.ElementAt(i).Key;
+
+                copy._groups.Add(key, _groups[key].GetDeepCopy());
+            }
+
+            return copy;
         }
 
         public TalkData GetTalkAsset(TalkInfo talkInfo)
@@ -98,7 +159,7 @@ namespace TalkSystem
 
                 if (groups.ContainsKey(talkInfo.GroupName))
                 {
-                    var talks = groups[talkInfo.GroupName].Talks;
+                    var talks = groups[talkInfo.GroupName].SubGroups;
 
                     if (talks.ContainsKey(talkInfo.SubGroupName))
                     {
@@ -147,7 +208,7 @@ namespace TalkSystem
         /// <returns></returns>
         public bool CreateTalkData(string groupName, string subGroup, string talkName, Language language)
         {
-            var subGroupTalks = _groups[language].Groups[groupName].Talks;
+            var subGroupTalks = _groups[language].Groups[groupName].SubGroups;
 
             var talk = new TalkData(new TalkInfo(groupName, subGroup, talkName, language));
             talk.CreateEmptyPage();
@@ -170,7 +231,7 @@ namespace TalkSystem
 
         public bool ContainsTalk(string groupName, string subGroup, string talkName, Language language)
         {
-            var subGroupTalks = _groups[language].Groups[groupName].Talks;
+            var subGroupTalks = _groups[language].Groups[groupName].SubGroups;
 
             if (subGroupTalks.ContainsKey(subGroup))
             {
@@ -255,5 +316,7 @@ namespace TalkSystem
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

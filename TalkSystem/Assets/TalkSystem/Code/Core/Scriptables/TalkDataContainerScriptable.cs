@@ -41,6 +41,5 @@ namespace TalkSystem
         [SerializeField] private TalkDataContainer _talkDataContainer;
 
         public TalkDataContainer Container => _talkDataContainer;
-
     }
 }

@@ -36,107 +36,15 @@ MonoBehaviour:
                   _subGroup: 
                   _group: 
                   _pages:
-                  - _pageText: A talk system that highlights words in your paragraphs
-                      very easy.
-                    _talkerName: A Name
-                    _sprites:
-                    - {fileID: 21300000, guid: 87d289e356c3c9a49b503236bac67256, type: 3}
+                  - _pageText: 'as 2 asd asd fasd asdasd '
+                    _talkerName: ada342
+                    _sprites: []
                     _highlight:
-                      _keys: 040000000000000001000000020000000300000005000000060000000700000008000000090000000a000000
+                      _keys: 04000000
                       _values:
                       - _wordIndex: 4
                         _wordStartCharIndex: 0
-                        _highlightLength: 10
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4278190335
-                        _animationType: 0
-                        _writeSpeed: 1
-                        _normalSpeed: 0
-                      - _wordIndex: 0
-                        _wordStartCharIndex: 0
-                        _highlightLength: 1
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4294967295
-                        _animationType: 0
-                        _writeSpeed: 0
-                        _normalSpeed: 0
-                      - _wordIndex: 1
-                        _wordStartCharIndex: 0
                         _highlightLength: 4
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4294967295
-                        _animationType: 0
-                        _writeSpeed: 0
-                        _normalSpeed: 0
-                      - _wordIndex: 2
-                        _wordStartCharIndex: 0
-                        _highlightLength: 6
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4294967295
-                        _animationType: 0
-                        _writeSpeed: 0
-                        _normalSpeed: 0
-                      - _wordIndex: 3
-                        _wordStartCharIndex: 0
-                        _highlightLength: 4
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4294967295
-                        _animationType: 0
-                        _writeSpeed: 0
-                        _normalSpeed: 0
-                      - _wordIndex: 5
-                        _wordStartCharIndex: 0
-                        _highlightLength: 5
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4294967295
-                        _animationType: 0
-                        _writeSpeed: 0
-                        _normalSpeed: 0
-                      - _wordIndex: 6
-                        _wordStartCharIndex: 0
-                        _highlightLength: 2
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4294967295
-                        _animationType: 0
-                        _writeSpeed: 0
-                        _normalSpeed: 0
-                      - _wordIndex: 7
-                        _wordStartCharIndex: 0
-                        _highlightLength: 4
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4294967295
-                        _animationType: 0
-                        _writeSpeed: 0
-                        _normalSpeed: 0
-                      - _wordIndex: 8
-                        _wordStartCharIndex: 0
-                        _highlightLength: 10
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4294967295
-                        _animationType: 0
-                        _writeSpeed: 0
-                        _normalSpeed: 0
-                      - _wordIndex: 9
-                        _wordStartCharIndex: 0
-                        _highlightLength: 4
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4294967295
-                        _animationType: 0
-                        _writeSpeed: 0
-                        _normalSpeed: 0
-                      - _wordIndex: 10
-                        _wordStartCharIndex: 0
-                        _highlightLength: 5
                         _color:
                           serializedVersion: 2
                           rgba: 4294967295
