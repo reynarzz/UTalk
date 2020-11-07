@@ -82,6 +82,7 @@ namespace TalkSystem.Editor
                 _labelStyle.richText = true;
                 _labelStyle.wordWrap = true;
                 _labelStyle.alignment = TextAnchor.UpperLeft;
+                _labelStyle.fontSize = 12;
 
                 _buttonWrapStyle = new GUIStyle(GUI.skin.button);
                 _buttonWrapStyle.wordWrap = true;
@@ -149,12 +150,15 @@ namespace TalkSystem.Editor
 
                 _textInfo = GUIUtils.SmartTextArea(ref text, SetToClipboard, GUILayout.MinHeight(100));
 
+                EditorGUILayout.Separator();
                 TextPreview(hightligted);
 
                 _currentTextPage.Text = text;
 
                 if (_textInfo.TextLengthChanged)
                 {
+                    TalkEditorWindow.RecordUndo("OnTexChanged");
+
                     OnTextChanged(oldText, _textInfo.Text, _textInfo.AddedChars, _textInfo.CursorIndex);
                 }
 
@@ -316,7 +320,7 @@ namespace TalkSystem.Editor
 
                 GUILayout.Space(4);
                 //GUILayout.HorizontalSlider(5, 0, 10, GUI.skin.horizontalScrollbar, GUI.skin.button);
-                _scrollView = GUILayout.BeginScrollView(_scrollView, true, false, GUI.skin.horizontalScrollbar, GUIStyle.none, GUILayout.MinHeight(130));
+                _scrollView = GUILayout.BeginScrollView(_scrollView, GUILayout.MinHeight(135), GUILayout.ExpandHeight(true));
 
                 GUILayout.BeginHorizontal();
 
@@ -343,6 +347,8 @@ namespace TalkSystem.Editor
                         GUILayout.BeginHorizontal();
                         if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
                         {
+                            TalkEditorWindow.RecordUndo("On higlight removed");
+
                             _currentTextPage.Highlight.Remove(wordIndex);
 
                             GUILayout.EndHorizontal();
@@ -393,7 +399,7 @@ namespace TalkSystem.Editor
                         }
 
                         GUILayout.EndVertical();
-                        GUILayout.Space(4);
+                        //GUILayout.Space(4);
 
                     }
                 }

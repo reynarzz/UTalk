@@ -12,9 +12,9 @@ namespace TalkSystem
     {
         public override event Action OnPageWritten;
 
-        public InstantWriter(MonoBehaviour mono, TextAnimationControl textAnimationControl) : base(mono, textAnimationControl) { }
+        public InstantWriter(MonoBehaviour mono, TextAnimationControl animationControl) : base(mono, animationControl) { }
 
-        protected override IEnumerator Write(TextControl control, TextPage page, TextAnimationControl textAnimationControl)
+        protected override IEnumerator Write(TextControl control, TextPage page, TextAnimationControl animationControl)
         {
             var wordIndex = 0;
             var whiteSpacesCount = -1;
@@ -30,23 +30,39 @@ namespace TalkSystem
                     var highlightLength = highlight.HighlighLength;
                     var startChar = highlight.StartLocalChar;
 
+
+                    var prevWriteSpeed = WriteSpeedType;
+
+                    //Set default color to chars not colored by the highlight color.
+                    for (int j = 0; j < startChar; j++)
+                    {
+                        var charIndex = i + j;
+
+                        control.ShowChar(charIndex);
+                    }
+
                     i += startChar;
 
                     for (int j = 0; j < highlightLength; j++)
                     {
-                        control.ShowChar(i + j, highlight.Color);
-                        textAnimationControl.HighlightedChar(i + j, highlight);
+                        var charIndex = i + j;
+
+                        control.ShowChar(charIndex, highlight.Color);
+                        animationControl.HighlightedChar(charIndex, highlight);
+
                     }
+
+                    SetWriteTypeSpeed(prevWriteSpeed);
 
                     var target = i + highlightLength;
 
-                    //When is could be possible to write normal chars in a highlighted word
+                    //When it could be possible to write normal chars in a highlighted word
                     while (page.Text.ElementAtOrDefault(i).IsValidChar())
                     {
                         if (i >= target)
                         {
                             control.ShowChar(i);
-                            textAnimationControl.NormalChar(i);
+                            animationControl.NormalChar(i);
                         }
 
                         i++;
@@ -60,12 +76,14 @@ namespace TalkSystem
                     while (page.Text.ElementAtOrDefault(i).IsValidChar())
                     {
                         control.ShowChar(i);
-                        textAnimationControl.NormalChar(i);
+                        animationControl.NormalChar(i);
 
                         i++;
-
-                        whiteSpacesCount = 0;
                     }
+
+                    //Only if the next char is the start of a word.
+                    if (page.Text.ElementAtOrDefault(i + 1).IsValidChar())
+                        whiteSpacesCount = 0;
                 }
 
                 whiteSpacesCount++;
@@ -78,7 +96,7 @@ namespace TalkSystem
 
             OnPageWritten?.Invoke();
 
-            yield return null;
+            yield break;
         }
     }
 }

@@ -42,6 +42,8 @@ namespace TalkSystem
                     sine.AddChar(charIndex);
                     break;
             }
+
+            NormalChar(charIndex);
         }
 
         public void NormalChar(int charIndex)

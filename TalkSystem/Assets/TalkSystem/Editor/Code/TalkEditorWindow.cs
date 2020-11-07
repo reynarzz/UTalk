@@ -11,6 +11,8 @@ public class TalkEditorWindow : EditorWindow
     private PageNavigator _pageNavigator;
     public static Rect Position;
 
+    private static TalkSystem.TalkDataContainerScriptable _scriptable;
+
     [MenuItem("Window/TalkEditor")]
     private static void Open()
     {
@@ -25,14 +27,17 @@ public class TalkEditorWindow : EditorWindow
     {
         if (_pageNavigator == null)
         {
-            var scriptable = Utils.GetTalkScriptable();
-            EditorUtility.SetDirty(scriptable);
+            _scriptable = Utils.GetTalkScriptable();
+            EditorUtility.SetDirty(_scriptable);
 
-            _pageNavigator = new PageNavigator(scriptable.Container);
+            _pageNavigator = new PageNavigator(_scriptable.Container);
 
             _pageNavigator.PushPage<TalkGroupsPage>();
+            Undo.undoRedoPerformed += OnUndoRedoPerform;
         }
     }
+
+    
 
     public void OnGUI()
     {
@@ -41,5 +46,22 @@ public class TalkEditorWindow : EditorWindow
         Position = new Rect(position.x + Screen.width / 2, position.y + Screen.height / 2, position.width, position.height);
 
         _pageNavigator.OnGUI();
+
+        Repaint();
+    }
+
+    private void OnUndoRedoPerform()
+    {
+        Debug.Log("Undo");
+        //Undo.PerformUndo();
+    }
+
+    public static void RecordUndo(string undoName)
+    {
+        Undo.RegisterCompleteObjectUndo(_scriptable, undoName);
+
+        //Debug.Log("Record: " + undoName);
+        //Undo.RecordObject(_scriptable, undoName);
+        //Undo.IncrementCurrentGroup();
     }
 }

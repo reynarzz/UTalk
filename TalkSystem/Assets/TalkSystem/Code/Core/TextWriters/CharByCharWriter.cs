@@ -55,37 +55,46 @@ namespace TalkSystem
                     var highlightLength = highlight.HighlighLength;
                     var startChar = highlight.StartLocalChar;
 
-                    i += startChar;
 
                     var prevWriteSpeed = WriteSpeedType;
+
+                    //Set default color to chars not colored by the highlight color.
+                    for (int j = 0; j < startChar; j++)
+                    {
+                        var charIndex = i + j;
+                     
+                        control.ShowChar(charIndex);
+                    }
+
+                    i += startChar;
 
                     for (int j = 0; j < highlightLength; j++)
                     {
                         var charIndex = i + j;
+
                         control.ShowChar(charIndex, highlight.Color);
                         animationControl.HighlightedChar(charIndex, highlight);
 
-                        //REMOVE THIS!! this is fix for the sine animation (continuous) but i have to find a way, maybe not moving the entire rectTransform, but the chars
-                        animationControl.NormalChar(charIndex);
+                        yield return WriteSpeed;
 
-                        if (highlight.WriteSpeedType == Highlight.HighlightWriteSpeed.Default || WriteSpeedType == WriteSpeedType.Fast)
-                        {
-                            yield return WriteSpeed;
-                            prevWriteSpeed = WriteSpeedType;
+                        //if (highlight.WriteSpeedType == Highlight.HighlightWriteSpeed.Default || WriteSpeedType == WriteSpeedType.Fast)
+                        //{
+                        //    yield return WriteSpeed;
+                        //    prevWriteSpeed = WriteSpeedType;
 
-                            continue;
-                        }
-                        else if (!_hightlightWriteSpeed)
-                        {
-                            _hightlightWriteSpeed = true;
+                        //    continue;
+                        //}
+                        //else if (!_hightlightWriteSpeed)
+                        //{
+                        //    _hightlightWriteSpeed = true;
 
-                            WriteSpeed = new WaitForSeconds(highlight.NormalWriteSpeed);
-                        }
+                        //    WriteSpeed = new WaitForSeconds(highlight.NormalWriteSpeed);
+                        //}
 
-                        if (highlight.WriteSpeedType == Highlight.HighlightWriteSpeed.Custom)
-                        {
-                            yield return WriteSpeed;
-                        }
+                        //if (highlight.WriteSpeedType == Highlight.HighlightWriteSpeed.Custom)
+                        //{
+                        //    yield return WriteSpeed;
+                        //}
                     }
 
                     SetWriteTypeSpeed(prevWriteSpeed);
@@ -93,7 +102,7 @@ namespace TalkSystem
 
                     var target = i + highlightLength;
 
-                    //When is could be possible to write normal chars in a highlighted word
+                    //When it could be possible to write normal chars in a highlighted word
                     while (page.Text.ElementAtOrDefault(i).IsValidChar())
                     {
                         if (i >= target)
@@ -119,11 +128,16 @@ namespace TalkSystem
                         animationControl.NormalChar(i);
 
                         if (WriteSpeedType == WriteSpeedType.Normal || WriteSpeedType == WriteSpeedType.Fast && page.CharByCharInfo.FastWriteSpeed > 0)
+                        {
                             yield return WriteSpeed;
-                        i++;
+                        }
 
-                        whiteSpacesCount = 0;
+                        i++;
                     }
+
+                    //Only if the next char is the start of a word.
+                    if (page.Text.ElementAtOrDefault(i + 1).IsValidChar())
+                        whiteSpacesCount = 0;
                 }
 
                 whiteSpacesCount++;

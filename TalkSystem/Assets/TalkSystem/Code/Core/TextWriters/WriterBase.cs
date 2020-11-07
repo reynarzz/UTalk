@@ -102,7 +102,7 @@ namespace TalkSystem
                     break;
             }
         }
-        
+
         public void OnLanguageChanged(TextPage textPage)
         {
 

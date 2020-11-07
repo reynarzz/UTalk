@@ -140,6 +140,14 @@ namespace TalkSystem
         [SerializeField] private CharByCharInfo _charByChar;
         [SerializeField] private InstantInfo _instantInfo;
 
+        //public struct PageInfo
+        //{
+        //    [SerializeField] private CharByCharInfo _charByChar;
+        //    [SerializeField] private InstantInfo _instantInfo;
+
+
+        //}
+
         public string Text { get => _pageText; set => _pageText = value; }
         public string TalkerName { get => _talkerName; set => _talkerName = value; }
         public SDictionary<int, Highlight> Highlight => _highlight;

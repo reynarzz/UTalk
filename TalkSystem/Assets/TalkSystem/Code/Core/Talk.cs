@@ -244,6 +244,7 @@ namespace TalkSystem
         }
 
         //Call it when a talk is running and the language in changed, to update the cloud talk with the new text.
+        /// <summary>When the language is changing.</summary>
         public void SetTalkOnLanguageChanged(TalkInfo info)
         {
             if (_scriptableContainer)

@@ -30,7 +30,7 @@ using UnityEngine.UI;
 
 namespace TalkSystem
 {
-    public class TalkCloud : TalkCloudBase
+    public class TalkCloud : ConverzationCloud
     {
         //Use tween instead for more performance.
         [SerializeField] private Animator _animator;
@@ -44,24 +44,26 @@ namespace TalkSystem
 
         public override void OnCloseCloud()
         {
+            base.OnCloseCloud();
+            
             _animator.Play("Hide");
         }
 
         //A = Animation, this is called from a frame in the animation window.
         private void A_OnCloudShown()
         {
-            OnCloudShow();
+            OnCloudFullyShown();
         }
 
         //A = Animation, this is called from a frame in the animation window.
         private void A_OnCloudHidden()
         {
-            OnCloudHidde();
+            OnCloudFullyHidden();
         }
 
-        protected override void OnPageChanged(string talkerName, int pageIndex, int maxPages)
+        protected override void OnPageSet(string talkerName, int pageIndex, int maxPages)
         {
-            //Debug.Log("Page changed");
+
         }
     }
 }
