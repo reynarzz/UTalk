@@ -15,14 +15,16 @@ namespace TalkSystem
 
         public override void Update()
         {
-            if (CharIndexesToAnimate.Count > 0)
+            if (CharsToAnimateCount > 0)
             {
-                for (int i = 0; i < CharIndexesToAnimate.Count; i++)
+                for (int i = 0; i < CharsToAnimateCount; i++)
                 {
-                    //this needs work, is not consistent.
-                    TextControl.OffsetChar(CharIndexesToAnimate[i], new Vector2(0, Mathf.Sin(i + Time.time * _freq) * _amp));
+                    //this needs work, is not very consistent.
+                    TextControl.OffsetChar(GetValidCharToAnimate(i), new Vector2(0, Mathf.Sin(i + Time.time * _freq) * _amp));
                 }
             }
         }
+
+        public override void OnExitPage() { }
     }
 }

@@ -13,7 +13,8 @@ namespace TalkSystem
         private TextPage _textPage;
 
         private List<int> _charIndexesToAnimate;
-        protected List<int> CharIndexesToAnimate => _charIndexesToAnimate;
+
+        protected int CharsToAnimateCount => _charIndexesToAnimate.Count;
 
         protected TextControl TextControl => _textControl;
         protected TextPage TextPage => _textPage;
@@ -28,6 +29,7 @@ namespace TalkSystem
         public virtual void Init(TextControl textControl, TextPage page)
         {
             _textControl = textControl;
+            _textPage = page;
             _charIndexesToAnimate.Clear();
         }
 
@@ -41,5 +43,12 @@ namespace TalkSystem
             //copy the list here.
             _charIndexesToAnimate = charsIndex.ToList();
         }
+
+        protected int GetValidCharToAnimate(int index)
+        {
+            return _charIndexesToAnimate.ElementAtOrDefault(index);
+        }
+
+        public abstract void OnExitPage();
     }
 }

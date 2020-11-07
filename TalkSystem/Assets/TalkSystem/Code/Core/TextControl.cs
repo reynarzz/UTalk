@@ -39,6 +39,7 @@ namespace TalkSystem
         private List<Color32> _clearColors;
 
         private Vector2 _textConstAnchoredPosition;
+        private Mesh _startingMesh;
 
         public struct CharQuad
         {
@@ -67,19 +68,23 @@ namespace TalkSystem
 
             _charVertices = new List<Vector3>();
             _clearColors = new List<Color32>();
+
+            _text.text = default;
+            _startingMesh = _text.mesh;
         }
 
         public void SetText(string text)
         {
             ClearColors();
 
-            _text.rectTransform.anchoredPosition = _textConstAnchoredPosition;
             _text.text = text;
         }
 
         public void ClearColors()
         {
             _clearColors.Clear();
+
+            _text.rectTransform.anchoredPosition = _textConstAnchoredPosition;
 
             _text.mesh.GetColors(_clearColors);
 
@@ -88,11 +93,12 @@ namespace TalkSystem
                 _clearColors[i] = Color.clear;
             }
 
+            _text.ForceMeshUpdate();
+
             _text.mesh.SetColors(_clearColors);
+            _text.canvasRenderer.SetMesh(_startingMesh);
 
-            _text.canvasRenderer.SetMesh(_text.mesh);
-
-            _text.color = Color.clear;//new Color(0,0,0, 1);
+            _text.color = Color.clear;
         }
 
         //If you change text position, you will have to update the mesh, because it will disappear!
@@ -170,6 +176,7 @@ namespace TalkSystem
         /// <summary>Call this function after setting the text, and before showing the text.</summary>
         public void ReloadCharsVertices()
         {
+            //This clears the list.
             _text.mesh.GetVertices(_charVertices);
         }
 

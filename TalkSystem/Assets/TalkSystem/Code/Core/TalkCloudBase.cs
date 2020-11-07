@@ -68,7 +68,7 @@ namespace TalkSystem
 
         /// <summary>Called everytime the page is changed.</summary>
         protected virtual void OnPageChanged(string talkerName, int pageIndex, int maxPages) { }
-
+        //All the extra behaviour should be in another class.
         public void SetPage(TextPage currentPage, int pageIndex)
         {
             ClearSprites();
@@ -135,12 +135,21 @@ namespace TalkSystem
         /// <summary>Triggers the event "OnCloudHidden"</summary>
         protected void OnCloudHidde()
         {
-            _talkerNameText.enabled = false;
+            
             OnCloudHidden?.Invoke();
         }
 
-        public abstract void ShowCloud();
-        public abstract void CloseCloud();
+        public abstract void OnShowCloud();
+        public abstract void OnCloseCloud();
+
+        /// <summary>Called when it's needed to close the talk cloud.</summary>
+        public void CloseCloud()
+        {
+            _talkerNameText.enabled = false;
+            ClearSprites();
+
+            OnCloseCloud();
+        }
 
         private void Clear()
         {

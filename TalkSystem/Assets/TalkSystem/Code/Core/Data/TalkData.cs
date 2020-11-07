@@ -63,6 +63,28 @@ namespace TalkSystem
         }
     }
 
+    [Serializable]
+    public struct TalkInfo
+    {
+        [SerializeField] private string _talkName;
+        [SerializeField] private string _groupName;
+        [SerializeField] private string _subGroupName;
+        [SerializeField] private Language _language;
+
+        public string GroupName => _groupName;
+        public string SubGroupName => _subGroupName;
+        public string TalkName => _talkName;
+        public Language Language => _language;
+
+        public TalkInfo(string groupName, string subGroupName, string talkName, Language language)
+        {
+            _groupName = groupName;
+            _subGroupName = subGroupName;
+            _talkName = talkName;
+
+            _language = language;
+        }
+    }
 
     [Serializable]
     public struct CharByCharInfo
@@ -155,7 +177,7 @@ namespace TalkSystem
         public TextPage(string text, SDictionary<int, Highlight> highlights)
         {
             _pageText = text;
-            _sprites = new List<Sprite>() { default };//test
+            _sprites = new List<Sprite>();
             _wordEvent = default;
             _highlight = highlights;
 
@@ -182,7 +204,7 @@ namespace TalkSystem
         [SerializeField] private int _highlightLength;
         [SerializeField] private Color32 _color;
         [SerializeField] private TextAnimation _animationType;
-        [SerializeField] private WriteSpeed _writeSpeed;
+        [SerializeField] private HighlightWriteSpeed _writeSpeed;
         [SerializeField] private float _normalSpeed;
 
         public int WordIndex => _wordIndex;
@@ -191,13 +213,13 @@ namespace TalkSystem
 
         public Color32 Color => _color;
         public TextAnimation Type => _animationType;
-        public WriteSpeed WriteSpeedType => _writeSpeed;
+        public HighlightWriteSpeed WriteSpeedType => _writeSpeed;
         public float NormalWriteSpeed => _normalSpeed;
 
         public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color) : this(wordIndex, startChar, highlightLength, color, default, default, default) { }
 
         public Highlight(int wordIndex, int startChar, int highlightLength, Color32 color, TextAnimation type,
-                         WriteSpeed writeSpeedType, float normalSpeed)
+                         HighlightWriteSpeed writeSpeedType, float normalSpeed)
         {
             _wordIndex = wordIndex;
             _wordStartCharIndex = startChar;
@@ -253,7 +275,7 @@ namespace TalkSystem
             return hashCode;
         }
 
-        public enum WriteSpeed
+        public enum HighlightWriteSpeed
         {
             Default, Custom
         }
@@ -262,25 +284,26 @@ namespace TalkSystem
     [Serializable]
     public class TalkData
     {
-        [SerializeField, HideInInspector] private string _talkName;
-        [SerializeField] private string _subGroup = "Default";
+        [SerializeField, HideInInspector] private TalkInfo _talkInfo;
+        [SerializeField] private string _subGroup;
+        [SerializeField] private string _group;
 
-
-        [SerializeField, HideInInspector] private Language _language;
         [SerializeField] private List<TextPage> _pages;
 
-        public string TalkName { get => _talkName; set => _talkName = value; }
-        public string SubGroup { get => _subGroup; set => _subGroup = value; }
-        public Language Language { get => _language; set => _language = value; }
+        public TalkInfo TalkInfo => _talkInfo;
+
         public int PagesCount => _pages.Count;
 
-        public TalkData(List<TextPage> pages)
+        public TalkData(TalkInfo talkInfo, List<TextPage> pages)
         {
+            _talkInfo = talkInfo;
             _pages = pages;
         }
 
-        public TalkData()
+        public TalkData(TalkInfo talkInfo)
         {
+            _talkInfo = talkInfo;
+
             _pages = new List<TextPage>();
         }
 

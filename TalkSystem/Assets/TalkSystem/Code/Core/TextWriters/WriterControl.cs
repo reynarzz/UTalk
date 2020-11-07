@@ -13,7 +13,7 @@ namespace TalkSystem
         private WriterFactory _writersFactory;
         private WriterBase _writer;
 
-        /// <summary>The current object that is writing in the text cloud.</summary>
+        /// <summary>The current object that is writing to the text cloud.</summary>
         public WriterBase Writer => _writer;
 
         public WriterControl(MonoBehaviour mono, Action onPageWriten)
@@ -21,10 +21,9 @@ namespace TalkSystem
             _writersFactory = new WriterFactory(mono, onPageWriten);
         }
 
-        public void SetPage(TextPage page, TextControl textControl)
+        public void Init(TextPage page, TextControl textControl)
         {
-            _writer = _writersFactory.GetWriter(page.WriteType);
-            _writer.Clear(textControl);
+            _writer = _writersFactory.GetWriter(page.WriteType, textControl);
         }
 
         public void Clear()

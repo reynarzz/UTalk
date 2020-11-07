@@ -190,7 +190,7 @@ namespace TalkSystem.Editor
 
                     if (GUILayout.Button("X", GUILayout.Width(40), GUILayout.MinHeight(40)))
                     {
-                        Context.Delete(TalkEditorWindow.Position, "Delete Talk", talk.TalkName, "Talk", RemoveTalk);
+                        Context.Delete(TalkEditorWindow.Position, "Delete Talk", talk.TalkInfo.TalkName, "Talk", RemoveTalk);
 
                         void RemoveTalk()
                         {
@@ -201,14 +201,19 @@ namespace TalkSystem.Editor
 
                     GUILayout.Space(7);
 
-                    if (GUILayout.Button(talk.TalkName + " | Pages: " + talk.PagesCount, _groupButtonStyle, GUILayout.MinHeight(40)))
+                    if (GUILayout.Button(talk.TalkInfo.TalkName + " | Pages: " + talk.PagesCount, _groupButtonStyle, GUILayout.MinHeight(40)))
                     {
                         var editPage = _navigator.PushPage<EditPageText>();
-                        editPage.NavigationName = talksOfSubGroup.Talks[j].TalkName;
+                        editPage.NavigationName = talksOfSubGroup.Talks[j].TalkInfo.TalkName;
 
                         editPage.SetCurrentTalkData(talksOfSubGroup.Talks[j]);
                     }
                     GUILayout.EndHorizontal();
+                }
+
+                if (string.IsNullOrEmpty(key))
+                {
+                    key = _default;
                 }
 
                 if (_subGroupsList.Contains(key))

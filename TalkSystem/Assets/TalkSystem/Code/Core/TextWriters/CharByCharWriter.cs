@@ -22,17 +22,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 namespace TalkSystem
 {
     public class CharByCharWriter : WriterBase
     {
         public override event Action OnPageWritten;
+        private bool _hightlightWriteSpeed;
 
         public CharByCharWriter(MonoBehaviour mono, TextAnimationControl animationControl) : base(mono, animationControl) { }
 
@@ -54,6 +57,8 @@ namespace TalkSystem
 
                     i += startChar;
 
+                    var prevWriteSpeed = WriteSpeedType;
+
                     for (int j = 0; j < highlightLength; j++)
                     {
                         var charIndex = i + j;
@@ -63,8 +68,28 @@ namespace TalkSystem
                         //REMOVE THIS!! this is fix for the sine animation (continuous) but i have to find a way, maybe not moving the entire rectTransform, but the chars
                         animationControl.NormalChar(charIndex);
 
-                        yield return _writeSpeed;
+                        if (highlight.WriteSpeedType == Highlight.HighlightWriteSpeed.Default || WriteSpeedType == WriteSpeedType.Fast)
+                        {
+                            yield return WriteSpeed;
+                            prevWriteSpeed = WriteSpeedType;
+
+                            continue;
+                        }
+                        else if (!_hightlightWriteSpeed)
+                        {
+                            _hightlightWriteSpeed = true;
+
+                            WriteSpeed = new WaitForSeconds(highlight.NormalWriteSpeed);
+                        }
+
+                        if (highlight.WriteSpeedType == Highlight.HighlightWriteSpeed.Custom)
+                        {
+                            yield return WriteSpeed;
+                        }
                     }
+
+                    SetWriteTypeSpeed(prevWriteSpeed);
+                    _hightlightWriteSpeed = false;
 
                     var target = i + highlightLength;
 
@@ -75,7 +100,9 @@ namespace TalkSystem
                         {
                             control.ShowChar(i);
                             animationControl.NormalChar(i);
-                            yield return _writeSpeed;
+
+                            if(WriteSpeedType == WriteSpeedType.Normal || WriteSpeedType == WriteSpeedType.Fast && page.CharByCharInfo.FastWriteSpeed > 0)
+                            yield return WriteSpeed;
                         }
 
                         i++;
@@ -90,7 +117,9 @@ namespace TalkSystem
                     {
                         control.ShowChar(i);
                         animationControl.NormalChar(i);
-                        yield return _writeSpeed;
+
+                        if (WriteSpeedType == WriteSpeedType.Normal || WriteSpeedType == WriteSpeedType.Fast && page.CharByCharInfo.FastWriteSpeed > 0)
+                            yield return WriteSpeed;
                         i++;
 
                         whiteSpacesCount = 0;

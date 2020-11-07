@@ -36,26 +36,28 @@ namespace TalkSystem
 
         [SerializeField] private TextMeshProUGUI _spaceText;
 
-        public string Name => name;
-        
-        private void Awake()
-        {
-        }
-
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Talk.Inst.Language = Language.English;
                 
                 if (!Talk.Inst.IsTalking)
                 {
-                    Talk.Inst.StartTalk(_talkCloud, "Default", "SubGroup", "Talk1", Handler);
+                    Talk.Inst.StartTalk(_talkCloud, new TalkInfo("Default", "SubGroup", "Talk1", Language.English), Handler);
                 }
                 else
                 {
-                    Talk.Inst.NextPage();
+                    var movedToNextPage = Talk.Inst.NextPage();
+
+                    if (!movedToNextPage)
+                    {
+                        Talk.Inst.SetWriteSpeed(WriteSpeedType.Fast);
+                    }
                 }
+            }
+            else if (Talk.Inst.IsTalking && Input.GetKeyUp(KeyCode.Space))
+            {
+                Talk.Inst.SetWriteSpeed(WriteSpeedType.Normal);
             }
         }
 

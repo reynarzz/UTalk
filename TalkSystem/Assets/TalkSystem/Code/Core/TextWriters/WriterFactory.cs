@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace TalkSystem
 {
-    public class WriterFactory 
+    public class WriterFactory
     {
         private Dictionary<Type, WriterBase> _writers;
         private TextAnimationControl _animationControl;
@@ -30,7 +30,7 @@ namespace TalkSystem
             };
         }
 
-        public WriterBase GetWriter<T>() where T: WriterBase
+        public WriterBase GetWriter<T>() where T : WriterBase
         {
             if (_writers.ContainsKey(typeof(T)))
             {
@@ -43,18 +43,26 @@ namespace TalkSystem
             }
         }
 
-        public WriterBase GetWriter(WriteType writerType)
+        public WriterBase GetWriter(WriteType writerType, TextControl textControl)
         {
+            var writer = default(WriterBase);
+
             switch (writerType)
             {
                 case WriteType.Instant:
-                    return _writers[typeof(InstantWriter)];
+                    writer = _writers[typeof(InstantWriter)];
+                    break;
                 case WriteType.CharByChar:
-                    return _writers[typeof(CharByCharWriter)];
+                    writer = _writers[typeof(CharByCharWriter)];
+                    break;
                 default:
                     Debug.LogError($"Type: {writerType} is not in the factory.");
                     return null;
             }
+
+            writer.SetTextControl(textControl);
+
+            return writer;
         }
     }
 }

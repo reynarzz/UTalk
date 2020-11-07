@@ -50,7 +50,7 @@ namespace TalkSystem
             {
                 case WriteType.Instant:
                     IntantAnim(charIndex);
-                   
+
                     break;
                 case WriteType.CharByChar:
                     CharByCharAnim(charIndex);
@@ -104,6 +104,14 @@ namespace TalkSystem
             }
 
             return animator;
+        }
+
+        public void OnExitPage()
+        {
+            for (int i = 0; i < _animators.Count; i++)
+            {
+                _animators[i].OnExitPage();
+            }
         }
     }
 }

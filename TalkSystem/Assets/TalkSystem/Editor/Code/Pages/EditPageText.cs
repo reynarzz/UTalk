@@ -203,12 +203,12 @@ namespace TalkSystem.Editor
 
             var nextSkin = _textPageIndex + 1 < _talkData.PagesCount ? _prevNextButtons : _prevNextButtonsDisabled;
             var prevSkin = _textPageIndex > 0 ? _prevNextButtons : _prevNextButtonsDisabled;
-            
+
             GUI.SetNextControlName("Prev");
             if (GUILayout.Button("Prev", prevSkin) && _textPageIndex > 0)
             {
                 GUI.FocusControl("Prev");
-                
+
                 _textPageIndex--;
                 _textInfo.TextEditor.ClearSelectedText();
 
@@ -374,12 +374,12 @@ namespace TalkSystem.Editor
 
                             GUILayout.BeginHorizontal();
                             GUILayout.Label("Write Speed", GUILayout.MaxWidth(80));
-                            var writeSpeedType = (Highlight.WriteSpeed)EditorGUILayout.EnumPopup(highlight.WriteSpeedType);
+                            var writeSpeedType = (Highlight.HighlightWriteSpeed)EditorGUILayout.EnumPopup(highlight.WriteSpeedType);
                             GUILayout.EndHorizontal();
 
                             var normalWriteSpeed = 0f;
 
-                            if (writeSpeedType == Highlight.WriteSpeed.Custom)
+                            if (writeSpeedType == Highlight.HighlightWriteSpeed.Custom)
                             {
                                 GUILayout.BeginHorizontal();
                                 GUILayout.Label("Speed", GUILayout.MaxWidth(70));
@@ -465,7 +465,7 @@ namespace TalkSystem.Editor
             GUILayout.EndHorizontal();
 
 
-            if(_currentTextPage.Sprites.Count > 0)
+            if (_currentTextPage.Sprites.Count > 0)
             {
                 GUILayout.Space(5);
 
@@ -495,7 +495,7 @@ namespace TalkSystem.Editor
                 GUILayout.EndHorizontal();
                 GUILayout.EndScrollView();
             }
-            
+
             GUILayout.EndVertical();
         }
 

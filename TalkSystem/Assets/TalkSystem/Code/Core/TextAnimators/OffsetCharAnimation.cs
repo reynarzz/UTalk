@@ -35,7 +35,7 @@ namespace TalkSystem
         private List<TextControl.CharQuad> _startPos;
         private Vector2 _offsetToMoveBack;
 
-        public OffsetCharAnimation() : base()
+        public OffsetCharAnimation()
         {
             _startPos = new List<TextControl.CharQuad>();
         }
@@ -44,8 +44,6 @@ namespace TalkSystem
         {
             base.Init(textControl, page);
 
-            _startPos.Clear();
-
             SetCharsStartPositions(textControl, page);
 
             SetOffset(textControl, page);
@@ -53,6 +51,8 @@ namespace TalkSystem
 
         private void SetCharsStartPositions(TextControl textControl, TextPage page)
         {
+            _startPos.Clear();
+
             for (int i = 0; i < page.Text.Length; i++)
             {
                 _startPos.Add(textControl.GetCharPos(i));
@@ -70,9 +70,10 @@ namespace TalkSystem
 
         public override void Update()
         {
-            for (int i = 0; i < CharIndexesToAnimate.Count; i++)
+            for (int i = 0; i < CharsToAnimateCount; i++)
             {
-                var index = CharIndexesToAnimate[i];
+                var index = GetValidCharToAnimate(i);
+
                 var targetPos = TextControl.OffsetVectors(_startPos[index], _offsetToMoveBack);
 
                 TextControl.SetCharPos(index, TextControl.LerpCharPos(TextControl.GetCharPos(index), targetPos, 30 * Time.deltaTime));
@@ -105,105 +106,9 @@ namespace TalkSystem
             return default;
         }
 
-
-        //private IEnumerator WriteByChar(TextControl control, TextPage page)
-        //{
-        //    _highlightedChars.Clear();
-        //    _startPos.Clear();
-
-        //    //Starts showing chars in the next frame.
-        //    yield return 0;
-
-        //    _textControl = control;
-        //    _textControl.ReloadCharsVertices();
-
-        //    for (int i = 0; i < page.Text.Length; i++)
-        //    {
-        //        _startPos.Add(control.GetCharPos(i));
-        //    }
-
-        //    yield return 0;
-
-        //    var wordIndex = 0;
-        //    var whiteSpacesCount = -1;
-        //    var highlightedWord = -1;
-
-        //    for (int i = 0; i < page.Text.Length; i++)
-        //    {
-        //        if (highlightedWord != wordIndex && page.Highlight.ContainsKey(wordIndex))
-        //        {
-        //            highlightedWord = wordIndex;
-
-        //            var highlight = page.Highlight[wordIndex];
-        //            var highlightLength = highlight.HighlighLength;
-        //            var startChar = highlight.StartLocalChar;
-
-        //            i += startChar;
-
-        //            if (highlight.Type == HighlightAnimation.Sine)
-        //            {
-        //                var list = new List<int>();
-
-        //                for (int j = 0; j < highlightLength; j++)
-        //                {
-        //                    list.Add(i + j);
-        //                }
-
-        //                _highlightedChars.Add(list.ToList());
-        //            }
-
-        //            for (int j = 0; j < highlightLength; j++)
-        //            {
-        //                control.ShowChar(i + j, highlight.Color);
-
-        //                _charsToMove.Add(i + j);
-        //                yield return _writeSpeed;
-        //            }
-
-        //            var target = i + highlightLength;
-
-        //            //When is in a highllighted word, but not all chars were chosen to be highligted.
-        //            while (page.Text.ElementAtOrDefault(i).IsValidChar())
-        //            {
-        //                if (i >= target)
-        //                {
-        //                    control.ShowChar(i);
-
-        //                    _charsToMove.Add(i);
-
-        //                    yield return _writeSpeed;
-        //                }
-
-        //                i++;
-
-        //                whiteSpacesCount = 0;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            //When is not in a highlighted word.
-        //            while (page.Text.ElementAtOrDefault(i).IsValidChar())
-        //            {
-        //                control.ShowChar(i);
-
-        //                _charsToMove.Add(i);
-
-        //                yield return _writeSpeed;
-        //                i++;
-
-        //                whiteSpacesCount = 0;
-        //            }
-        //        }
-
-        //        whiteSpacesCount++;
-
-        //        if (whiteSpacesCount == 1)
-        //        {
-        //            wordIndex++;
-        //        }
-        //    }
-
-        //    OnPageWriten?.Invoke();
-        //}
+        public override void OnExitPage()
+        {
+            TextControl.OffsetText(_offsetToMoveBack);
+        }
     }
 }

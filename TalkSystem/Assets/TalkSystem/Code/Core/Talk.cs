@@ -64,41 +64,7 @@ namespace TalkSystem
 
         private TextPage _currentPage;
 
-        /// <summary>Sets the target language (English default). If the player change it when the text is being displayed, all the text will be updated to the selected language.</summary>
-        public Language Language
-        {
-            get
-            {
-                if (_scriptableContainer)
-                {
-                    return _scriptableContainer.Container.RuntimeLanguage;
-                }
-                else
-                {
-                    Debug.LogError("Container reference wasn't added.");
-
-                    return Language.English;
-                }
-            }
-            set
-            {
-                if (_scriptableContainer)
-                {
-                    _scriptableContainer.Container.RuntimeLanguage = value;
-
-                    if (_talkData)
-                    {
-                        _writerControl.Writer.OnLanguageChanged(_currentPage);
-                    }
-                }
-                else
-                {
-                    Debug.LogError("Container reference wasn't added.");
-
-                }
-            }
-        }
-
+  
         protected override void Awake()
         {
             _writerControl = new WriterControl(this, OnPageWriten);
@@ -138,9 +104,9 @@ namespace TalkSystem
                     _isLastPage = default;
                     _canShowNextPage = default;
 
-                    _writerControl.SetPage(_currentPage, _talkCloud.TextControl);
+                    _writerControl.Init(_currentPage, _talkCloud.TextControl);
 
-                    _talkCloud.ShowCloud();
+                    _talkCloud.OnShowCloud();
                     _talkCallback?.Invoke(TalkEvent.Started);
                 }
                 else
@@ -180,43 +146,43 @@ namespace TalkSystem
             }
         }
 
-        public void StartTalk(TalkCloudBase cloud, string groupName, string subGroup, string talkName)
+        public void StartTalk(TalkCloudBase cloud, TalkInfo talkInfo)
         {
             if (!_isTalking)
             {
-                _talkData = _scriptableContainer.Container.GetTalkAsset(talkName, groupName, subGroup);
+                _talkData = _scriptableContainer.Container.GetTalkAsset(talkInfo);
 
                 StartTalk(cloud, _talkData);
             }
         }
 
-        public void StartTalk(TalkCloudBase cloud, string groupName, string subGroup, string talkName, Action<TalkEvent> talkCallback)
+        public void StartTalk(TalkCloudBase cloud, TalkInfo talkInfo, Action<TalkEvent> talkCallback)
         {
             if (!_isTalking)
             {
                 _talkCallback = talkCallback;
 
-                StartTalk(cloud, groupName, subGroup, talkName);
+                StartTalk(cloud, talkInfo);
             }
         }
 
-        public void StartTalk(TalkCloudBase cloud, string groupName, string subGroup, string talkName, Action<string> wordEventCallback)
+        public void StartTalk(TalkCloudBase cloud, TalkInfo talkInfo, Action<string> wordEventCallback)
         {
             if (!_isTalking)
             {
                 _onWordEventCallBack = wordEventCallback;
 
-                StartTalk(cloud, groupName, subGroup, talkName);
+                StartTalk(cloud, talkInfo);
             }
         }
 
-        public void StartTalk(TalkCloudBase cloud, string groupName, string subGroup, string talkName, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
+        public void StartTalk(TalkCloudBase cloud, TalkInfo talkInfo, Action<TalkEvent> talkCallback, Action<string> wordEventCallback)
         {
             if (!_isTalking)
             {
                 _onWordEventCallBack = wordEventCallback;
 
-                StartTalk(cloud, groupName, subGroup, talkName, talkCallback);
+                StartTalk(cloud, talkInfo, talkCallback);
             }
         }
 
@@ -238,10 +204,10 @@ namespace TalkSystem
 
                         _currentPage = _talkData.GetPage(_pageIndex);
 
-                        _writerControl.SetPage(_currentPage, _talkCloud.TextControl);
                         _talkCloud.SetPage(_currentPage, _pageIndex);
 
-                        _writerControl.Writer.InitWriter(_talkCloud.TextControl, _currentPage);
+                        _writerControl.Init(_currentPage, _talkCloud.TextControl);
+                        _writerControl.Writer.WritePage(_currentPage);
 
                         return true;
                     }
@@ -252,7 +218,7 @@ namespace TalkSystem
                 }
                 else
                 {
-                    _writerControl.Writer.Clear(_talkCloud.TextControl);
+                    _writerControl.Writer.OnExitTalk();
 
                     _talkCloud.CloseCloud();
                 }
@@ -265,9 +231,38 @@ namespace TalkSystem
             return false;
         }
 
+        public void SetWriteSpeed(WriteSpeedType writeSpeed)
+        {
+            if (_isTalking)
+            {
+                _writerControl.Writer.SetWriteTypeSpeed(writeSpeed);
+            }
+            else
+            {
+                Debug.LogError("Not talking!");
+            }
+        }
+
+        //Call it when a talk is running and the language in changed, to update the cloud talk with the new text.
+        public void SetTalkOnLanguageChanged(TalkInfo info)
+        {
+            if (_scriptableContainer)
+            {
+                if (_talkData)
+                {
+                    _talkData = _scriptableContainer.Container.GetTalkAsset(info);
+                    _writerControl.Writer.OnLanguageChanged(_talkData.GetPage(_pageIndex));
+                }
+            }
+            else
+            {
+                Debug.LogError("Container reference wasn't added.");
+            }
+        }
+
         private void OnCloudShown()
         {
-            _writerControl.Writer.InitWriter(_talkCloud.TextControl, _currentPage);
+            _writerControl.Writer.WritePage(_currentPage);
         }
 
         private void OnCloudHidden()

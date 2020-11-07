@@ -35,14 +35,14 @@ namespace TalkSystem
         //Use tween instead for more performance.
         [SerializeField] private Animator _animator;
 
-        public override void ShowCloud()
+        public override void OnShowCloud()
         {
             TurnImageOffWhenNotSpriteIsFound(true);
 
             _animator.Play("Show");
         }
 
-        public override void CloseCloud()
+        public override void OnCloseCloud()
         {
             _animator.Play("Hide");
         }

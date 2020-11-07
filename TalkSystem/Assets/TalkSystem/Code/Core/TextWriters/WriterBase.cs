@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace TalkSystem
 {
-    public enum WriteSpeed
+    public enum WriteSpeedType
     {
         Normal, Fast
     }
@@ -23,29 +23,42 @@ namespace TalkSystem
 
         private WaitForSeconds _normalSpeed;
         private WaitForSeconds _fastSpeed;
-        protected WaitForSeconds _writeSpeed;
+        private WaitForSeconds _default;
+
+        private WaitForSeconds _writeSpeed;
+        protected WaitForSeconds WriteSpeed { get => _writeSpeed; set => _writeSpeed = value; }
 
         private readonly MonoBehaviour _mono;
         private readonly TextAnimationControl _animationControl;
+
+        private WriteSpeedType _writeSpeedType;
+        protected WriteSpeedType WriteSpeedType => _writeSpeedType;
 
         public WriterBase(MonoBehaviour mono, TextAnimationControl animationControl)
         {
             _mono = mono;
             _animationControl = animationControl;
+            _default = new WaitForSeconds(0);
         }
 
         /// <summary>Write the page.</summary>
         protected abstract IEnumerator Write(TextControl control, TextPage page, TextAnimationControl animationControl);
 
-        public void InitWriter(TextControl control, TextPage page)
+        public void SetTextControl(TextControl control)
         {
             _control = control;
+        }
 
+        public void WritePage(TextPage page)
+        {
             switch (page.WriteType)
             {
                 case WriteType.Instant:
+                    _normalSpeed = _default;
+                    _fastSpeed = _default;
                     break;
                 case WriteType.CharByChar:
+                    //i need to cache this.
                     _normalSpeed = new WaitForSeconds(page.CharByCharInfo.NormalWriteSpeed);
                     _fastSpeed = new WaitForSeconds(page.CharByCharInfo.FastWriteSpeed);
                     break;
@@ -53,21 +66,21 @@ namespace TalkSystem
 
             _writeSpeed = _normalSpeed;
 
-            _mono.StartCoroutine(StartWriter(control, page));
+            _mono.StartCoroutine(StartWriter(page));
         }
 
         /// <summary>This does the necessary pre-work to start writing properly.</summary>
-        private IEnumerator StartWriter(TextControl control, TextPage page)
+        private IEnumerator StartWriter(TextPage page)
         {
-            control.SetText(page.Text);
-            _animationControl.Init(control, page);
+            _control.SetText(page.Text);
+            _animationControl.Init(_control, page);
 
             //The next code have to be done in a different frame, that's the reason of this line.
             yield return 0;
-            
-            control.ReloadCharsVertices();
 
-            yield return Write(control, page, _animationControl);
+            _control.ReloadCharsVertices();
+
+            yield return Write(_control, page, _animationControl);
         }
 
         public void Update()
@@ -75,14 +88,16 @@ namespace TalkSystem
             _animationControl.Update();
         }
 
-        public void SetWriteSpeed(WriteSpeed speed)
+        public void SetWriteTypeSpeed(WriteSpeedType speedType)
         {
-            switch (speed)
+            _writeSpeedType = speedType;
+
+            switch (_writeSpeedType)
             {
-                case WriteSpeed.Normal:
+                case WriteSpeedType.Normal:
                     _writeSpeed = _normalSpeed;
                     break;
-                case WriteSpeed.Fast:
+                case WriteSpeedType.Fast:
                     _writeSpeed = _fastSpeed;
                     break;
             }
@@ -92,10 +107,11 @@ namespace TalkSystem
         {
 
         }
-        public virtual void Clear(TextControl control)
-        {
-            control.ClearColors();
-        }
 
+        public virtual void OnExitTalk()
+        {
+            _animationControl.OnExitPage();
+            _control.ClearColors();
+        }
     }
 }

@@ -77,10 +77,8 @@ namespace TalkSystem
     public class TalkDataContainer
     {
         [SerializeField, HideInInspector] private Language _language;
-        [SerializeField, HideInInspector] private Language _runtimeLanguge;
-
         public Language Language { get => _language; set => _language = value; }
-        public Language RuntimeLanguage { get => _runtimeLanguge; set => _runtimeLanguge = value; }
+
 
         [SerializeField] private SDictionary<Language, TalkGroupsByNameData> _groups;
 
@@ -91,24 +89,24 @@ namespace TalkSystem
             _groups = new SDictionary<Language, TalkGroupsByNameData>();
         }
 
-        public TalkData GetTalkAsset(string talkName, string groupName, string subGroup = "Default")
+        public TalkData GetTalkAsset(TalkInfo talkInfo)
         {
             if (_groups.ContainsKey(_language))
             {
                 var groups = _groups[_language].Groups;
                 var talkData = default(TalkData);
 
-                if (groups.ContainsKey(groupName))
+                if (groups.ContainsKey(talkInfo.GroupName))
                 {
-                    var talks = groups[groupName].Talks;
+                    var talks = groups[talkInfo.GroupName].Talks;
 
-                    if (talks.ContainsKey(subGroup))
+                    if (talks.ContainsKey(talkInfo.SubGroupName))
                     {
-                        for (int i = 0; i < talks[subGroup].Talks.Count; i++)
+                        for (int i = 0; i < talks[talkInfo.SubGroupName].Talks.Count; i++)
                         {
-                            var talk = talks[subGroup].Talks[i];
+                            var talk = talks[talkInfo.SubGroupName].Talks[i];
 
-                            if (talk.TalkName == talkName)
+                            if (talk.TalkInfo.TalkName == talkInfo.TalkName)
                             {
                                 talkData = talk;
                                 break;
@@ -117,19 +115,19 @@ namespace TalkSystem
                     }
                     else
                     {
-                        Debug.LogError("Sub-Group: " + subGroup + " doesn't exist!");
+                        Debug.LogError("Sub-Group: " + talkInfo.SubGroupName + " doesn't exist!");
 
                     }
 
                 }
                 else
                 {
-                    Debug.LogError("Group: " + groupName + " doesn't exist!");
+                    Debug.LogError("Group: " + talkInfo.GroupName + " doesn't exist!");
                 }
 
                 if (!talkData)
                 {
-                    Debug.LogError("Talk: " + talkName + " doesn't exist!");
+                    Debug.LogError("Talk: " + talkInfo.TalkName + " doesn't exist!");
                 }
 
                 return talkData;
@@ -151,24 +149,20 @@ namespace TalkSystem
         {
             var subGroupTalks = _groups[language].Groups[groupName].Talks;
 
+            var talk = new TalkData(new TalkInfo(groupName, subGroup, talkName, language));
+            talk.CreateEmptyPage();
+
             if (!subGroupTalks.ContainsKey(subGroup))
             {
-                var talk = new TalkData() { TalkName = talkName, SubGroup = subGroup };
-                talk.CreateEmptyPage();
-
                 var subGroups = new TalksGroupData.TalksSubGroupsData();
 
                 subGroups.Talks.Add(talk);
 
                 subGroupTalks.Add(subGroup, subGroups);
-
                 return false;
             }
             else
             {
-                var talk = new TalkData() { TalkName = talkName };
-                talk.CreateEmptyPage();
-
                 subGroupTalks[subGroup].Talks.Add(talk);
                 return true;
             }
@@ -180,7 +174,7 @@ namespace TalkSystem
 
             if (subGroupTalks.ContainsKey(subGroup))
             {
-                return subGroupTalks[subGroup].Talks.Exists(x => x.TalkName == talkName);
+                return subGroupTalks[subGroup].Talks.Exists(x => x.TalkInfo.TalkName == talkName);
             }
             //if (ContainsLanguage(language))
             //{
@@ -255,6 +249,11 @@ namespace TalkSystem
             }
 
             return _groups[language];
+        }
+
+        internal void GetTalkAsset(object talkPath)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -49,11 +49,7 @@ namespace TalkSystem
                     { 8, new Highlight(8, 0,"second".Length, Color.green) }
                 });
 
-            _data = new TalkData(new List<TextPage>() { page })
-            {
-                TalkName = "SpanishTalk",
-                Language = Language.Spanish
-            };
+            _data = new TalkData(new TalkInfo("", "", "SpanishTalk", Language.Spanish), new List<TextPage>() { page });
         }
 
         private void Update()
