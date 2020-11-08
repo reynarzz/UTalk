@@ -44,8 +44,6 @@ public class TalkEditorWindow : EditorWindow
 
         _pageNavigator.OnGUI();
 
-        EditorUndoRedo.GUI();
-
         Repaint();
     } 
 

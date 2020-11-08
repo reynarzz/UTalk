@@ -36,21 +36,29 @@ MonoBehaviour:
                   _subGroup: 
                   _group: 
                   _pages:
-                  - _pageText: 'as 2 asd asd fasd asdasd '
+                  - _pageText: Hello
                     _talkerName: ada342
                     _sprites: []
                     _highlight:
-                      _keys: 04000000
-                      _values:
-                      - _wordIndex: 4
-                        _wordStartCharIndex: 0
-                        _highlightLength: 4
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4294967295
-                        _animationType: 0
-                        _writeSpeed: 0
-                        _normalSpeed: 0
+                      _keys: 
+                      _values: []
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 0
+                    _charByChar:
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _offsetType: 0
+                      _animationType: 0
+                      _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 0
+                  - _pageText: Bye
+                    _talkerName: ada342
+                    _sprites: []
+                    _highlight:
+                      _keys: 
+                      _values: []
                     _wordEvent:
                       _wordIndex: 0
                     _writeType: 0

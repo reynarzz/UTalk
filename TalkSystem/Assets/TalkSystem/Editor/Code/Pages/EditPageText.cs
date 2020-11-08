@@ -641,14 +641,12 @@ namespace TalkSystem.Editor
             //oldText = Regex.Replace(oldText, @"\s+", " ");
             //newText = Regex.Replace(newText, @"\s+", " ");
 
-            //TalkEditorWindow.RecordUndo("OnTexChanged");
-            TalkEditorWindow.RecordToUndo("thing1");
+            //TalkEditorWindow.RecordToUndo("thing1");
 
             if (charAdded)
             {
                 //char added.
                 OnCharAdded(insertedIndex, cursor != newText.Length);
-
                 //word added.
             }
             else
@@ -837,44 +835,49 @@ namespace TalkSystem.Editor
 
                 var colorOpen = $"<color=#{hex}>";
                 var colorClose = "</color>";
-                //Debug.Log(splitted[wordIndex]);
 
-                //Debug.Log("Word: " + splitted[wordIndex] + ", StartChar " + highlight.WordStartCharIndex + ", end: " + highlight.HighlighLength);
-                var modified = splitted[wordIndex];
+                var modified = splitted.ElementAtOrDefault(wordIndex);
 
-                //Debug.Log("LocalChar: " + highlight.StartLocalChar);
-                modified = modified.Insert(highlight.StartLocalChar, colorOpen);
-
-                var insertIndex = colorOpen.Length + highlight.StartLocalChar + highlight.HighlighLength;
-
-                if (modified.Length > insertIndex)
+                if (!string.IsNullOrEmpty(modified))
                 {
-                    modified = modified.Insert(colorOpen.Length + highlight.StartLocalChar + highlight.HighlighLength, colorClose);
-                }
-                else
-                {
-                    //Adjust hightlightLength.
-                    var hightlight = page.Highlight[wordIndex];
+                    //Debug.Log("LocalChar: " + highlight.StartLocalChar);
+                    modified = modified.Insert(highlight.StartLocalChar, colorOpen);
 
-                    var length = splitted[wordIndex].Length - (highlight.StartLocalChar);
+                    var insertIndex = colorOpen.Length + highlight.StartLocalChar + highlight.HighlighLength;
 
-                    if (length > 0)
+                    if (modified.Length > insertIndex)
                     {
-                        page.Highlight[wordIndex] = new Highlight(hightlight.WordIndex, hightlight.StartLocalChar, length, hightlight.Color, hightlight.Type,
-                                                                  highlight.WriteSpeedType, highlight.NormalWriteSpeed);
-
-                        modified = modified.Insert(modified.Length, colorClose);
+                        modified = modified.Insert(colorOpen.Length + highlight.StartLocalChar + highlight.HighlighLength, colorClose);
                     }
                     else
                     {
-                        Debug.Log("Nothing to highlight, removed");
-                        page.Highlight.Remove(wordIndex);
-                        continue;
+                        //Adjust hightlightLength.
+                        var hightlight = page.Highlight[wordIndex];
+
+                        var length = splitted[wordIndex].Length - (highlight.StartLocalChar);
+
+                        if (length > 0)
+                        {
+                            page.Highlight[wordIndex] = new Highlight(hightlight.WordIndex, hightlight.StartLocalChar, length, hightlight.Color, hightlight.Type,
+                                                                      highlight.WriteSpeedType, highlight.NormalWriteSpeed);
+
+                            modified = modified.Insert(modified.Length, colorClose);
+                        }
+                        else
+                        {
+                            Debug.Log("Nothing to highlight, removed");
+                            page.Highlight.Remove(wordIndex);
+                            continue;
+                        }
                     }
+
+                    splitted[wordIndex] = modified;
                 }
-
-
-                splitted[wordIndex] = modified;
+                else
+                {
+                    //the problem: when you delete a word with an space in front (ctrl+backspace) the word isn't registred.
+                    Debug.LogError("Word index doesn't exist: " + wordIndex);
+                }
             }
 
             for (int i = 0; i < splitted.Length; i++)
