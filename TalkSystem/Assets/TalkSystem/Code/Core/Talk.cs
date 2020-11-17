@@ -231,6 +231,7 @@ namespace TalkSystem
             return false;
         }
 
+        //Change write speed (if the current writer is different to "instant")
         public void SetWriteSpeed(WriteSpeedType writeSpeed)
         {
             if (_isTalking)

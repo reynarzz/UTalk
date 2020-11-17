@@ -38,9 +38,8 @@ namespace TalkSystem
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetMouseButtonDown(0))
             {
-                
                 if (!Talk.Inst.IsTalking)
                 {
                     Talk.Inst.StartTalk(_talkCloud, new TalkInfo("Default", "SubGroup", "Talk1", Language.English), Handler);
@@ -55,7 +54,7 @@ namespace TalkSystem
                     }
                 }
             }
-            else if (Talk.Inst.IsTalking && Input.GetKeyUp(KeyCode.Space))
+            else if (Talk.Inst.IsTalking && Input.GetMouseButtonUp(0))
             {
                 Talk.Inst.SetWriteSpeed(WriteSpeedType.Normal);
             }

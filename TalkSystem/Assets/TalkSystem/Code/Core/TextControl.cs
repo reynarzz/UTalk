@@ -41,6 +41,14 @@ namespace TalkSystem
         private Vector2 _textConstAnchoredPosition;
         private Mesh _startingMesh;
 
+        private List<CharWritten> _charsWritten;
+
+        private struct CharWritten
+        {
+            public int _index;
+            public Color32 _color;
+        }
+
         public struct CharQuad
         {
             public Vector3 BL { get; set; }
@@ -68,6 +76,7 @@ namespace TalkSystem
 
             _charVertices = new List<Vector3>();
             _clearColors = new List<Color32>();
+            _charsWritten = new List<CharWritten>();
 
             _text.text = default;
             _startingMesh = _text.mesh;
@@ -75,14 +84,15 @@ namespace TalkSystem
 
         public void SetText(string text)
         {
-            ClearColors();
+            ClearAll();
 
             _text.text = text;
         }
 
-        public void ClearColors()
+        public void ClearAll()
         {
             _clearColors.Clear();
+            _charsWritten.Clear();
 
             _text.rectTransform.anchoredPosition = _textConstAnchoredPosition;
 
@@ -105,6 +115,7 @@ namespace TalkSystem
         private void UpdateHightlight(TMP_TextInfo textInfo)
         {
             //TODO: update mesh.
+            ReloadText();
         }
 
         public void ShowChar(int charIndex)
@@ -114,10 +125,13 @@ namespace TalkSystem
 
         public void ShowChar(int charIndex, Color32 color)
         {
+            _charsWritten.Add(new CharWritten() { _index = charIndex, _color = color });
+
             var colors = _text.mesh.colors;
 
             var charInfo = _text.textInfo.characterInfo[charIndex];
-
+            _text.textInfo.characterInfo[charIndex].style =  FontStyles.Bold;
+            
             if (!char.IsWhiteSpace(charInfo.character))
             {
                 //If the text is not enabled, this will throw an error.
@@ -161,6 +175,20 @@ namespace TalkSystem
             _text.canvasRenderer.SetMesh(_text.mesh);
         }
 
+        public void SetCharScale(int charIndex, float scale)
+        {
+            var vIndex = _text.textInfo.characterInfo[charIndex].vertexIndex;
+
+            _charVertices[vIndex + 0] *= scale;
+            _charVertices[vIndex + 1] *= scale;
+            _charVertices[vIndex + 2] *= scale;
+            _charVertices[vIndex + 3] *= scale;
+
+            _text.mesh.SetVertices(_charVertices);
+
+            _text.canvasRenderer.SetMesh(_text.mesh);
+        }
+
         public CharQuad GetCharPos(int charIndex)
         {
             var vIndex = _text.textInfo.characterInfo[charIndex].vertexIndex;
@@ -171,6 +199,12 @@ namespace TalkSystem
             var point4 = _charVertices[vIndex + 3];
 
             return new CharQuad(point1, point2, point3, point4);
+        }
+
+        public void SetCharStyle(int charIndex, FontStyles style)
+        {
+            //bold, italic, thin
+            _text.textInfo.characterInfo[charIndex].style = style;
         }
 
         /// <summary>Call this function after setting the text, and before showing the text.</summary>
@@ -203,6 +237,20 @@ namespace TalkSystem
             a.BR = Vector3.Lerp(a.BR, b.BR, t);
 
             return a;
+        }
+
+        public void ReloadText()
+        {
+            //Debug.Log(_charsWritten.Count);
+            //_text.ClearMesh();
+
+            for (int i = 0; i < _charsWritten.Count; i++)
+            {
+                var charInfo  = _charsWritten[i];
+
+                //ShowChar(charInfo._index, charInfo._color);
+                //_charsWritten.RemoveAt(_charsWritten.Count - 1);
+            }
         }
     }
 }

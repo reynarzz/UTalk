@@ -21,7 +21,6 @@ namespace TalkSystem.Editor
 
         private int _currentGroup = -1;
         public string NavigationName => "Groups";
-        private Language _language;
 
         private GUIContent[] _groupsTextGrid;
         private bool _deleteGroup;
@@ -56,7 +55,7 @@ namespace TalkSystem.Editor
             _groups.Clear();
             _groupsTextGridList.Clear();
 
-            var groups = _dataContainer.GetGroupByIndex(_language).Groups;
+            var groups = _dataContainer.GetGroupsByLanguage(_dataContainer.Language).Groups;
             _groups.Add(groups);
 
             for (int i = 0; i < groups.Count; i++)
@@ -68,18 +67,10 @@ namespace TalkSystem.Editor
             _groupsTextGrid = _groupsTextGridList.ToArray();
         }
 
-
         public void OnGUI()
         {
-
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
-
-            var prevLang = _language;
-
-            _language = (Language)EditorGUILayout.EnumPopup(_language, GUILayout.Width(_language.ToString().Length * 10));
-
-            LanguageSwitchedUpdate(_language, prevLang);
-
+            
             var search = EditorStyles.toolbarSearchField;
 
             search.margin.left = 5;
@@ -96,6 +87,13 @@ namespace TalkSystem.Editor
             }
 
             _deleteGroup = GUILayout.Toggle(_deleteGroup, "x", EditorStyles.toolbarButton, GUILayout.MaxWidth(30));
+
+            var prevLang = _dataContainer.Language;
+
+            _dataContainer.Language = (Language)EditorGUILayout.EnumPopup(_dataContainer.Language, GUILayout.Width(_dataContainer.Language.ToString().Length * 10));
+
+            LanguageSwitchedUpdate(_dataContainer.Language, prevLang);
+
 
             GUILayout.EndHorizontal();
 
@@ -124,7 +122,7 @@ namespace TalkSystem.Editor
         {
             Context.ShowCreateGroup(TalkEditorWindow.Position, "Group", x =>
             {
-                _dataContainer.CreateGroup(x, _language);
+                _dataContainer.CreateGroup(x, _dataContainer.Language);
 
                 SetGroups();
             });
@@ -156,7 +154,7 @@ namespace TalkSystem.Editor
 
                                 void DeleteGroup()
                                 {
-                                    _dataContainer.DeleteGroup(_groupsTextGrid[selectedGroup].text, _language);
+                                    _dataContainer.DeleteGroup(_groupsTextGrid[selectedGroup].text, _dataContainer.Language);
 
                                     _deleteGroup = false;
                                 }
@@ -173,14 +171,13 @@ namespace TalkSystem.Editor
 
             GUILayout.EndScrollView();
         }
-
+        
         private void TalksPage()
         {
             if (_currentGroup > -1)
             {
-                var talkPage = _navigator.PushPage<TalksPage>();
-                talkPage.NavigationName = _groupsTextGrid[_currentGroup].text;
-                talkPage.SetGroup(_dataContainer.GetGroupByIndex(_language).Groups[_groupsTextGrid[_currentGroup].text]);
+                var pageName = _groupsTextGrid[_currentGroup].text;
+                var talkPage = _navigator.PushTalkPage(pageName);
 
                 _deleteGroup = false;
                 _currentGroup = -1;

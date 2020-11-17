@@ -95,23 +95,6 @@ namespace TalkSystem
         [SerializeField] private CharByCharAnimation _animationType;
         [SerializeField] private float _offset;
 
-        public enum CharByCharAnimation
-        {
-            None,
-            OffsetToPos
-        }
-
-        public enum OffsetStartPos
-        {
-            Top,
-            TopLeft,
-            TopRight,
-
-            Bottom,
-            BottomLeft,
-            BottomRight,
-        }
-
         public float NormalWriteSpeed { get => _normalWriteSpeed; set => _normalWriteSpeed = value; }
         public float FastWriteSpeed { get => _fastWriteSpeed; set => _fastWriteSpeed = value; }
         public OffsetStartPos OffsetType { get => _offsetType; set => _offsetType = value; }
@@ -134,6 +117,23 @@ namespace TalkSystem
                   a._normalWriteSpeed != b._normalWriteSpeed ||
                   a._offset != b._offset ||
                   a._offsetType != b._offsetType;
+        }
+
+        public enum CharByCharAnimation
+        {
+            None,
+            OffsetToPos
+        }
+
+        public enum OffsetStartPos
+        {
+            Top,
+            TopLeft,
+            TopRight,
+
+            Bottom,
+            BottomLeft,
+            BottomRight,
         }
     }
 
@@ -172,8 +172,6 @@ namespace TalkSystem
         //{
         //    [SerializeField] private CharByCharInfo _charByChar;
         //    [SerializeField] private InstantInfo _instantInfo;
-
-
         //}
 
         public string Text { get => _pageText; set => _pageText = value; }

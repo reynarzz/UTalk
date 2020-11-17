@@ -22,7 +22,7 @@ public class TalkEditorWindow : EditorWindow
         window.minSize = new Vector2(275, 275);
         window.Show();
     }
-
+     
     private void Init()
     {
         if (_pageNavigator == null)
@@ -30,9 +30,7 @@ public class TalkEditorWindow : EditorWindow
             _scriptable = Utils.GetTalkScriptable();
             EditorUtility.SetDirty(_scriptable);
 
-            _pageNavigator = new PageNavigator(_scriptable.Container);
-
-            _pageNavigator.PushPage<TalkGroupsPage>();
+            _pageNavigator = new PageNavigator(_scriptable.Container, _scriptable.CurrentPageState);
         }
     }
 
@@ -47,8 +45,17 @@ public class TalkEditorWindow : EditorWindow
         Repaint();
     } 
 
+    public static void SetDirtyAndSave()
+    {
+        EditorUtility.SetDirty(_scriptable);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
     public static void RecordToUndo(string name)
     {
+        EditorUtility.SetDirty(_scriptable);
+
         Undo.SetCurrentGroupName(name);
 
         Undo.RecordObject(_scriptable, _scriptable.name);

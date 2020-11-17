@@ -33,13 +33,19 @@ namespace TalkSystem
     [CreateAssetMenu]
     public class TalkDataContainerScriptable : ScriptableObject
     {
-        //Save the page
-        //public int _groupIndex;
-        //public int _groupIndex;
-        //public int _groupIndex;
-
         [SerializeField] private TalkDataContainer _talkDataContainer;
 
         public TalkDataContainer Container => _talkDataContainer;
+
+        [Serializable]
+        public class PageNavigatorState
+        {
+            public string _groupName;
+            public string _subgroupName;
+            public string _talkName;
+        }
+
+        [SerializeField, HideInInspector] private PageNavigatorState _pageState;
+        public PageNavigatorState CurrentPageState => _pageState;
     }
 }

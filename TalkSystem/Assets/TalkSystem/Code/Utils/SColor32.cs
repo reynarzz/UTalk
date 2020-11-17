@@ -12,10 +12,10 @@ namespace TalkSystem
     /// <summary>Serializable color</summary>
     public struct SColor32
     {
-        private int _r;
-        private int _g;
-        private int _b;
-        private int _a;
+        [SerializeField] private int _r;
+        [SerializeField] private int _g;
+        [SerializeField] private int _b;
+        [SerializeField] private int _a;
 
         public int r => _r;
         public int g => _g;

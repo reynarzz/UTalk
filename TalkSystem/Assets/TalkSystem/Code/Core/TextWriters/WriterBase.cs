@@ -105,13 +105,13 @@ namespace TalkSystem
 
         public void OnLanguageChanged(TextPage textPage)
         {
-
+            _control.ReloadText();
         }
 
         public virtual void OnExitTalk()
         {
             _animationControl.OnExitPage();
-            _control.ClearColors();
+            _control.ClearAll();
         }
     }
 }

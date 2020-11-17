@@ -31,19 +31,19 @@ using UnityEngine.UIElements;
 namespace TalkSystem
 {
     [Serializable]
-    public class TalkGroupsByNameData
+    public class TalkGroupsContainer
     {
         [SerializeField] private SDictionary<string, TalksGroupData> _groups;
         public SDictionary<string, TalksGroupData> Groups => _groups;
 
-        public TalkGroupsByNameData()
+        public TalkGroupsContainer()
         {
             _groups = new SDictionary<string, TalksGroupData>();
         }
 
-        public TalkGroupsByNameData GetDeepCopy()
+        public TalkGroupsContainer GetDeepCopy()
         {
-            var copy = MemberwiseClone() as TalkGroupsByNameData;
+            var copy = MemberwiseClone() as TalkGroupsContainer;
 
             copy._groups = new SDictionary<string, TalksGroupData>();
 
@@ -92,6 +92,16 @@ namespace TalkSystem
             return copy;
         }
 
+        public TalksSubGroupsData GetSubGroupSafe(string name)
+        {
+            if (_talks.ContainsKey(name))
+            {
+                return _talks[name];
+            }
+
+            return null;
+        }
+
         [Serializable]
         public class TalksSubGroupsData
         {
@@ -127,18 +137,18 @@ namespace TalkSystem
         public Language Language { get => _language; set => _language = value; }
 
 
-        [SerializeField] private SDictionary<Language, TalkGroupsByNameData> _groups;
+        [SerializeField] private SDictionary<Language, TalkGroupsContainer> _groups;
 
         public TalkDataContainer()
         {
-            _groups = new SDictionary<Language, TalkGroupsByNameData>();
+            _groups = new SDictionary<Language, TalkGroupsContainer>();
         }
 
         public TalkDataContainer GetDeepCopy()
         {
             var copy = MemberwiseClone() as TalkDataContainer;
 
-            copy._groups = new SDictionary<Language, TalkGroupsByNameData>();
+            copy._groups = new SDictionary<Language, TalkGroupsContainer>();
 
             for (int i = 0; i < _groups.Count; i++)
             {
@@ -277,7 +287,7 @@ namespace TalkSystem
             }
             else
             {
-                var talksByNameGroup = new TalkGroupsByNameData();
+                var talksByNameGroup = new TalkGroupsContainer();
 
                 talksByNameGroup.Groups.Add(groupName, groupData);
 
@@ -302,7 +312,31 @@ namespace TalkSystem
             _groups[language].Groups.Remove(groupName);
         }
 
-        public TalkGroupsByNameData GetGroupByIndex(Language language)
+        //Gets groups using the current language.
+        public TalkGroupsContainer GetGroupsByLanguage()
+        {
+            return GetGroupsByLanguage(Language);
+        }
+
+        public TalksGroupData GetGroup(string name)
+        {
+            return GetGroup(name, _language);
+        }
+
+        public TalksGroupData GetGroup(string name, Language language)
+        {
+            if (_groups.ContainsKey(language))
+            {
+                if (_groups[language].Groups.ContainsKey(name))
+                {
+                    return _groups[language].Groups[name];
+                }
+            }
+
+            return null;
+        }
+
+        public TalkGroupsContainer GetGroupsByLanguage(Language language)
         {
             if (!_groups.ContainsKey(language))
             {
@@ -317,6 +351,6 @@ namespace TalkSystem
             throw new NotImplementedException();
         }
 
-        
+
     }
 }

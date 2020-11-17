@@ -129,7 +129,6 @@ namespace TalkSystem.Editor
         {
             Context.ShowCreateTalk(TalkEditorWindow.Position, "Talk", _subGroupsList, (sGroup, tName) =>
             {
-                Debug.Log("Talk name: " + tName);
                 if (!_dataContainer.ContainsTalk(_talkData.GroupName, sGroup, tName, _talkData.Language))
                 {
                     var hadSubGroup = _dataContainer.CreateTalkData(_talkData.GroupName, sGroup, tName, _talkData.Language);
@@ -203,11 +202,11 @@ namespace TalkSystem.Editor
 
                     if (GUILayout.Button(talk.TalkInfo.TalkName + " | Pages: " + talk.PagesCount, _groupButtonStyle, GUILayout.MinHeight(40)))
                     {
-                        var editPage = _navigator.PushPage<EditPageText>();
-                        editPage.NavigationName = talksOfSubGroup.Talks[j].TalkInfo.TalkName;
+                        var info = talksOfSubGroup.Talks[j].TalkInfo;
 
-                        editPage.SetCurrentTalkData(talksOfSubGroup.Talks[j]);
+                        _navigator.PushEditPage(info.SubGroupName, info.TalkName);
                     }
+
                     GUILayout.EndHorizontal();
                 }
 
