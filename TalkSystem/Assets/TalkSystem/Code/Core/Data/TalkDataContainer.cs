@@ -327,7 +327,7 @@ namespace TalkSystem
         {
             if (_groups.ContainsKey(language))
             {
-                if (_groups[language].Groups.ContainsKey(name))
+                if (!string.IsNullOrEmpty(name) && _groups[language].Groups.ContainsKey(name))
                 {
                     return _groups[language].Groups[name];
                 }

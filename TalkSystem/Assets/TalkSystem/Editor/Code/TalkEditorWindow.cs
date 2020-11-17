@@ -33,7 +33,7 @@ public class TalkEditorWindow : EditorWindow
             _pageNavigator = new PageNavigator(_scriptable.Container, _scriptable.CurrentPageState);
         }
     }
-
+     
     public void OnGUI()
     {
         Init();
@@ -43,13 +43,12 @@ public class TalkEditorWindow : EditorWindow
         _pageNavigator.OnGUI();
 
         Repaint();
-    } 
-
+    }  
+          
     public static void SetDirtyAndSave()
     {
         EditorUtility.SetDirty(_scriptable);
         AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
     }
 
     public static void RecordToUndo(string name)

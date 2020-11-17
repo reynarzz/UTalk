@@ -150,11 +150,17 @@ namespace TalkSystem.Editor
 
                 _pageNavigatorState._groupName = groupName;
 
+                TalkEditorWindow.SetDirtyAndSave();
+                 
                 return true;
             }
             else
             {
                 _pageNavigatorState._groupName = default;
+
+                _pageNavigatorState._subgroupName = default;
+                _pageNavigatorState._talkName = default;
+
             }
 
             return false;
@@ -165,9 +171,9 @@ namespace TalkSystem.Editor
             if (!string.IsNullOrEmpty(subGroupName) && !string.IsNullOrEmpty(talkName))
             {
                 var subGroup = _dataContainer.GetGroup(_pageNavigatorState._groupName).GetSubGroupSafe(subGroupName);
-                 
+
                 if (subGroup != null)
-                { 
+                {
                     var editPage = PushPage<EditPageText>();
                     editPage.NavigationName = talkName;
 
@@ -175,12 +181,14 @@ namespace TalkSystem.Editor
 
                     _pageNavigatorState._subgroupName = subGroupName;
                     _pageNavigatorState._talkName = talkName;
+
+                    TalkEditorWindow.SetDirtyAndSave();
                 }
             }
             else
             {
-                _pageNavigatorState._subgroupName = default;
-                _pageNavigatorState._talkName = default;
+                //_pageNavigatorState._subgroupName = default;
+                //_pageNavigatorState._talkName = default;
             }
         }
 
@@ -224,7 +232,7 @@ namespace TalkSystem.Editor
                 }
             }
         }
-
+          
         private void LoadPageState()
         {
             PushPage<TalkGroupsPage>();

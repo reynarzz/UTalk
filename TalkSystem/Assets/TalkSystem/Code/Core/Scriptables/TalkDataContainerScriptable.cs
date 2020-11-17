@@ -45,7 +45,7 @@ namespace TalkSystem
             public string _talkName;
         }
 
-        [SerializeField, HideInInspector] private PageNavigatorState _pageState;
+        [SerializeField/*, HideInInspector*/] private PageNavigatorState _pageState;
         public PageNavigatorState CurrentPageState => _pageState;
     }
 }

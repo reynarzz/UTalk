@@ -77,35 +77,8 @@ MonoBehaviour:
           - _groupName: Default
             _language: 1
             _talks:
-              _keys:
-              - Default
-              _values:
-              - _talks:
-                - _talkInfo:
-                    _talkName: 
-                    _groupName: 
-                    _subGroupName: 
-                    _language: 0
-                  _subGroup: Default
-                  _group: 
-                  _pages:
-                  - _pageText: 
-                    _talkerName: 
-                    _sprites: []
-                    _highlight:
-                      _keys: 
-                      _values: []
-                    _wordEvent:
-                      _wordIndex: 0
-                    _writeType: 0
-                    _charByChar:
-                      _normalWriteSpeed: 0
-                      _fastWriteSpeed: 0
-                      _offsetType: 0
-                      _animationType: 0
-                      _offset: 0
-                    _instantInfo:
-                      _TextAnimation: 0
+              _keys: []
+              _values: []
       - _groups:
           _keys:
           - Default
@@ -115,3 +88,7 @@ MonoBehaviour:
             _talks:
               _keys: []
               _values: []
+  _pageState:
+    _groupName: Default
+    _subgroupName: SubGroup
+    _talkName: Talk1
