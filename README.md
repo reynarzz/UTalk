@@ -37,5 +37,6 @@ namespace MyProject
 This is just starting, These are some of the features that will be added soon.
 
 - [x] Localization Support
-- [ ] A Robust Editor to write all your text and hightlight the most important words.
-- [ ] Animations to the highlighted words.
+- [x] A Robust Editor to write all your text and hightlight the most important words.
+   - [ ] Import/Export talk files.
+- [x] Animations to the highlighted words.
