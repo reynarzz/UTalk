@@ -123,7 +123,7 @@ namespace TalkSystem.Editor
 
             _path.Clear();
 
-            for (int i = 0; i < _navigatedPages.Count; i++)
+            for (int i = 1; i < _navigatedPages.Count; i++)
             {
                 _path.Append($"<color=#fff>{_navigatedPages[i].NavigationName}</color>");
 
@@ -181,9 +181,11 @@ namespace TalkSystem.Editor
                 if (subGroup != null)
                 {
                     var editPage = PushPage<EditPageText>();
-                    editPage.NavigationName = talkName;
+                    var talkData = subGroup.Talks.First(x => x.TalkInfo.TalkName == talkName);
 
-                    editPage.SetCurrentTalkData(subGroup.Talks.First(x => x.TalkInfo.TalkName == talkName));
+                    editPage.NavigationName = talkData.TalkInfo.SubGroupName +"/" + talkName;
+
+                    editPage.SetCurrentTalkData(talkData);
 
                     _pageNavigatorState._subgroupName = subGroupName;
                     _pageNavigatorState._talkName = talkName;

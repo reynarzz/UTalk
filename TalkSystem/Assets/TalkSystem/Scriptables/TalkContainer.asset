@@ -56,7 +56,7 @@ MonoBehaviour:
                       _wordIndex: 0
                     _writeType: 1
                     _charByChar:
-                      _normalWriteSpeed: 0.02
+                      _normalWriteSpeed: 0.023
                       _fastWriteSpeed: 0
                       _offsetType: 2
                       _animationType: 1
@@ -83,7 +83,7 @@ MonoBehaviour:
                       _wordIndex: 0
                     _writeType: 1
                     _charByChar:
-                      _normalWriteSpeed: 0.02
+                      _normalWriteSpeed: 0.023
                       _fastWriteSpeed: 0
                       _offsetType: 5
                       _animationType: 1
