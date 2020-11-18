@@ -131,13 +131,13 @@ namespace TalkSystem.Editor
                     _path.Append("<color=#fff>/</color>");
             }
 
-            if (GUILayout.Button(_navigatedPages.Count == 1?"Home":"Back", GUILayout.MaxWidth(60)))
+            if (GUILayout.Button(_navigatedPages.Count == 1 ? "Home" : "Back", GUILayout.MaxWidth(60)))
             {
                 PopPage();
             }
 
             var c = GUI.color;
-            GUI.color = Color.gray;
+            GUI.color = Color.gray * 0.5f;
 
             GUILayout.Label($"<color=#ff2>Path:</color> {_path}", _pathLabel);
             GUI.color = c;
@@ -157,7 +157,7 @@ namespace TalkSystem.Editor
                 _pageNavigatorState._groupName = groupName;
 
                 TalkEditorWindow.SetDirtyAndSave();
-                 
+
                 return true;
             }
             else
@@ -238,7 +238,7 @@ namespace TalkSystem.Editor
                 }
             }
         }
-          
+
         private void LoadPageState()
         {
             PushPage<TalkGroupsPage>();

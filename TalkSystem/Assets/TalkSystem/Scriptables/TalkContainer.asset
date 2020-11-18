@@ -36,38 +36,58 @@ MonoBehaviour:
                   _subGroup: 
                   _group: 
                   _pages:
-                  - _pageText: 21 fasd
-                    _talkerName: ada342
+                  - _pageText: You might want to develop your idea after you have
+                      formed a team.
+                    _talkerName: Steve
                     _sprites: []
                     _highlight:
-                      _keys: 
-                      _values: []
+                      _keys: 06000000
+                      _values:
+                      - _wordIndex: 6
+                        _wordStartCharIndex: 0
+                        _highlightLength: 4
+                        _color:
+                          serializedVersion: 2
+                          rgba: 4294923008
+                        _animationType: 1
+                        _writeSpeed: 0
+                        _normalSpeed: 0
                     _wordEvent:
                       _wordIndex: 0
-                    _writeType: 0
+                    _writeType: 1
                     _charByChar:
-                      _normalWriteSpeed: 0
+                      _normalWriteSpeed: 0.02
                       _fastWriteSpeed: 0
-                      _offsetType: 0
-                      _animationType: 0
-                      _offset: 0
+                      _offsetType: 2
+                      _animationType: 1
+                      _offset: 15
                     _instantInfo:
                       _TextAnimation: 0
-                  - _pageText: asd
-                    _talkerName: ada342
+                  - _pageText: "But usually it\u2019s better to have a solid idea
+                      and plan of attack in place..."
+                    _talkerName: Mike
                     _sprites: []
                     _highlight:
-                      _keys: 
-                      _values: []
+                      _keys: 07000000
+                      _values:
+                      - _wordIndex: 7
+                        _wordStartCharIndex: 0
+                        _highlightLength: 5
+                        _color:
+                          serializedVersion: 2
+                          rgba: 4278205183
+                        _animationType: 0
+                        _writeSpeed: 0
+                        _normalSpeed: 0
                     _wordEvent:
                       _wordIndex: 0
-                    _writeType: 0
+                    _writeType: 1
                     _charByChar:
-                      _normalWriteSpeed: 0
+                      _normalWriteSpeed: 0.02
                       _fastWriteSpeed: 0
-                      _offsetType: 0
-                      _animationType: 0
-                      _offset: 0
+                      _offsetType: 5
+                      _animationType: 1
+                      _offset: 15
                     _instantInfo:
                       _TextAnimation: 0
       - _groups:
@@ -92,4 +112,4 @@ MonoBehaviour:
     _groupName: Default
     _subgroupName: SubGroup
     _talkName: Talk1
-  CategoryIndex: 1
+  CategoryIndex: 0

@@ -92,7 +92,7 @@ namespace TalkSystem
         public void ClearAll()
         {
             _clearColors.Clear();
-            _charsWritten.Clear();
+            //_charsWritten.Clear();
 
             _text.rectTransform.anchoredPosition = _textConstAnchoredPosition;
 
@@ -125,7 +125,7 @@ namespace TalkSystem
 
         public void ShowChar(int charIndex, Color32 color)
         {
-            _charsWritten.Add(new CharWritten() { _index = charIndex, _color = color });
+            //_charsWritten.Add(new CharWritten() { _index = charIndex, _color = color });
 
             var colors = _text.mesh.colors;
 
@@ -244,9 +244,9 @@ namespace TalkSystem
             //Debug.Log(_charsWritten.Count);
             //_text.ClearMesh();
 
-            for (int i = 0; i < _charsWritten.Count; i++)
+            //for (int i = 0; i < _charsWritten.Count; i++)
             {
-                var charInfo  = _charsWritten[i];
+                //var charInfo  = _charsWritten[i];
 
                 //ShowChar(charInfo._index, charInfo._color);
                 //_charsWritten.RemoveAt(_charsWritten.Count - 1);

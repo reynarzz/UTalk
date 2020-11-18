@@ -70,7 +70,7 @@ namespace TalkSystem.Editor
 
                     for (int j = 0; j < groupsFolders.Length; j++)
                     {
-                        LoadGroups(languages[i], groupsFolders[i]);
+                        LoadGroups(languages[i], groupsFolders[j]);
 
                         var subGroupsFolders = Directory.GetDirectories(groupsFolders[j]);
 
@@ -101,7 +101,7 @@ namespace TalkSystem.Editor
 
             var group = new Group() { Language = languageName, Name = groupName };
 
-            Debug.Log(languageName + ", " + groupName);
+            //Debug.Log(languageName + ", " + groupName);
 
             _groups.Add(group);
         }
@@ -113,8 +113,6 @@ namespace TalkSystem.Editor
             var subGroup = new SubGroup();
             subGroup.Name = subGroupName;
 
-            Debug.Log(subGroupName);
-
             _groups[groupIndex].SubGroups.Add(subGroup);
         }
 
@@ -122,16 +120,12 @@ namespace TalkSystem.Editor
         {
             //if (!path.EndsWith(".meta"))
             {
-                Debug.Log(path);
-
-
                 var talkName = new DirectoryInfo(path).Name;
                 var group = _groups[groupIndex];
 
                 var subGroups = group.SubGroups[subGroupIndex];
 
                 var talkData = new TalkData(new TalkInfo(group.Name, subGroups.Name, talkName, Language.English));
-                Debug.Log(talkData.TalkInfo);
 
                 var pages = Directory.GetFiles(path);
 
@@ -142,13 +136,8 @@ namespace TalkSystem.Editor
                     talkData.AddPage(new TextPage(page, new SDictionary<int, Highlight>()));
                 }
 
-                //talkData.AddPage();
-                Debug.Log(talkName);
-
                 subGroups.Talks.Add(talkData);
-                //Debug.Log(page);
             }
         }
-
     }
 }
