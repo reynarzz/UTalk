@@ -30,7 +30,7 @@ using UnityEngine;
 
 namespace TalkSystem.Editor
 {
-    public class PageNavigator
+    public class PageNavigator : IPage
     {
         private GUIStyle _navigationButtons;
         private GUIStyle _pathLabel;
@@ -41,6 +41,8 @@ namespace TalkSystem.Editor
         private StringBuilder _path;
 
         private TalkDataContainerScriptable.PageNavigatorState _pageNavigatorState;
+
+        public string NavigationName => "Editor";
 
         public PageNavigator(TalkDataContainer dataContainer, TalkDataContainerScriptable.PageNavigatorState pageState)
         {
@@ -123,18 +125,22 @@ namespace TalkSystem.Editor
 
             for (int i = 0; i < _navigatedPages.Count; i++)
             {
-                _path.Append(_navigatedPages[i].NavigationName);
+                _path.Append($"<color=#fff>{_navigatedPages[i].NavigationName}</color>");
 
                 if (i + 1 < _navigatedPages.Count)
                     _path.Append("<color=#fff>/</color>");
             }
 
-            if (GUILayout.Button("Back", GUILayout.MaxWidth(60)))
+            if (GUILayout.Button(_navigatedPages.Count == 1?"Home":"Back", GUILayout.MaxWidth(60)))
             {
                 PopPage();
             }
 
-            GUILayout.Label($"Path: {_path}", _pathLabel);
+            var c = GUI.color;
+            GUI.color = Color.gray;
+
+            GUILayout.Label($"<color=#ff2>Path:</color> {_path}", _pathLabel);
+            GUI.color = c;
             GUILayout.EndHorizontal();
         }
 

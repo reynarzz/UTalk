@@ -84,6 +84,11 @@ namespace TalkSystem
 
             _language = language;
         }
+
+        public override string ToString()
+        {
+            return $"Group: {_groupName}, SubGroup: {_subGroupName}, TalkName: {_talkName}";
+        }
     }
 
     [Serializable]
@@ -346,6 +351,8 @@ namespace TalkSystem
         [SerializeField] private string _group;
 
         [SerializeField] private List<TextPage> _pages;
+
+        public bool Selected_Editor { get; set; }
 
         public TalkInfo TalkInfo => _talkInfo;
 
