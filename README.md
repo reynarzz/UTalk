@@ -38,6 +38,6 @@ This is just starting, These are some of the features that will be added soon.
 
 - [x] Localization Support
 - [ ] A Robust Editor.
-   - [x] Write and hightlight the most important words.
+   - [x] Write and hightlight the words.
    - [ ] Import/Export talk files.
 - [x] Animations to the words.
