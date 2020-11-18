@@ -1,4 +1,4 @@
-# UnityTextHighlight
+# unityTalk
 A talk system that highlights words in your paragraphs very easy.
 
 ## How it looks?
