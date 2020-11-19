@@ -20,6 +20,10 @@ MonoBehaviour:
       - _groups:
           _keys:
           - Default
+          - Other group
+          - erwser
+          - werwertwer
+          - werwer
           _values:
           - _groupName: Default
             _language: 0
@@ -63,10 +67,11 @@ MonoBehaviour:
                       _offset: 15
                     _instantInfo:
                       _TextAnimation: 0
-                  - _pageText: "But usually it\u2019s better to have a solid idea
-                      and plan of attack in place..."
+                  - _pageText: "But usually it\u2019s better to have a solid idea\nand
+                      plan of attack in place..."
                     _talkerName: Mike
-                    _sprites: []
+                    _sprites:
+                    - {fileID: 21300000, guid: 87d289e356c3c9a49b503236bac67256, type: 3}
                     _highlight:
                       _keys: 07000000
                       _values:
@@ -90,6 +95,26 @@ MonoBehaviour:
                       _offset: 15
                     _instantInfo:
                       _TextAnimation: 0
+          - _groupName: Other group
+            _language: 0
+            _talks:
+              _keys: []
+              _values: []
+          - _groupName: erwser
+            _language: 0
+            _talks:
+              _keys: []
+              _values: []
+          - _groupName: werwertwer
+            _language: 0
+            _talks:
+              _keys: []
+              _values: []
+          - _groupName: werwer
+            _language: 0
+            _talks:
+              _keys: []
+              _values: []
       - _groups:
           _keys:
           - Default
@@ -110,6 +135,6 @@ MonoBehaviour:
               _values: []
   _pageState:
     _groupName: Default
-    _subgroupName: SubGroup
-    _talkName: Talk1
+    _subgroupName: 
+    _talkName: 
   CategoryIndex: 0

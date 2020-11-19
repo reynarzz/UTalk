@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.Experimental;
 using UnityEngine;
 
 namespace TalkSystem.Editor
@@ -19,7 +20,6 @@ namespace TalkSystem.Editor
         private GUIStyle _navigationButtons;
         private GUIStyle _groupGridButtons;
 
-        private int _currentGroup = -1;
         public string NavigationName => "Groups";
 
         private GUIContent[] _groupsTextGrid;
@@ -28,7 +28,9 @@ namespace TalkSystem.Editor
         private List<SDictionary<string, TalksGroupData>> _groups;
         private List<GUIContent> _groupsTextGridList;
 
-        private Vector2 _gridScroll;
+        private Vector2 _groupsScroll;
+
+        private const int _groupsPerRow = 2;
 
         public TalkGroupsPage(TalkDataContainer dataContainer, PageNavigator navigator)
         {
@@ -36,18 +38,50 @@ namespace TalkSystem.Editor
             _navigator = navigator;
 
             _groupGridButtons = new GUIStyle(GUI.skin.button);
+            _groupGridButtons.normal.background = GetNewTex(Color.clear);
+            _groupGridButtons.active.background = GetNewTex(Color.black * 0.3f);
+
+            _groupGridButtons.hover.background = GetNewTex(Color.black * 0.1f);
+
+            _groupGridButtons.wordWrap = true;
+
             _groupGridButtons.margin.top = 10;
             _groupGridButtons.margin.bottom = 10;
-            _groupGridButtons.margin.right = 10;
-            _groupGridButtons.margin.left = 10;
+            _groupGridButtons.margin.right = 35;
+            _groupGridButtons.margin.left = 35;
 
-            _groupGridButtons.padding.bottom = 25;
-            _groupGridButtons.padding.top = 25;
+            _groupGridButtons.padding.bottom = 10;
+            _groupGridButtons.padding.top = 10;
+
+            //_groupGridButtons.padding.left = 1;
+            //_groupGridButtons.padding.right = 1;
+
+            //_groupGridButtons.contentOffset = new Vector2(-20, 0);
+            _groupGridButtons.imagePosition = ImagePosition.ImageAbove;
+            _groupGridButtons.normal.textColor = Color.white;
+            _groupGridButtons.fontSize = 10;
 
             _groups = new List<SDictionary<string, TalksGroupData>>();
             _groupsTextGridList = new List<GUIContent>();
 
             SetGroups();
+        }
+
+        private Texture2D GetNewTex(Color color)
+        {
+            var tex = new Texture2D(Texture2D.whiteTexture.width, Texture2D.whiteTexture.height);
+
+            for (int x = 0; x < tex.width; x++)
+            {
+                for (int y = 0; y < tex.height; y++)
+                {
+                    tex.SetPixel(x, y, color);
+                }
+            }
+
+            tex.Apply();
+
+            return tex;
         }
 
         private void SetGroups()
@@ -58,10 +92,20 @@ namespace TalkSystem.Editor
             var groups = _dataContainer.GetGroupsByLanguage(_dataContainer.Language).Groups;
             _groups.Add(groups);
 
+            var groupWithContentIcon = EditorGUIUtility.IconContent("Folder On Icon");
+            var groupNoContentIcon = groupWithContentIcon;// EditorGUIUtility.IconContent("FolderEmpty On Icon");
+            //groupNoContentIcon.image.height = 20;
+            //groupNoContentIcon.image.width = 20;
+
+            var icon = default(GUIContent);
+
             for (int i = 0; i < groups.Count; i++)
             {
-                //Maybe i will add icons or something.
-                _groupsTextGridList.Add(new GUIContent(groups.Keys.ElementAt(i)));
+                icon = groups[groups.Keys.ElementAt(i)].SubGroups.Count > 0 ? groupWithContentIcon : groupNoContentIcon;
+
+                icon.text = groups.Keys.ElementAt(i);
+
+                _groupsTextGridList.Add(new GUIContent(icon));
             }
 
             _groupsTextGrid = _groupsTextGridList.ToArray();
@@ -70,7 +114,7 @@ namespace TalkSystem.Editor
         public void OnGUI()
         {
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
-            
+
             var search = EditorStyles.toolbarSearchField;
 
             search.margin.left = 5;
@@ -97,16 +141,7 @@ namespace TalkSystem.Editor
 
             GUILayout.EndHorizontal();
 
-            if (_groups.Count > 0)
-            {
-                if (_currentGroup < 0)
-                {
-
-                    Groups();
-                }
-
-                TalksPage();
-            }
+            Groups();
         }
 
         private void LanguageSwitchedUpdate(Language current, Language compare)
@@ -128,15 +163,37 @@ namespace TalkSystem.Editor
             });
         }
 
-
-
         private void Groups()
         {
             GUILayout.Space(4);
 
-            _gridScroll = GUILayout.BeginScrollView(_gridScroll);
+            _groupsScroll = GUILayout.BeginScrollView(_groupsScroll);
 
-            _currentGroup = GUILayout.SelectionGrid(_currentGroup, _groupsTextGrid, 2, _groupGridButtons);
+            var index = 0;
+
+            for (int i = 0; i < _groupsTextGrid.Length; i++)
+            {
+                GUILayout.BeginHorizontal();
+
+                for (int j = 0; j < _groupsPerRow; j++)
+                {
+                    if (GUILayout.Button(_groupsTextGrid[index], _groupGridButtons))
+                    {
+                        TalksPage(_groupsTextGrid[index].text);
+                    }
+
+                    index++;
+
+                    if (index == _groupsTextGrid.Length)
+                    {
+                        i = _groupsTextGrid.Length;
+
+                        break;
+                    }
+                }
+
+                GUILayout.EndHorizontal();
+            }
 
             if (_deleteGroup)
             {
@@ -148,7 +205,7 @@ namespace TalkSystem.Editor
                     {
                         if (_groupsTextGrid.Length > selectedGroup)
                         {
-                            if (GUI.Button(new Rect(j * Screen.width / 2, i * 80, 20, 20), "X"))
+                            if (GUI.Button(new Rect(15 + j * (Screen.width / 2 - 16), i * 110 + 10, 20, 20), "X"))
                             {
                                 Context.Delete(TalkEditorWindow.Position, "Group", _groupsTextGrid[selectedGroup].text, "Entire group", DeleteGroup);
 
@@ -169,19 +226,15 @@ namespace TalkSystem.Editor
                 }
             }
 
+
             GUILayout.EndScrollView();
         }
-        
-        private void TalksPage()
-        {
-            if (_currentGroup > -1)
-            {
-                var pageName = _groupsTextGrid[_currentGroup].text;
-                var talkPage = _navigator.PushTalkPage(pageName);
 
-                _deleteGroup = false;
-                _currentGroup = -1;
-            }
+        private void TalksPage(string groupName)
+        {
+            _navigator.PushTalkPage(groupName);
+
+            _deleteGroup = false;
         }
     }
 }

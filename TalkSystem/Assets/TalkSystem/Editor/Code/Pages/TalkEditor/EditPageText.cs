@@ -204,7 +204,9 @@ namespace TalkSystem.Editor
             var prevSkin = _textPageIndex > 0 ? _prevNextButtons : _prevNextButtonsDisabled;
 
             GUI.SetNextControlName("Prev");
-            if (GUILayout.Button("Prev", prevSkin) && _textPageIndex > 0)
+            var prev = EditorGUIUtility.IconContent("tab_prev");
+
+            if (GUILayout.Button(prev, prevSkin) && _textPageIndex > 0)
             {
                 TalkEditorWindow.RecordToUndo("go prev page");
 
@@ -219,7 +221,11 @@ namespace TalkSystem.Editor
             GUILayout.Label((_textPageIndex + 1).ToString() + "/" + _talkData.PagesCount, _centeredLabel, GUILayout.Width(40));
 
             GUI.SetNextControlName("Next");
-            if (GUILayout.Button("Next", nextSkin) && _textPageIndex + 1 < _talkData.PagesCount)
+
+            var next = EditorGUIUtility.IconContent("tab_next");
+            //next.text = "Next";
+
+            if (GUILayout.Button(next, nextSkin) && _textPageIndex + 1 < _talkData.PagesCount)
             {
                 TalkEditorWindow.RecordToUndo("advance next page");
 
@@ -235,8 +241,10 @@ namespace TalkSystem.Editor
         private void AddRemovePageToolbar()
         {
             GUILayout.BeginHorizontal(EditorStyles.helpBox);
+            var addIcon = EditorGUIUtility.IconContent("CreateAddNew");
+            //addIcon.text = "Add";
 
-            if (GUILayout.Button("Add Page"))
+            if (GUILayout.Button(addIcon))
             {
                 TalkEditorWindow.RecordToUndo("PageAdded");
 
@@ -248,7 +256,10 @@ namespace TalkSystem.Editor
 
             var buttonSkin = _talkData.PagesCount > 1 ? GUI.skin.button : _disabledButton;
 
-            if (GUILayout.Button("Delete This", buttonSkin))
+            var deleteIcon = EditorGUIUtility.IconContent("TreeEditor.Trash");
+            //deleteIcon.text = "Delete";
+
+            if (GUILayout.Button(deleteIcon, buttonSkin))
             {
                 if (_talkData.PagesCount > 1)
                 {
@@ -443,7 +454,10 @@ namespace TalkSystem.Editor
         {
             GUILayout.Space(5);
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Preview");
+            var previewIcon = EditorGUIUtility.IconContent("d_animationvisibilitytoggleon");
+            previewIcon.text = "Preview";
+
+            GUILayout.Label(previewIcon);
             //_backgroundColor = EditorGUILayout.ColorField(_backgroundColor, GUILayout.MaxWidth(100));
 
             GUILayout.EndHorizontal();
@@ -457,12 +471,18 @@ namespace TalkSystem.Editor
 
         private void PageOptions()
         {
-            GUILayout.Label("Page Options");
+            var configIcon = EditorGUIUtility.IconContent("d__Popup");
+            configIcon.text = "Page Options";
+            GUILayout.Label(configIcon);
 
             GUILayout.BeginVertical(EditorStyles.helpBox);
             var talkerName = EditorGUILayout.TextField("Talker Name", _currentTextPage.TalkerName);
             EditorGUILayout.Separator();
-            var writerType = (WriteType)EditorGUILayout.EnumPopup("Write Type", _currentTextPage.WriteType);
+
+            var writeIcon = EditorGUIUtility.IconContent("d_editicon.sml");
+            writeIcon.text = "Write Type";
+
+            var writerType = (WriteType)EditorGUILayout.EnumPopup(writeIcon, _currentTextPage.WriteType);
 
             switch (writerType)
             {
@@ -514,7 +534,11 @@ namespace TalkSystem.Editor
             GUILayout.BeginVertical();
 
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Sprites", GUILayout.MaxWidth(135));
+
+            var spriteIcon = EditorGUIUtility.IconContent("d_Sprite Icon");
+            spriteIcon.text = "Sprites";
+
+            EditorGUILayout.LabelField(spriteIcon, GUILayout.MaxWidth(135));
             GUILayout.Space(10);
             if (GUILayout.Button("Add"))
             {
@@ -566,7 +590,10 @@ namespace TalkSystem.Editor
         {
             var instantInfo = _currentTextPage.InstantInfo;
 
-            var animType = (TextAnimation)EditorGUILayout.EnumPopup("Animation", instantInfo.TextAnimation);
+            var animIcon = EditorGUIUtility.IconContent("AnimationClip Icon");
+            animIcon.text = "Animation";
+
+            var animType = (TextAnimation)EditorGUILayout.EnumPopup(animIcon, instantInfo.TextAnimation);
 
             if (instantInfo.TextAnimation != animType)
             {
@@ -581,7 +608,27 @@ namespace TalkSystem.Editor
         {
             var charByCharWriteInfo = _currentTextPage.CharByCharInfo;
 
-            charByCharWriteInfo.AnimationType = (CharByCharInfo.CharByCharAnimation)EditorGUILayout.EnumPopup("Animation", charByCharWriteInfo.AnimationType);
+            var normalWriteSpeed = EditorGUILayout.FloatField("Normal write delay ", charByCharWriteInfo.NormalWriteSpeed);
+            var fastWriteSpeed = EditorGUILayout.FloatField("Fast write delay ", charByCharWriteInfo.FastWriteSpeed);
+
+            if (charByCharWriteInfo.NormalWriteSpeed != normalWriteSpeed)
+            {
+                TalkEditorWindow.RecordToUndo("n write speed");
+                charByCharWriteInfo.NormalWriteSpeed = normalWriteSpeed;
+            }
+
+            if (charByCharWriteInfo.FastWriteSpeed != fastWriteSpeed)
+            {
+                TalkEditorWindow.RecordToUndo("f write speed");
+                charByCharWriteInfo.FastWriteSpeed = fastWriteSpeed;
+            }
+
+            EditorGUILayout.Separator();
+
+            var animIcon = EditorGUIUtility.IconContent("AnimationClip Icon");
+            animIcon.text = "Animation";
+
+            charByCharWriteInfo.AnimationType = (CharByCharInfo.CharByCharAnimation)EditorGUILayout.EnumPopup(animIcon, charByCharWriteInfo.AnimationType);
 
             switch (charByCharWriteInfo.AnimationType)
             {
@@ -611,20 +658,7 @@ namespace TalkSystem.Editor
                     break;
             }
 
-            var normalWriteSpeed = EditorGUILayout.FloatField("Normal write delay ", charByCharWriteInfo.NormalWriteSpeed);
-            var fastWriteSpeed = EditorGUILayout.FloatField("Fast write delay ", charByCharWriteInfo.FastWriteSpeed);
-
-            if (charByCharWriteInfo.NormalWriteSpeed != normalWriteSpeed)
-            {
-                TalkEditorWindow.RecordToUndo("n write speed");
-                charByCharWriteInfo.NormalWriteSpeed = normalWriteSpeed;
-            }
-
-            if (charByCharWriteInfo.FastWriteSpeed != fastWriteSpeed)
-            {
-                TalkEditorWindow.RecordToUndo("f write speed");
-                charByCharWriteInfo.FastWriteSpeed = fastWriteSpeed;
-            }
+            
 
             _currentTextPage.CharByCharInfo = charByCharWriteInfo;
         }

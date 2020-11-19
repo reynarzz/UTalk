@@ -131,7 +131,12 @@ namespace TalkSystem.Editor
                     _path.Append("<color=#fff>/</color>");
             }
 
-            if (GUILayout.Button(_navigatedPages.Count == 1 ? "Home" : "Back", GUILayout.MaxWidth(60)))
+            var backIcon = EditorGUIUtility.IconContent("back");
+
+            //TODO: Add house/home icon
+            var content = _navigatedPages.Count == 1 ? backIcon : backIcon;
+
+            if (GUILayout.Button(content, GUILayout.MinHeight(20), GUILayout.MaxWidth(35)))
             {
                 PopPage();
             }
