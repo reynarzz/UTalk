@@ -1,4 +1,4 @@
-# uTalk
+# UTalk
 A talk system that highlights words in all your text very easy.
 
 ## How it looks?
@@ -47,4 +47,4 @@ This is just starting, These are some of the features that will be added soon.
 - [x] Animations to the words.
 
 ## Running ver?
-2020.1.9f1, but newer versions could work as well.
+2020.1.9f1, but newer versions should work as well.
