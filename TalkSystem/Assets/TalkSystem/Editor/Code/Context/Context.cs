@@ -92,7 +92,7 @@ namespace uTalk.Editor
             window.titleContent = new GUIContent(title);
 
             _constantPos = position;
-            window.ShowModal();
+            window.ShowModalUtility();
         }
 
         private void OnGUI()

@@ -31,6 +31,7 @@ namespace uTalk.Editor
         private Vector2 _groupsScroll;
 
         private const int _groupsPerRow = 2;
+        private List<bool> _deleteToggles;
 
         public TalkGroupsPage(TalkDataContainer dataContainer, PageNavigator navigator)
         {
@@ -63,6 +64,7 @@ namespace uTalk.Editor
 
             _groups = new List<SDictionary<string, TalksGroupData>>();
             _groupsTextGridList = new List<GUIContent>();
+            _deleteToggles = new List<bool>();
 
             SetGroups();
         }
@@ -88,6 +90,8 @@ namespace uTalk.Editor
         {
             _groups.Clear();
             _groupsTextGridList.Clear();
+            _deleteToggles.Clear();
+            _deleteGroup = false;
 
             var groups = _dataContainer.GetGroupsByLanguage(_dataContainer.Language).Groups;
             _groups.Add(groups);
@@ -106,6 +110,7 @@ namespace uTalk.Editor
                 icon.text = groups.Keys.ElementAt(i);
 
                 _groupsTextGridList.Add(new GUIContent(icon));
+                _deleteToggles.Add(false);
             }
 
             _groupsTextGrid = _groupsTextGridList.ToArray();
@@ -113,6 +118,13 @@ namespace uTalk.Editor
 
         public void OnGUI()
         {
+            var currentEvent = Event.current;
+
+            if (currentEvent.control && currentEvent.type == EventType.KeyUp)
+            {
+                SetGroups();
+            }
+
             GUILayout.BeginHorizontal(EditorStyles.toolbar);
 
             var search = EditorStyles.toolbarSearchField;
@@ -126,11 +138,21 @@ namespace uTalk.Editor
 
             if (GUILayout.Button("+", EditorStyles.toolbarButton, GUILayout.MaxWidth(30)))
             {
+                _deleteGroup = false;
+
                 AddGroup();
                 return;
             }
 
+
+            var prevDelete = _deleteGroup;
+
             _deleteGroup = GUILayout.Toggle(_deleteGroup, "x", EditorStyles.toolbarButton, GUILayout.MaxWidth(30));
+
+            if (!_deleteGroup && prevDelete)
+            {
+                RestartDeleteSelection();
+            }
 
             var prevLang = _dataContainer.Language;
 
@@ -141,7 +163,17 @@ namespace uTalk.Editor
 
             GUILayout.EndHorizontal();
 
+
+
             Groups();
+        }
+
+        private void RestartDeleteSelection()
+        {
+            for (int i = 0; i < _deleteToggles.Count; i++)
+            {
+                _deleteToggles[i] = false;
+            }
         }
 
         private void LanguageSwitchedUpdate(Language current, Language compare)
@@ -205,21 +237,37 @@ namespace uTalk.Editor
                     {
                         if (_groupsTextGrid.Length > selectedGroup)
                         {
-                            if (GUI.Button(new Rect(15 + j * (Screen.width / 2 - 16), i * 110 + 10, 20, 20), "X"))
-                            {
-                                Context.Delete(UTalkEditorWindow.Position, "Group", _groupsTextGrid[selectedGroup].text, "Entire group", DeleteGroup);
+                            _deleteToggles[selectedGroup] = GUI.Toggle(new Rect(15 + j * (Screen.width / 2 - 16), i * 110 + 10, 20, 20), _deleteToggles[selectedGroup], "");
 
-                                void DeleteGroup()
-                                {
-                                    _dataContainer.DeleteGroup(_groupsTextGrid[selectedGroup].text, _dataContainer.Language);
-                                }
-
-                                SetGroups();
-                                return;
-                            }
                         }
 
                         selectedGroup++;
+                    }
+                }
+
+                if (_deleteToggles.Any(x => x))
+                {
+                    if (GUI.Button(new Rect(0, Screen.height - 123, Screen.width, 20), $"Delete ({_deleteToggles.Count(x => x)})"))
+                    {
+                        Context.Delete(UTalkEditorWindow.Position, "Group", "Selected", "groups", DeleteGroup);
+
+                        void DeleteGroup()
+                        {
+                            UTalkEditorWindow.RecordToUndo("Delete group");
+
+                            for (int i = 0; i < _deleteToggles.Count; i++)
+                            {
+                                if (_deleteToggles[i])
+                                {
+                                    _dataContainer.DeleteGroup(_groupsTextGrid[i].text, _dataContainer.Language);
+                                }
+                            }
+
+                            SetGroups();
+                            _deleteGroup = false;
+                        }
+
+                        return;
                     }
                 }
             }
@@ -232,6 +280,7 @@ namespace uTalk.Editor
         {
             _navigator.PushTalkPage(groupName);
 
+            RestartDeleteSelection();
             _deleteGroup = false;
         }
     }
