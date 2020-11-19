@@ -28,59 +28,59 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
-namespace TalkSystem
+namespace uTalk
 {
     public class RuntimeTextExample : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI _spaceText;
         [SerializeField] private TalkCloudBase _talkCloud;
 
-        private TalkData _data;
+        //private TalkData _data;
 
-        private void Start()
-        {
-            var text = "This is the first line.\nThis is the second and final.";
+        //private void Start()
+        //{
+        //    var text = "This is the first line.\nThis is the second and final.";
 
-            var page = new TextPage(text,
-                new SDictionary<int, Highlight>()
-                {
-                    { 0, new Highlight(0, 0, "This".Length, Color.blue) },
-                    { 3, new Highlight(3, 0,"first".Length, Color.red) },
-                    { 8, new Highlight(8, 0,"second".Length, Color.green) }
-                });
+        //    var page = new TextPage(text,
+        //        new SDictionary<int, Highlight>()
+        //        {
+        //            { 0, new Highlight(0, 0, "This".Length, Color.blue) },
+        //            { 3, new Highlight(3, 0,"first".Length, Color.red) },
+        //            { 8, new Highlight(8, 0,"second".Length, Color.green) }
+        //        });
 
-            _data = new TalkData(new TalkInfo("", "", "SpanishTalk", Language.Spanish), new List<TextPage>() { page });
-        }
+        //    _data = new TalkData(new TalkInfo("", "", "SpanishTalk", Language.Spanish), new List<TextPage>() { page });
+        //}
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (!Talk.Inst.IsTalking)
-                {
-                    Talk.Inst.StartTalk(_talkCloud, _data, Handler);
-                }
-                else
-                {
-                    Talk.Inst.NextPage();
-                }
-            }
-        }
+        //private void Update()
+        //{
+        //    if (Input.GetKeyDown(KeyCode.Space))
+        //    {
+        //        if (!UTalk.Inst.IsTalking)
+        //        {
+        //            UTalk.Inst.StartTalk(_talkCloud, _data, Handler);
+        //        }
+        //        else
+        //        {
+        //            UTalk.Inst.NextPage();
+        //        }
+        //    }
+        //}
 
-        private void Handler(TalkEvent talkEvent)
-        {
-            switch (talkEvent)
-            {
-                case TalkEvent.Started:
-                    _spaceText.enabled = false;
-                    break;
-                case TalkEvent.Finished:
-                    _spaceText.enabled = true;
-                    break;
-                case TalkEvent.PageChanged:
-                    var pageIndex = Talk.Inst.PageIndex;
-                    break;
-            }
-        }
+        //private void Handler(TalkEvent talkEvent)
+        //{
+        //    switch (talkEvent)
+        //    {
+        //        case TalkEvent.Started:
+        //            _spaceText.enabled = false;
+        //            break;
+        //        case TalkEvent.Finished:
+        //            _spaceText.enabled = true;
+        //            break;
+        //        case TalkEvent.PageChanged:
+        //            var pageIndex = UTalk.Inst.PageIndex;
+        //            break;
+        //    }
+        //}
     }
 }

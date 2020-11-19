@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEditor.Experimental;
 using UnityEngine;
 
-namespace TalkSystem.Editor
+namespace uTalk.Editor
 {
     public class TalkGroupsPage : IPage
     {
@@ -155,7 +155,7 @@ namespace TalkSystem.Editor
 
         private void AddGroup()
         {
-            Context.ShowCreateGroup(TalkEditorWindow.Position, "Group", x =>
+            Context.ShowCreateGroup(UTalkEditorWindow.Position, "Group", x =>
             {
                 _dataContainer.CreateGroup(x, _dataContainer.Language);
 
@@ -207,7 +207,7 @@ namespace TalkSystem.Editor
                         {
                             if (GUI.Button(new Rect(15 + j * (Screen.width / 2 - 16), i * 110 + 10, 20, 20), "X"))
                             {
-                                Context.Delete(TalkEditorWindow.Position, "Group", _groupsTextGrid[selectedGroup].text, "Entire group", DeleteGroup);
+                                Context.Delete(UTalkEditorWindow.Position, "Group", _groupsTextGrid[selectedGroup].text, "Entire group", DeleteGroup);
 
                                 void DeleteGroup()
                                 {

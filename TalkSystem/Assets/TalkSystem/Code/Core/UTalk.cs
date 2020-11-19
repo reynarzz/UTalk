@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace TalkSystem
+namespace uTalk
 {
     public enum TalkEvent
     {
@@ -37,7 +37,7 @@ namespace TalkSystem
     }
 
     /// <summary>Entry point to control the talk system. put this in your GM object.</summary>
-    public class Talk : MonoSingleton<Talk>
+    public class UTalk : MonoSingleton<UTalk>
     {
         [SerializeField] private TalkDataContainerScriptable _scriptableContainer;
 
@@ -244,8 +244,8 @@ namespace TalkSystem
             }
         }
 
-        //Call it when a talk is running and the language in changed, to update the cloud talk with the new text.
-        /// <summary>When the language is changing.</summary>
+        //Call it when a talk is running and the language is changed to update the cloud talk with the new text.
+        /// <summary>Call when the language is changed.</summary>
         public void SetTalkOnLanguageChanged(TalkInfo info)
         {
             if (_scriptableContainer)

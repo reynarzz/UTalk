@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace TalkSystem
+namespace uTalk
 {
     /// <summary>Serializable dictionary for the talk system.</summary>
     [Serializable]

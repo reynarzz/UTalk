@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-namespace TalkSystem.Editor
+namespace uTalk.Editor
 {
     public class TalkFileManager : IPage
     {

@@ -1,31 +1,35 @@
-# unityTalk
-A talk system that highlights words in your paragraphs very easy.
+# uTalk
+A talk system that highlights words in all your text very easy.
 
 ## How it looks?
-Let's choose colors for some important words!
+Let's choose some colors for all the important words!
 
 ![](ReadmeFiles/TalkCloudDemo2.gif)
 
 ## Simple to use
 Just a few method calls and you will be ready to show some awesome text!
 ```c#
-using Talk;
+using uTalk;
 
 namespace MyProject
 {
     public class Example : MonoBehaviour
     {
-        private void Update()
+	[SerializeField] private TalkCloudBase _talkCloud;
+        
+	private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetMouseButtonDown(0))
             {
-                if (!TalkSystem.Inst.TalkStarted)
+                if (!UTalk.Inst.IsTalking)
                 {
-                    TalkSystem.Inst.StartTalk();
+		    var talkInfo = new TalkInfo("Group", "SubGroup", "TalkName", "Language");
+
+                    UTalk.Inst.StartTalk(_talkCloud, talkInfo);
                 }
                 else
                 {
-                    TalkSystem.Inst.NextPage();
+                    UTalk.Inst.NextPage();
                 }
             }
         }
@@ -41,3 +45,6 @@ This is just starting, These are some of the features that will be added soon.
    - [x] Write and hightlight the words.
    - [ ] Import/Export talk files.
 - [x] Animations to the words.
+
+## Running ver?
+2020.1.9f1, but newer versions could work as well.

@@ -26,9 +26,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using TalkSystem.Editor;
+using uTalk.Editor;
 
-namespace TalkSystem
+namespace uTalk
 {
     public class PagesFactory 
     {

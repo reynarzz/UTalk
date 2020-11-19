@@ -10,7 +10,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace TalkSystem.Editor
+namespace uTalk.Editor
 {
     public static class Utils
     {

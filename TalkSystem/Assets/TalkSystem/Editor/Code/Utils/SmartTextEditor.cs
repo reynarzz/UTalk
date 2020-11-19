@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System.Reflection;
 
-namespace TalkSystem.Editor
+namespace uTalk.Editor
 {
     /// <summary>Captures the events of the TextEditor</summary>
     public class SmartTextEditor : TextEditor

@@ -31,7 +31,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace TalkSystem.Editor
+namespace uTalk.Editor
 {
     //This class needs a huge refactorization.
     public class EditPageText : IPage
@@ -208,7 +208,7 @@ namespace TalkSystem.Editor
 
             if (GUILayout.Button(prev, prevSkin) && _textPageIndex > 0)
             {
-                TalkEditorWindow.RecordToUndo("go prev page");
+                UTalkEditorWindow.RecordToUndo("go prev page");
 
                 GUI.FocusControl("Prev");
 
@@ -227,7 +227,7 @@ namespace TalkSystem.Editor
 
             if (GUILayout.Button(next, nextSkin) && _textPageIndex + 1 < _talkData.PagesCount)
             {
-                TalkEditorWindow.RecordToUndo("advance next page");
+                UTalkEditorWindow.RecordToUndo("advance next page");
 
                 GUI.FocusControl("Next");
 
@@ -246,7 +246,7 @@ namespace TalkSystem.Editor
 
             if (GUILayout.Button(addIcon))
             {
-                TalkEditorWindow.RecordToUndo("PageAdded");
+                UTalkEditorWindow.RecordToUndo("PageAdded");
 
 
                 _talkData.CreateEmptyPageWithLastPageOptions();
@@ -263,7 +263,7 @@ namespace TalkSystem.Editor
             {
                 if (_talkData.PagesCount > 1)
                 {
-                    TalkEditorWindow.RecordToUndo("DeletedPage");
+                    UTalkEditorWindow.RecordToUndo("DeletedPage");
                     _talkData.DeletePage(_textPageIndex);
 
                     if (_textPageIndex - 1 > -1)
@@ -313,7 +313,7 @@ namespace TalkSystem.Editor
 
                 if (!string.IsNullOrEmpty(wordsToHighlight) && GUILayout.Button($"Add Hightlight to: {wordsToHighlight}", _buttonWrapStyle))
                 {
-                    TalkEditorWindow.RecordToUndo("add highlight");
+                    UTalkEditorWindow.RecordToUndo("add highlight");
 
                     for (int i = 0; i < selectedWords.Count; i++)
                     {
@@ -363,7 +363,7 @@ namespace TalkSystem.Editor
                         GUILayout.BeginHorizontal();
                         if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
                         {
-                            TalkEditorWindow.RecordToUndo("HRemoved");
+                            UTalkEditorWindow.RecordToUndo("HRemoved");
 
 
                             _currentTextPage.Highlight.Remove(wordIndex);
@@ -390,7 +390,7 @@ namespace TalkSystem.Editor
 
                             if (highlight.Color != color)
                             {
-                                TalkEditorWindow.RecordToUndo("HColor");
+                                UTalkEditorWindow.RecordToUndo("HColor");
 
                             }
 
@@ -403,7 +403,7 @@ namespace TalkSystem.Editor
 
                             if (highlight.Type != type)
                             {
-                                TalkEditorWindow.RecordToUndo("HAnim");
+                                UTalkEditorWindow.RecordToUndo("HAnim");
 
                             }
 
@@ -414,7 +414,7 @@ namespace TalkSystem.Editor
 
                             if (highlight.WriteSpeedType != writeSpeedType)
                             {
-                                TalkEditorWindow.RecordToUndo("HwriteSpeedType");
+                                UTalkEditorWindow.RecordToUndo("HwriteSpeedType");
 
                             }
 
@@ -430,7 +430,7 @@ namespace TalkSystem.Editor
 
                             if (highlight.NormalWriteSpeed != normalWriteSpeed)
                             {
-                                TalkEditorWindow.RecordToUndo("HNWriteSpeed");
+                                UTalkEditorWindow.RecordToUndo("HNWriteSpeed");
                             }
 
                             highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, color, type, writeSpeedType, normalWriteSpeed);
@@ -496,7 +496,7 @@ namespace TalkSystem.Editor
                 case WriteType.Instant:
                     if (_currentTextPage.CharByCharInfo != default)
                     {
-                        TalkEditorWindow.RecordToUndo("char by char default");
+                        UTalkEditorWindow.RecordToUndo("char by char default");
                         _currentTextPage.CharByCharInfo = default;
                     }
                     InstantInfoPageOpt();
@@ -504,7 +504,7 @@ namespace TalkSystem.Editor
                 case WriteType.CharByChar:
                     if (_currentTextPage.InstantInfo != default)
                     {
-                        TalkEditorWindow.RecordToUndo("set instant default");
+                        UTalkEditorWindow.RecordToUndo("set instant default");
 
                         _currentTextPage.InstantInfo = default;
 
@@ -515,14 +515,14 @@ namespace TalkSystem.Editor
 
             if (_currentTextPage.WriteType != writerType)
             {
-                TalkEditorWindow.RecordToUndo("writer name");
+                UTalkEditorWindow.RecordToUndo("writer name");
 
                 _currentTextPage.WriteType = writerType;
             }
 
             if (_currentTextPage.TalkerName != talkerName)
             {
-                TalkEditorWindow.RecordToUndo("Talker name " + talkerName);
+                UTalkEditorWindow.RecordToUndo("Talker name " + talkerName);
 
                 _currentTextPage.TalkerName = talkerName;
             }
@@ -549,7 +549,7 @@ namespace TalkSystem.Editor
             GUILayout.Space(10);
             if (GUILayout.Button("Add"))
             {
-                TalkEditorWindow.RecordToUndo("add sprite");
+                UTalkEditorWindow.RecordToUndo("add sprite");
 
                 _currentTextPage.Sprites.Add(default);
             }
@@ -575,7 +575,7 @@ namespace TalkSystem.Editor
 
                     if (GUILayout.Button("Remove", GUILayout.MaxWidth(60)))
                     {
-                        TalkEditorWindow.RecordToUndo("remove sprite");
+                        UTalkEditorWindow.RecordToUndo("remove sprite");
 
                         _currentTextPage.Sprites.RemoveAt(i);
                         break;
@@ -604,7 +604,7 @@ namespace TalkSystem.Editor
 
             if (instantInfo.TextAnimation != animType)
             {
-                TalkEditorWindow.RecordToUndo("n write speed");
+                UTalkEditorWindow.RecordToUndo("n write speed");
                 instantInfo.TextAnimation = animType;
             }
 
@@ -620,13 +620,13 @@ namespace TalkSystem.Editor
 
             if (charByCharWriteInfo.NormalWriteSpeed != normalWriteSpeed)
             {
-                TalkEditorWindow.RecordToUndo("n write speed");
+                UTalkEditorWindow.RecordToUndo("n write speed");
                 charByCharWriteInfo.NormalWriteSpeed = normalWriteSpeed;
             }
 
             if (charByCharWriteInfo.FastWriteSpeed != fastWriteSpeed)
             {
-                TalkEditorWindow.RecordToUndo("f write speed");
+                UTalkEditorWindow.RecordToUndo("f write speed");
                 charByCharWriteInfo.FastWriteSpeed = fastWriteSpeed;
             }
 
@@ -648,7 +648,7 @@ namespace TalkSystem.Editor
 
                     if (charByCharWriteInfo.OffsetType != offsetType)
                     {
-                        TalkEditorWindow.RecordToUndo("Offset type");
+                        UTalkEditorWindow.RecordToUndo("Offset type");
 
                         charByCharWriteInfo.OffsetType = offsetType;
                     }
@@ -658,7 +658,7 @@ namespace TalkSystem.Editor
 
                     if (charByCharWriteInfo.Offset != offsetValue)
                     {
-                        TalkEditorWindow.RecordToUndo("Offset Value");
+                        UTalkEditorWindow.RecordToUndo("Offset Value");
                         charByCharWriteInfo.Offset = offsetValue;
                     }
 

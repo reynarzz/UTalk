@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 
-namespace TalkSystem
+namespace uTalk
 {
     [CustomPropertyDrawer(typeof(ISerializeField))]
     public class InterfaceDrawer : PropertyDrawer

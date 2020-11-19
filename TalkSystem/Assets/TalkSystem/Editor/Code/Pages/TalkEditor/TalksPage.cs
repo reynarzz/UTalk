@@ -25,11 +25,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TalkSystem.Editor;
+using uTalk.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace TalkSystem.Editor
+namespace uTalk.Editor
 {
     public enum SubGroup
     {
@@ -129,7 +129,7 @@ namespace TalkSystem.Editor
 
         private void AddTalk()
         {
-            Context.ShowCreateTalk(TalkEditorWindow.Position, "Talk", _subGroupsList, (sGroup, tName) =>
+            Context.ShowCreateTalk(UTalkEditorWindow.Position, "Talk", _subGroupsList, (sGroup, tName) =>
             {
                 if (!_dataContainer.ContainsTalk(_talkData.GroupName, sGroup, tName, _talkData.Language))
                 {
@@ -171,11 +171,11 @@ namespace TalkSystem.Editor
 
                     if (GUILayout.Button(deleteIcon, _centeredButtonLabel, GUILayout.Width(22), GUILayout.MaxHeight(22)))
                     {
-                        Context.Delete(TalkEditorWindow.Position, "Delete", key, "Sub-Group and all it's data", DeleteGroup);
+                        Context.Delete(UTalkEditorWindow.Position, "Delete", key, "Sub-Group and all it's data", DeleteGroup);
 
                         void DeleteGroup()
                         {
-                            TalkEditorWindow.RecordToUndo("Delete subGroup");
+                            UTalkEditorWindow.RecordToUndo("Delete subGroup");
 
                             _talkData.SubGroups.Remove(key);
                         }
@@ -209,11 +209,11 @@ namespace TalkSystem.Editor
 
                     if (GUILayout.Button(deletePage, GUILayout.Width(40), GUILayout.MinHeight(40)))
                     {
-                        Context.Delete(TalkEditorWindow.Position, "Delete Talk", talk.TalkInfo.TalkName, "Talk", RemoveTalk);
+                        Context.Delete(UTalkEditorWindow.Position, "Delete Talk", talk.TalkInfo.TalkName, "Talk", RemoveTalk);
 
                         void RemoveTalk()
                         {
-                            TalkEditorWindow.RecordToUndo("Remove talk");
+                            UTalkEditorWindow.RecordToUndo("Remove talk");
 
                             talksOfSubGroup.Talks.RemoveAt(j);
                         }

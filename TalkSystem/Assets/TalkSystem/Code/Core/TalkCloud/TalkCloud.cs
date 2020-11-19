@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace TalkSystem
+namespace uTalk
 {
     public class TalkCloud : ConverzationCloud
     {

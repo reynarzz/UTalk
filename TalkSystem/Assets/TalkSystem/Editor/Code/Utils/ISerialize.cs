@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace TalkSystem
+namespace uTalk
 {
     /// <summary>Wraps an interface to serialize a field with the "ISerializeField" attribute.</summary>
     /// <typeparam name="T"></typeparam>

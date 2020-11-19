@@ -4,16 +4,16 @@ using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using TalkSystem.Editor;
+using uTalk.Editor;
 
-public class TalkEditorWindow : EditorWindow
+public class UTalkEditorWindow : EditorWindow
 {
     private PageNavigator _pageNavigator;
     private TalkFileManager _talkManager;
 
     public static Rect Position;
 
-    private static TalkSystem.TalkDataContainerScriptable _scriptable;
+    private static uTalk.TalkDataContainerScriptable _scriptable;
 
     private IPage[] _mainPages;
     private string[] _mainPageNames;
@@ -21,9 +21,9 @@ public class TalkEditorWindow : EditorWindow
     [MenuItem("Window/TalkEditor")]
     private static void Open()
     {
-        var window = GetWindow<TalkEditorWindow>();
+        var window = GetWindow<UTalkEditorWindow>();
 
-        window.titleContent = new GUIContent("Talk Editor");
+        window.titleContent = new GUIContent("Utalk");
         window.minSize = new Vector2(275, 275);
         window.Show();
     }

@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace TalkSystem
+namespace uTalk
 {
     [Serializable]
     public class TalkGroupsContainer

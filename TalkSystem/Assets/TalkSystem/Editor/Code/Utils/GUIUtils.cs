@@ -30,7 +30,7 @@ using UnityEngine;
 using System.Reflection;
 using UnityEditor;
 
-namespace TalkSystem.Editor
+namespace uTalk.Editor
 {
     /// <summary>A hack to get all the properties of the text area.</summary>
     public static class GUIUtils

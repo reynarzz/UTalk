@@ -4,7 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 //using TalkSystem.Editor;
-using TalkSystem;
+using uTalk;
 
 namespace Tests
 {

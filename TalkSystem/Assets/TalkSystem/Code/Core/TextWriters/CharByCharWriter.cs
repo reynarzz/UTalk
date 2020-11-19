@@ -30,7 +30,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 
-namespace TalkSystem
+namespace uTalk
 {
     public class CharByCharWriter : WriterBase
     {

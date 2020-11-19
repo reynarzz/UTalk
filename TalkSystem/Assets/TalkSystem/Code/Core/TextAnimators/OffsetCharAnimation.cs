@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace TalkSystem
+namespace uTalk
 {
     public class OffsetCharAnimation : TextAnimationBase
     {

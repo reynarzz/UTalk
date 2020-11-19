@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace TalkSystem.Editor
+namespace uTalk.Editor
 {
     //Maybe this has to be inside the text scriptable object, and be cleaned on build.
     public static class TalkEditorClipboard

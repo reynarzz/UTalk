@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
-namespace TalkSystem
+namespace uTalk
 {
     public enum WriteType
     {

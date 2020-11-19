@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
-namespace TalkSystem
+namespace uTalk
 {
     public class Example : MonoBehaviour
     {
@@ -40,23 +40,25 @@ namespace TalkSystem
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if (!Talk.Inst.IsTalking)
+                if (!UTalk.Inst.IsTalking)
                 {
-                    Talk.Inst.StartTalk(_talkCloud, new TalkInfo("Default", "SubGroup", "Talk1", Language.English), Handler);
+                    var info = new TalkInfo("Default", "SubGroup", "Talk1", Language.English);
+
+                    UTalk.Inst.StartTalk(_talkCloud, info, Handler);
                 }
                 else
                 {
-                    var movedToNextPage = Talk.Inst.NextPage();
+                    var movedToNextPage = UTalk.Inst.NextPage();
 
                     if (!movedToNextPage)
                     {
-                        Talk.Inst.SetWriteSpeed(WriteSpeedType.Fast);
+                        UTalk.Inst.SetWriteSpeed(WriteSpeedType.Fast);
                     }
                 }
             }
-            else if (Talk.Inst.IsTalking && Input.GetMouseButtonUp(0))
+            else if (UTalk.Inst.IsTalking && Input.GetMouseButtonUp(0))
             {
-                Talk.Inst.SetWriteSpeed(WriteSpeedType.Normal);
+                UTalk.Inst.SetWriteSpeed(WriteSpeedType.Normal);
             }
         }
 
@@ -71,7 +73,7 @@ namespace TalkSystem
                     _spaceText.enabled = true;
                     break;
                 case TalkEvent.PageChanged:
-                    var pageIndex = Talk.Inst.PageIndex;
+                    var pageIndex = UTalk.Inst.PageIndex;
                     break;
             }
         }

@@ -8,7 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace TalkSystem
+namespace uTalk
 { 
     public abstract class ConverzationCloud : TalkCloudBase
     {

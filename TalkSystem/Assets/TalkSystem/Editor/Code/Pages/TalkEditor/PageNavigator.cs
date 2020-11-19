@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace TalkSystem.Editor
+namespace uTalk.Editor
 {
     public class PageNavigator : IPage
     {
@@ -161,7 +161,7 @@ namespace TalkSystem.Editor
 
                 _pageNavigatorState._groupName = groupName;
 
-                TalkEditorWindow.SetDirtyAndSave();
+                UTalkEditorWindow.SetDirtyAndSave();
 
                 return true;
             }
@@ -195,7 +195,7 @@ namespace TalkSystem.Editor
                     _pageNavigatorState._subgroupName = subGroupName;
                     _pageNavigatorState._talkName = talkName;
 
-                    TalkEditorWindow.SetDirtyAndSave();
+                    UTalkEditorWindow.SetDirtyAndSave();
                 }
             }
             else
