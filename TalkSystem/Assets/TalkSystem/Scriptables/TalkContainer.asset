@@ -26,6 +26,8 @@ MonoBehaviour:
             _talks:
               _keys:
               - SubGroup
+              - Default
+              - Main
               _values:
               - _talks:
                 - _talkInfo:
@@ -63,10 +65,11 @@ MonoBehaviour:
                       _offset: 15
                     _instantInfo:
                       _TextAnimation: 0
-                  - _pageText: "But usually it\u2019s better to have a solid idea
-                      and plan of attack in place..."
+                  - _pageText: "But usually it\u2019s better to have a solid idea\nand
+                      plan of attack in place..."
                     _talkerName: Mike
-                    _sprites: []
+                    _sprites:
+                    - {fileID: 21300000, guid: 87d289e356c3c9a49b503236bac67256, type: 3}
                     _highlight:
                       _keys: 07000000
                       _values:
@@ -90,6 +93,158 @@ MonoBehaviour:
                       _offset: 15
                     _instantInfo:
                       _TextAnimation: 0
+              - _talks:
+                - _talkInfo:
+                    _talkName: a3
+                    _groupName: Default
+                    _subGroupName: Default
+                    _language: 0
+                  _subGroup: 
+                  _group: 
+                  _pages:
+                  - _pageText: 
+                    _talkerName: 
+                    _sprites: []
+                    _highlight:
+                      _keys: 
+                      _values: []
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 0
+                    _charByChar:
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _offsetType: 0
+                      _animationType: 0
+                      _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 0
+                - _talkInfo:
+                    _talkName: qqweqwe
+                    _groupName: Default
+                    _subGroupName: Default
+                    _language: 0
+                  _subGroup: 
+                  _group: 
+                  _pages:
+                  - _pageText: 
+                    _talkerName: 
+                    _sprites: []
+                    _highlight:
+                      _keys: 
+                      _values: []
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 0
+                    _charByChar:
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _offsetType: 0
+                      _animationType: 0
+                      _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 0
+                - _talkInfo:
+                    _talkName: 34g  sfd sf
+                    _groupName: Default
+                    _subGroupName: Default
+                    _language: 0
+                  _subGroup: 
+                  _group: 
+                  _pages:
+                  - _pageText: 
+                    _talkerName: 
+                    _sprites: []
+                    _highlight:
+                      _keys: 
+                      _values: []
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 0
+                    _charByChar:
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _offsetType: 0
+                      _animationType: 0
+                      _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 0
+                - _talkInfo:
+                    _talkName: 634  gdfg udfg
+                    _groupName: Default
+                    _subGroupName: Default
+                    _language: 0
+                  _subGroup: 
+                  _group: 
+                  _pages:
+                  - _pageText: 
+                    _talkerName: 
+                    _sprites: []
+                    _highlight:
+                      _keys: 
+                      _values: []
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 0
+                    _charByChar:
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _offsetType: 0
+                      _animationType: 0
+                      _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 0
+                - _talkInfo:
+                    _talkName: 3246778345
+                    _groupName: Default
+                    _subGroupName: Default
+                    _language: 0
+                  _subGroup: 
+                  _group: 
+                  _pages:
+                  - _pageText: 
+                    _talkerName: 
+                    _sprites: []
+                    _highlight:
+                      _keys: 
+                      _values: []
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 0
+                    _charByChar:
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _offsetType: 0
+                      _animationType: 0
+                      _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 0
+              - _talks:
+                - _talkInfo:
+                    _talkName: 34224
+                    _groupName: Default
+                    _subGroupName: Main
+                    _language: 0
+                  _subGroup: 
+                  _group: 
+                  _pages:
+                  - _pageText: 
+                    _talkerName: 
+                    _sprites: []
+                    _highlight:
+                      _keys: 
+                      _values: []
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 0
+                    _charByChar:
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _offsetType: 0
+                      _animationType: 0
+                      _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 0
       - _groups:
           _keys:
           - Default
@@ -110,6 +265,6 @@ MonoBehaviour:
               _values: []
   _pageState:
     _groupName: Default
-    _subgroupName: SubGroup
-    _talkName: Talk1
+    _subgroupName: Default
+    _talkName: qqweqwe
   CategoryIndex: 0

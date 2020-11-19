@@ -56,7 +56,8 @@ public class TalkEditorWindow : EditorWindow
 
         Repaint();
     }  
-          
+    
+    /// <summary>Notify changes to unity after manipulating the data.</summary>
     public static void SetDirtyAndSave()
     {
         EditorUtility.SetDirty(_scriptable);

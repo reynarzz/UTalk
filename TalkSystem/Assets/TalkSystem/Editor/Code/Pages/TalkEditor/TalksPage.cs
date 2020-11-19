@@ -61,13 +61,15 @@ namespace TalkSystem.Editor
 
             _groupButtonStyle = new GUIStyle(GUI.skin.button);
             _groupButtonStyle.alignment = TextAnchor.MiddleLeft;
-            _groupButtonStyle.margin.right = 20;
+            //_groupButtonStyle.margin.right = 20;
             _groupButtonStyle.margin.bottom = 10;
-            _groupButtonStyle.padding.left = 20;
+            _groupButtonStyle.padding.left = 1;
             _groupButtonStyle.wordWrap = true;
 
             _centeredButtonLabel = new GUIStyle(GUI.skin.button);
             _centeredButtonLabel.alignment = TextAnchor.MiddleCenter;
+            _centeredButtonLabel.padding.left = 3;
+            _centeredButtonLabel.padding.right = 3;
 
             _subGroupsList = new List<string>();
         }
@@ -154,21 +156,27 @@ namespace TalkSystem.Editor
                 var key = _talkData.SubGroups.Keys.ElementAt(i);
 
                 var talksOfSubGroup = _talkData.SubGroups[key];
-
+                
                 if (_subGroupsList.Contains(key))
                 {
                     GUILayout.Space(5);
+                    var c = GUI.color;
+                    GUI.color = Color.gray;
                     GUILayout.BeginVertical(EditorStyles.helpBox);
-                    GUILayout.Space(2);
+                    GUI.color = c;
+
 
                     GUILayout.BeginHorizontal();
+                    var deleteIcon = EditorGUIUtility.IconContent("TreeEditor.Trash");
 
-                    if (GUILayout.Button("x", _centeredButtonLabel, GUILayout.Width(22), GUILayout.MaxHeight(22)))
+                    if (GUILayout.Button(deleteIcon, _centeredButtonLabel, GUILayout.Width(22), GUILayout.MaxHeight(22)))
                     {
                         Context.Delete(TalkEditorWindow.Position, "Delete", key, "Sub-Group and all it's data", DeleteGroup);
 
                         void DeleteGroup()
                         {
+                            TalkEditorWindow.RecordToUndo("Delete subGroup");
+
                             _talkData.SubGroups.Remove(key);
                         }
 
@@ -176,38 +184,48 @@ namespace TalkSystem.Editor
                     }
                     GUILayout.Label(key);
                     GUILayout.EndHorizontal();
-                    GUILayout.Space(5);
+                    GUILayout.Space(3);
                 }
 
                 for (int j = 0; j < talksOfSubGroup.Talks.Count; j++)
                 {
-                    GUILayout.Space(7);
+                    //GUILayout.Space(7);
                     GUILayout.BeginHorizontal();
-                    GUILayout.Space(10);
+                    //GUILayout.Space(10);
 
                     var talk = talksOfSubGroup.Talks[j];
+                    var pageIcon = EditorGUIUtility.IconContent("UnityEditor.ConsoleWindow@2x");
 
-                    if (GUILayout.Button("X", GUILayout.Width(40), GUILayout.MinHeight(40)))
-                    {
-                        Context.Delete(TalkEditorWindow.Position, "Delete Talk", talk.TalkInfo.TalkName, "Talk", RemoveTalk);
+                    pageIcon.text = talk.TalkInfo.TalkName /*+ " | Pages: " + talk.PagesCount*/;
 
-                        void RemoveTalk()
-                        {
-                            talksOfSubGroup.Talks.RemoveAt(j);
-                        }
-                        return;
-                    }
-
-                    GUILayout.Space(7);
-
-                    if (GUILayout.Button(talk.TalkInfo.TalkName + " | Pages: " + talk.PagesCount, _groupButtonStyle, GUILayout.MinHeight(40)))
+                    if (GUILayout.Button(pageIcon, _groupButtonStyle, GUILayout.MinHeight(40)))
                     {
                         var info = talksOfSubGroup.Talks[j].TalkInfo;
 
                         _navigator.PushEditPage(info.SubGroupName, info.TalkName);
                     }
 
+                    var deletePage = EditorGUIUtility.IconContent("TreeEditor.Trash");
+
+                    if (GUILayout.Button(deletePage, GUILayout.Width(40), GUILayout.MinHeight(40)))
+                    {
+                        Context.Delete(TalkEditorWindow.Position, "Delete Talk", talk.TalkInfo.TalkName, "Talk", RemoveTalk);
+
+                        void RemoveTalk()
+                        {
+                            TalkEditorWindow.RecordToUndo("Remove talk");
+
+                            talksOfSubGroup.Talks.RemoveAt(j);
+                        }
+                        return;
+                    }
+
                     GUILayout.EndHorizontal();
+
+                    if (j + 1 < talksOfSubGroup.Talks.Count)
+                    {
+                        GUILayout.Space(3);
+                    }
                 }
 
                 if (string.IsNullOrEmpty(key))
@@ -217,7 +235,7 @@ namespace TalkSystem.Editor
 
                 if (_subGroupsList.Contains(key))
                 {
-                    GUILayout.Space(15);
+                    GUILayout.Space(3);
                     GUILayout.EndVertical();
                 }
             }
