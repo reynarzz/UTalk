@@ -196,7 +196,7 @@ namespace TalkSystem.Editor
                     var talk = talksOfSubGroup.Talks[j];
                     var pageIcon = EditorGUIUtility.IconContent("UnityEditor.ConsoleWindow@2x");
 
-                    pageIcon.text = talk.TalkInfo.TalkName + " | Pages: " + talk.PagesCount;
+                    pageIcon.text = talk.TalkInfo.TalkName /*+ " | Pages: " + talk.PagesCount*/;
 
                     if (GUILayout.Button(pageIcon, _groupButtonStyle, GUILayout.MinHeight(40)))
                     {

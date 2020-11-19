@@ -212,8 +212,6 @@ namespace TalkSystem.Editor
                                 void DeleteGroup()
                                 {
                                     _dataContainer.DeleteGroup(_groupsTextGrid[selectedGroup].text, _dataContainer.Language);
-
-                                    _deleteGroup = false;
                                 }
 
                                 SetGroups();

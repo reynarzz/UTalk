@@ -458,15 +458,22 @@ namespace TalkSystem.Editor
             previewIcon.text = "Preview";
 
             GUILayout.Label(previewIcon);
-            //_backgroundColor = EditorGUILayout.ColorField(_backgroundColor, GUILayout.MaxWidth(100));
 
             GUILayout.EndHorizontal();
 
-            //var rect = GUILayoutUtility.GetRect(Screen.width, 100, EditorStyles.helpBox);
+            if (string.IsNullOrEmpty(text))
+            {
+                _labelStyle.normal.textColor = Color.gray;
+                text = "...";
 
-            //EditorGUI.DrawRect(rect, _backgroundColor);
+                GUILayout.Label(text, _labelStyle);
 
-            GUILayout.Label(/*rect,*/ text, _labelStyle);
+                _labelStyle.normal.textColor = Color.white;
+            }
+            else
+            {
+                GUILayout.Label(text, _labelStyle);
+            }
         }
 
         private void PageOptions()
