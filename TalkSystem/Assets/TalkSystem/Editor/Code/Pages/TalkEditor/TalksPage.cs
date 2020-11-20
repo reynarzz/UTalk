@@ -42,13 +42,14 @@ namespace uTalk.Editor
 
         private readonly PageNavigator _navigator;
         private GUIStyle _groupButtonStyle;
-        private GUIStyle _centeredButtonLabel;
+        private GUIStyle _deleteSubGroupStyle;
 
         private TalksGroupData _talkData;
 
         private List<string> _subGroupsList;
         private Vector2 _scroll;
         private string _searchText;
+        private GUIStyle _centeredLabel;
 
         public string NavigationName { get; set; }
         private const string _default = "Default";
@@ -66,10 +67,13 @@ namespace uTalk.Editor
             _groupButtonStyle.padding.left = 1;
             _groupButtonStyle.wordWrap = true;
 
-            _centeredButtonLabel = new GUIStyle(GUI.skin.button);
-            _centeredButtonLabel.alignment = TextAnchor.MiddleCenter;
-            _centeredButtonLabel.padding.left = 3;
-            _centeredButtonLabel.padding.right = 3;
+            _deleteSubGroupStyle = new GUIStyle(GUI.skin.button);
+            _deleteSubGroupStyle.alignment = TextAnchor.MiddleCenter;
+            _deleteSubGroupStyle.padding.left = 3;
+            _deleteSubGroupStyle.padding.right = 3;
+
+            _centeredLabel = new GUIStyle(GUI.skin.label);
+            _centeredLabel.alignment = TextAnchor.MiddleCenter;
 
             _subGroupsList = new List<string>();
         }
@@ -169,11 +173,11 @@ namespace uTalk.Editor
                     GUILayout.BeginHorizontal();
                     var deleteIcon = EditorGUIUtility.IconContent("TreeEditor.Trash");
 
-                    if (GUILayout.Button(deleteIcon, _centeredButtonLabel, GUILayout.Width(22), GUILayout.MaxHeight(22)))
+                    if (GUILayout.Button(deleteIcon, _deleteSubGroupStyle, GUILayout.Width(22), GUILayout.MaxHeight(22)))
                     {
-                        Context.Delete(UTalkEditorWindow.Position, "Delete", key, "Sub-Group and all it's data", DeleteGroup);
+                        //Context.Delete(UTalkEditorWindow.Position, "Delete", key, "Sub-Group and all it's data", DeleteGroup);
 
-                        void DeleteGroup()
+                        //void DeleteGroup()
                         {
                             UTalkEditorWindow.RecordToUndo("Delete subGroup");
 
@@ -187,46 +191,55 @@ namespace uTalk.Editor
                     GUILayout.Space(3);
                 }
 
-                for (int j = 0; j < talksOfSubGroup.Talks.Count; j++)
+                if(talksOfSubGroup.Talks.Count == 0)
                 {
-                    //GUILayout.Space(7);
-                    GUILayout.BeginHorizontal();
-                    //GUILayout.Space(10);
-
-                    var talk = talksOfSubGroup.Talks[j];
-                    var pageIcon = EditorGUIUtility.IconContent("UnityEditor.ConsoleWindow@2x");
-
-                    pageIcon.text = talk.TalkInfo.TalkName /*+ " | Pages: " + talk.PagesCount*/;
-
-                    if (GUILayout.Button(pageIcon, _groupButtonStyle, GUILayout.MinHeight(40)))
+                    GUILayout.Label("Empty", _centeredLabel);
+                    GUILayout.Space(2);
+                }
+                else
+                {
+                    for (int j = 0; j < talksOfSubGroup.Talks.Count; j++)
                     {
-                        var info = talksOfSubGroup.Talks[j].TalkInfo;
+                        //GUILayout.Space(7);
+                        GUILayout.BeginHorizontal();
+                        //GUILayout.Space(10);
 
-                        _navigator.PushEditPage(info.SubGroupName, info.TalkName);
-                    }
+                        var talk = talksOfSubGroup.Talks[j];
+                        var pageIcon = EditorGUIUtility.IconContent("UnityEditor.ConsoleWindow@2x");
 
-                    var deletePage = EditorGUIUtility.IconContent("TreeEditor.Trash");
+                        pageIcon.text = talk.TalkInfo.TalkName /*+ " | Pages: " + talk.PagesCount*/;
 
-                    if (GUILayout.Button(deletePage, GUILayout.Width(40), GUILayout.MinHeight(40)))
-                    {
-                        Context.Delete(UTalkEditorWindow.Position, "Delete Talk", talk.TalkInfo.TalkName, "Talk", RemoveTalk);
-
-                        void RemoveTalk()
+                        if (GUILayout.Button(pageIcon, _groupButtonStyle, GUILayout.MinHeight(40)))
                         {
-                            UTalkEditorWindow.RecordToUndo("Remove talk");
+                            var info = talksOfSubGroup.Talks[j].TalkInfo;
 
-                            talksOfSubGroup.Talks.RemoveAt(j);
+                            _navigator.PushEditPage(info.SubGroupName, info.TalkName);
                         }
-                        return;
-                    }
 
-                    GUILayout.EndHorizontal();
+                        var deletePage = EditorGUIUtility.IconContent("TreeEditor.Trash");
 
-                    if (j + 1 < talksOfSubGroup.Talks.Count)
-                    {
-                        GUILayout.Space(3);
+                        if (GUILayout.Button(deletePage, GUILayout.Width(40), GUILayout.MinHeight(40)))
+                        {
+                            //Context.Delete(UTalkEditorWindow.Position, "Delete Talk", talk.TalkInfo.TalkName, "Talk", RemoveTalk);
+
+                            //void RemoveTalk()
+                            {
+                                UTalkEditorWindow.RecordToUndo("Remove talk");
+
+                                talksOfSubGroup.Talks.RemoveAt(j);
+                            }
+                            return;
+                        }
+
+                        GUILayout.EndHorizontal();
+
+                        if (j + 1 < talksOfSubGroup.Talks.Count)
+                        {
+                            GUILayout.Space(3);
+                        }
                     }
                 }
+               
 
                 if (string.IsNullOrEmpty(key))
                 {

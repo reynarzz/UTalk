@@ -41,17 +41,8 @@ MonoBehaviour:
                     _talkerName: Steve
                     _sprites: []
                     _highlight:
-                      _keys: 06000000
-                      _values:
-                      - _wordIndex: 6
-                        _wordStartCharIndex: 0
-                        _highlightLength: 4
-                        _color:
-                          serializedVersion: 2
-                          rgba: 4294923008
-                        _animationType: 1
-                        _writeSpeed: 0
-                        _normalSpeed: 0
+                      _keys: 
+                      _values: []
                     _wordEvent:
                       _wordIndex: 0
                     _writeType: 1

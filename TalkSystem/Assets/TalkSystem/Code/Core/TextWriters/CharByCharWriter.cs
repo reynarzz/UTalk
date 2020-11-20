@@ -77,24 +77,24 @@ namespace uTalk
 
                         yield return WriteSpeed;
 
-                        //if (highlight.WriteSpeedType == Highlight.HighlightWriteSpeed.Default || WriteSpeedType == WriteSpeedType.Fast)
-                        //{
-                        //    yield return WriteSpeed;
-                        //    prevWriteSpeed = WriteSpeedType;
+                        if (highlight.WriteSpeedType == Highlight.HighlightWriteSpeed.Default || WriteSpeedType == WriteSpeedType.Fast)
+                        {
+                            yield return WriteSpeed;
+                            prevWriteSpeed = WriteSpeedType;
 
-                        //    continue;
-                        //}
-                        //else if (!_hightlightWriteSpeed)
-                        //{
-                        //    _hightlightWriteSpeed = true;
+                            continue;
+                        }
+                        else if (!_hightlightWriteSpeed)
+                        {
+                            _hightlightWriteSpeed = true;
 
-                        //    WriteSpeed = new WaitForSeconds(highlight.NormalWriteSpeed);
-                        //}
+                            WriteSpeed = new WaitForSeconds(highlight.NormalWriteSpeed);
+                        }
 
-                        //if (highlight.WriteSpeedType == Highlight.HighlightWriteSpeed.Custom)
-                        //{
-                        //    yield return WriteSpeed;
-                        //}
+                        if (highlight.WriteSpeedType == Highlight.HighlightWriteSpeed.Custom)
+                        {
+                            yield return WriteSpeed;
+                        }
                     }
 
                     SetWriteTypeSpeed(prevWriteSpeed);

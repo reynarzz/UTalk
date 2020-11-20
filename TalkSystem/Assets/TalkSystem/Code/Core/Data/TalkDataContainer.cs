@@ -136,7 +136,6 @@ namespace uTalk
         [SerializeField, HideInInspector] private Language _language;
         public Language Language { get => _language; set => _language = value; }
 
-
         [SerializeField] private SDictionary<Language, TalkGroupsContainer> _groups;
 
         public TalkDataContainer()
@@ -187,9 +186,7 @@ namespace uTalk
                     else
                     {
                         Debug.LogError("Sub-Group: " + talkInfo.SubGroupName + " doesn't exist!");
-
                     }
-
                 }
                 else
                 {
@@ -211,8 +208,6 @@ namespace uTalk
         {
             return _groups.ContainsKey(language);
         }
-
-
 
         /// <summary>Returns true if had the subGroup name already</summary>
         /// <returns></returns>

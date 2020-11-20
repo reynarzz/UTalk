@@ -33,12 +33,16 @@ namespace uTalk.Editor
         private const int _groupsPerRow = 2;
         private List<bool> _deleteToggles;
 
+
+        private GUIContent _editIcon;
+
         public TalkGroupsPage(TalkDataContainer dataContainer, PageNavigator navigator)
         {
             _dataContainer = dataContainer;
             _navigator = navigator;
 
             _groupGridButtons = new GUIStyle(GUI.skin.button);
+
             _groupGridButtons.normal.background = GetNewTex(Color.clear);
             _groupGridButtons.active.background = GetNewTex(Color.black * 0.3f);
 
@@ -65,6 +69,9 @@ namespace uTalk.Editor
             _groups = new List<SDictionary<string, TalksGroupData>>();
             _groupsTextGridList = new List<GUIContent>();
             _deleteToggles = new List<bool>();
+
+            _editIcon = EditorGUIUtility.IconContent("d_editicon.sml");
+
 
             SetGroups();
         }
@@ -144,7 +151,6 @@ namespace uTalk.Editor
                 return;
             }
 
-
             var prevDelete = _deleteGroup;
 
             _deleteGroup = GUILayout.Toggle(_deleteGroup, "x", EditorStyles.toolbarButton, GUILayout.MaxWidth(30));
@@ -158,12 +164,17 @@ namespace uTalk.Editor
 
             _dataContainer.Language = (Language)EditorGUILayout.EnumPopup(_dataContainer.Language, GUILayout.Width(_dataContainer.Language.ToString().Length * 10));
 
+
+            //GUI.SetNextControlName("Edit languages");
+            if (GUILayout.Button(_editIcon, EditorStyles.toolbarButton, GUILayout.MaxWidth(30)))
+            {
+                //GUI.FocusControl("Edit languages");
+            }
+
             LanguageSwitchedUpdate(_dataContainer.Language, prevLang);
 
 
             GUILayout.EndHorizontal();
-
-
 
             Groups();
         }
@@ -249,9 +260,9 @@ namespace uTalk.Editor
                 {
                     if (GUI.Button(new Rect(0, Screen.height - 123, Screen.width, 20), $"Delete ({_deleteToggles.Count(x => x)})"))
                     {
-                        Context.Delete(UTalkEditorWindow.Position, "Group", "Selected", "groups", DeleteGroup);
+                        //Context.Delete(UTalkEditorWindow.Position, "Group", "Selected", "groups", DeleteGroup);
 
-                        void DeleteGroup()
+                        //void DeleteGroup()
                         {
                             UTalkEditorWindow.RecordToUndo("Delete group");
 

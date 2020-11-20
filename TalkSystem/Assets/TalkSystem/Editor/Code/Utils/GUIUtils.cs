@@ -132,7 +132,6 @@ namespace uTalk.Editor
             return DoTextFieldOrSomething(ref text, true, GUI.skin.textArea, options, onOperationCallback);
         }
 
-        //TODO: Copy paste doesn't work correctly. 
         private static TextEditorInfo DoTextFieldOrSomething(ref string text, bool multiline, GUIStyle style, GUILayoutOption[] options,
                                                              OnOperation onTextInClipboard)
         {

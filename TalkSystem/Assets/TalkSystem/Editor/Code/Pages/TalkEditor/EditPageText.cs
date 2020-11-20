@@ -33,7 +33,7 @@ using UnityEngine;
 
 namespace uTalk.Editor
 {
-    //This class needs a huge refactorization.
+    //This class needs a huge refactor.
     public class EditPageText : IPage
     {
         public delegate void TextChanged(string oldText, string newText, int charsAdded, int cursor);
@@ -127,15 +127,17 @@ namespace uTalk.Editor
             _currentTextPage = talkData.GetPage(_textPageIndex);
         }
 
-        private Vector2 _entireScroll;
+        private Vector2 _pageScroll;
 
         public void OnGUI()
         {
+            GUILayout.Window(0, new Rect(0, 0, Screen.width, 200), x => { }, "hello");
+
             if (_textPageIndex >= 0)
             {
                 GUILayout.Space(5);
 
-                _entireScroll = EditorGUILayout.BeginScrollView(_entireScroll);
+                _pageScroll = EditorGUILayout.BeginScrollView(_pageScroll);
 
                 //here i'm creating a new text page instance!! (TextPage was an struct before, but now this need a refactor!!!)
                 var hightligted = HighlightText(new TextPage(_currentTextPage.Text, _currentTextPage.Sprites, _currentTextPage.Event, _currentTextPage.Highlight));
@@ -144,7 +146,8 @@ namespace uTalk.Editor
                 var oldText = _currentTextPage.Text.ToString();
 
                 var text = oldText.ToString();
-
+                
+                GUI.SetNextControlName("Text Area");
                 _textInfo = GUIUtils.SmartTextArea(ref text, SetToClipboard, GUILayout.MinHeight(100));
 
                 EditorGUILayout.Separator();
@@ -164,35 +167,9 @@ namespace uTalk.Editor
 
                 GUILayout.Space(5);
 
-                //var selected = Utils.GetSelectedWords(textInfo.StartSelectIndex, textInfo.SelectedText, textInfo.Text);
-                //selected.Print();
-                //GUILayout.Space(5);
-
-
-
                 PageOptions();
 
                 EditorGUILayout.EndScrollView();
-
-
-                //TEST
-                //if (_showInfo = EditorGUILayout.Foldout(_showInfo, "Highlight Info"))
-                //{
-                //    var orderedKeys = _currentTextPage.Highlight.Keys.OrderBy(x => x);
-
-                //    GUILayout.BeginVertical(EditorStyles.helpBox);
-
-                //    //Debug.Log("Show");
-                //    for (int i = 0; i < _currentTextPage.Highlight.Count; i++)
-                //    {
-                //        var key = orderedKeys.ElementAt(i);
-                //        var highlight = _currentTextPage.Highlight[key];
-
-                //        GUILayout.Label("Index: " + highlight.WordIndex + ", Char: " + highlight.StartLocalChar + ", " + "Length: " + highlight.HighlighLength);
-                //    }
-
-                //    GUILayout.EndVertical();
-                //}
             }
         }
 
@@ -203,9 +180,9 @@ namespace uTalk.Editor
             var nextSkin = _textPageIndex + 1 < _talkData.PagesCount ? _prevNextButtons : _prevNextButtonsDisabled;
             var prevSkin = _textPageIndex > 0 ? _prevNextButtons : _prevNextButtonsDisabled;
 
-            GUI.SetNextControlName("Prev");
             var prev = EditorGUIUtility.IconContent("tab_prev");
 
+            GUI.SetNextControlName("Prev");
             if (GUILayout.Button(prev, prevSkin) && _textPageIndex > 0)
             {
                 UTalkEditorWindow.RecordToUndo("go prev page");
@@ -220,11 +197,10 @@ namespace uTalk.Editor
 
             GUILayout.Label((_textPageIndex + 1).ToString() + "/" + _talkData.PagesCount, _centeredLabel, GUILayout.Width(40));
 
-            GUI.SetNextControlName("Next");
 
             var next = EditorGUIUtility.IconContent("tab_next");
-            //next.text = "Next";
 
+            GUI.SetNextControlName("Next");
             if (GUILayout.Button(next, nextSkin) && _textPageIndex + 1 < _talkData.PagesCount)
             {
                 UTalkEditorWindow.RecordToUndo("advance next page");
@@ -361,10 +337,10 @@ namespace uTalk.Editor
                         GUILayout.Space(1);
 
                         GUILayout.BeginHorizontal();
+
                         if (GUILayout.Button("X", GUILayout.MaxWidth(20)))
                         {
                             UTalkEditorWindow.RecordToUndo("HRemoved");
-
 
                             _currentTextPage.Highlight.Remove(wordIndex);
 
@@ -550,6 +526,7 @@ namespace uTalk.Editor
             if (GUILayout.Button("Add"))
             {
                 UTalkEditorWindow.RecordToUndo("add sprite");
+                _pageScroll = Vector2.up * 10000;
 
                 _currentTextPage.Sprites.Add(default);
             }

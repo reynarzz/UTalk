@@ -27,8 +27,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
-using UnityEngine;
-
+using UnityEngine; 
+ 
 namespace uTalk
 {
     public class TextControl

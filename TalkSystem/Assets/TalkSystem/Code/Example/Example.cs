@@ -38,7 +38,7 @@ namespace uTalk
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
             {
                 if (!UTalk.Inst.IsTalking)
                 {
@@ -56,7 +56,7 @@ namespace uTalk
                     }
                 }
             }
-            else if (UTalk.Inst.IsTalking && Input.GetMouseButtonUp(0))
+            else if (UTalk.Inst.IsTalking && (Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.Space)))
             {
                 UTalk.Inst.SetWriteSpeed(WriteSpeedType.Normal);
             }
