@@ -164,12 +164,11 @@ namespace uTalk.Editor
 
             _dataContainer.Language = (Language)EditorGUILayout.EnumPopup(_dataContainer.Language, GUILayout.Width(_dataContainer.Language.ToString().Length * 10));
 
-
             //GUI.SetNextControlName("Edit languages");
-            if (GUILayout.Button(_editIcon, EditorStyles.toolbarButton, GUILayout.MaxWidth(30)))
-            {
-                //GUI.FocusControl("Edit languages");
-            }
+            //if (GUILayout.Button(_editIcon, EditorStyles.toolbarButton, GUILayout.MaxWidth(30)))
+            //{
+            //    //GUI.FocusControl("Edit languages");
+            //}
 
             LanguageSwitchedUpdate(_dataContainer.Language, prevLang);
 

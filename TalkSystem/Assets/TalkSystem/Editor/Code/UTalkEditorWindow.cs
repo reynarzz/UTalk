@@ -27,7 +27,7 @@ public class UTalkEditorWindow : EditorWindow
         window.minSize = new Vector2(275, 275);
         window.Show();
     }
-    
+     
     private void Init()
     {
         if (_pageNavigator == null)
@@ -38,7 +38,7 @@ public class UTalkEditorWindow : EditorWindow
             _pageNavigator = new PageNavigator(_scriptable, _scriptable.CurrentPageState);
             _talkManager = new TalkFileManager(_scriptable.Container);
 
-            _mainPages = new IPage[] { _pageNavigator, _talkManager };
+            _mainPages = new IPage[] { _pageNavigator/*, _talkManager*/ };
 
             _mainPageNames = _mainPages.Select(x => x.NavigationName).ToArray();
 
@@ -55,7 +55,7 @@ public class UTalkEditorWindow : EditorWindow
 
         Position = new Rect(position.x + Screen.width / 2, position.y + Screen.height / 2, position.width, position.height);
 
-        _scriptable.CategoryIndex = GUILayout.Toolbar(_scriptable.CategoryIndex, _mainPageNames);
+        //--_scriptable.CategoryIndex = GUILayout.Toolbar(_scriptable.CategoryIndex, _mainPageNames);
         GUILayout.Space(5);
         _mainPages[_scriptable.CategoryIndex].OnGUI();
 

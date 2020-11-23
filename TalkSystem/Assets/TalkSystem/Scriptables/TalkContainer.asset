@@ -178,6 +178,6 @@ MonoBehaviour:
         _TextAnimation: 0
   _pageState:
     _groupName: Default
-    _subgroupName: SubGroup
-    _talkName: Talk1
+    _subgroupName: 
+    _talkName: 
   CategoryIndex: 0
