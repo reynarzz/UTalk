@@ -1,4 +1,4 @@
-# UTalk  ![](https://img.shields.io/badge/Licence-MIT-lightgrey)
+# UTalk  ![](https://img.shields.io/badge/Release-Beta-green) ![](https://img.shields.io/badge/Licence-MIT-lightgrey)
 A talk system that highlights words in all your text very easy.
 
 ## How it looks?
