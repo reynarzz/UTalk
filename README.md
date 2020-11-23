@@ -4,9 +4,12 @@ A talk system that highlights words in all your text very easy.
 ## How it looks?
 Let's choose some colors for all the important words!
 
-![](ReadmeFiles/TalkCloudDemo2.gif)
+![](ReadmeFiles/preview.gif)
 
-## Simple to use
+## Simple Editor
+![](ReadmeFiles/editorDemo.gif)
+
+## Easy to implement!
 Just a few method calls and you will be ready to show some awesome text!
 ```c#
 using uTalk;
