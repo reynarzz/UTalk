@@ -258,12 +258,15 @@ namespace uTalk.Editor
                     SelectNone();
                     break;
                 case TextEditOp.DeleteWordBack:
-
                     if (textIsReadOnly)
                     {
                         return false;
                     }
-                    return DeleteWordBack();
+
+                    //IMPLEMENT THIS..-----------------------------------
+                    //--return DeleteWordBack();
+
+                    return false;
                 case TextEditOp.DeleteLineBack:
                     if (textIsReadOnly)
                     {

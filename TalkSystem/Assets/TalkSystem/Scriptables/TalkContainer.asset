@@ -36,13 +36,21 @@ MonoBehaviour:
                   _subGroup: 
                   _group: 
                   _pages:
-                  - _pageText: You might want to develop your idea after you have
-                      formed a team.
+                  - _pageText: This line contains a highlighted word.
                     _talkerName: Steve
                     _sprites: []
                     _highlight:
-                      _keys: 
-                      _values: []
+                      _keys: 04000000
+                      _values:
+                      - _wordIndex: 4
+                        _wordStartCharIndex: 0
+                        _highlightLength: 11
+                        _color:
+                          serializedVersion: 2
+                          rgba: 4280954623
+                        _animationType: 0
+                        _writeSpeed: 0
+                        _normalSpeed: 0
                     _wordEvent:
                       _wordIndex: 0
                     _writeType: 1
@@ -54,24 +62,73 @@ MonoBehaviour:
                       _offset: 15
                     _instantInfo:
                       _TextAnimation: 0
-                  - _pageText: You might want to develop your idea after you have
-                      formed a team.
-                    _talkerName: Steve
-                    _sprites: []
+                  - _pageText: 'This page contains an animated word.
+
+                      And
+                      a highligted word without animation.
+
+'
+                    _talkerName: Mike
+                    _sprites:
+                    - {fileID: 21300000, guid: 87d289e356c3c9a49b503236bac67256, type: 3}
                     _highlight:
-                      _keys: 
-                      _values: []
+                      _keys: 0400000009000000
+                      _values:
+                      - _wordIndex: 4
+                        _wordStartCharIndex: 0
+                        _highlightLength: 8
+                        _color:
+                          serializedVersion: 2
+                          rgba: 4294918400
+                        _animationType: 1
+                        _writeSpeed: 0
+                        _normalSpeed: 0
+                      - _wordIndex: 9
+                        _wordStartCharIndex: 0
+                        _highlightLength: 4
+                        _color:
+                          serializedVersion: 2
+                          rgba: 4278219263
+                        _animationType: 0
+                        _writeSpeed: 0
+                        _normalSpeed: 0
                     _wordEvent:
                       _wordIndex: 0
                     _writeType: 1
                     _charByChar:
                       _normalWriteSpeed: 0.023
                       _fastWriteSpeed: 0
-                      _offsetType: 2
+                      _offsetType: 5
                       _animationType: 1
                       _offset: 15
                     _instantInfo:
                       _TextAnimation: 0
+                  - _pageText: All the text in this page is moving!
+                    _talkerName: 
+                    _sprites: []
+                    _highlight:
+                      _keys: 07000000
+                      _values:
+                      - _wordIndex: 7
+                        _wordStartCharIndex: 0
+                        _highlightLength: 6
+                        _color:
+                          serializedVersion: 2
+                          rgba: 4286447871
+                        _animationType: 0
+                        _writeSpeed: 0
+                        _normalSpeed: 0
+                    _wordEvent:
+                      _wordIndex: 0
+                    _writeType: 0
+                    _charByChar:
+                      _normalWriteSpeed: 0
+                      _fastWriteSpeed: 0
+                      _offsetType: 0
+                      _animationType: 0
+                      _offset: 0
+                    _instantInfo:
+                      _TextAnimation: 1
       - _groups:
           _keys:
           - Default
@@ -93,12 +150,21 @@ MonoBehaviour:
   _editPageData:
     _pageIndex: 0
     _currentTextPage:
-      _pageText: You might want to develop your idea after you have formed a team.
+      _pageText: This line contains a highlighted word.
       _talkerName: Steve
       _sprites: []
       _highlight:
-        _keys: 
-        _values: []
+        _keys: 04000000
+        _values:
+        - _wordIndex: 4
+          _wordStartCharIndex: 0
+          _highlightLength: 11
+          _color:
+            serializedVersion: 2
+            rgba: 4280954623
+          _animationType: 0
+          _writeSpeed: 0
+          _normalSpeed: 0
       _wordEvent:
         _wordIndex: 0
       _writeType: 1

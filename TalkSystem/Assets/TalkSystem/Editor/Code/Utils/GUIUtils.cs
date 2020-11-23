@@ -333,8 +333,10 @@ namespace uTalk.Editor
                                 flag = true;
                             }
 
-                            //IMPORTANT!: I disabled this to support undo/redo in text area.
-                            //--current.Use();
+                            if (!current.control && !current.command)
+                            {
+                                current.Use();
+                            }
                         }
 
                         if (editor.text.Length != originalTextLength)
