@@ -27,23 +27,28 @@ public class UTalkEditorWindow : EditorWindow
         window.minSize = new Vector2(275, 275);
         window.Show();
     }
-     
+    
     private void Init()
     {
         if (_pageNavigator == null)
         {
             _scriptable = Utils.GetTalkScriptable();
-            EditorUtility.SetDirty(_scriptable);
+            //EditorUtility.SetDirty(_scriptable);
 
-            _pageNavigator = new PageNavigator(_scriptable.Container, _scriptable.CurrentPageState);
+            _pageNavigator = new PageNavigator(_scriptable, _scriptable.CurrentPageState);
             _talkManager = new TalkFileManager(_scriptable.Container);
 
             _mainPages = new IPage[] { _pageNavigator, _talkManager };
 
             _mainPageNames = _mainPages.Select(x => x.NavigationName).ToArray();
+
+            //Undo.undoRedoPerformed += () =>
+            //{
+            //    Debug.Log("undo performed");
+            //};
         }
     }
-     
+    
     public void OnGUI()
     {
         Init();

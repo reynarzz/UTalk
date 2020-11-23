@@ -45,21 +45,20 @@ namespace uTalk.Editor
         private GUIStyle _prevNextButtons;
         private GUIStyle _prevNextButtonsDisabled;
 
-        private int _textPageIndex = 0;
-
         public event TextChanged OnTextChanged;
 
-        private TextPage _currentTextPage;
         private StringBuilder _highlightedText;
-
+        private TalkDataContainerScriptable.EditPageData _data;
         private SDictionary<int, Highlight> _temp;
         private GUIUtils.TextEditorInfo _textInfo;
         private Color32 _backgroundColor = new Color(0, 0, 0, 0.2f);
 
         public string NavigationName { get; set; }
 
-        public EditPageText()
+        public EditPageText(TalkDataContainerScriptable.EditPageData data)
         {
+            _data = data;
+
             _temp = new SDictionary<int, Highlight>();
 
             _highlightedText = new StringBuilder();
@@ -122,38 +121,41 @@ namespace uTalk.Editor
 
         private void SetTextPageIndex(int textPageIndex, TalkData talkData)
         {
-            _textPageIndex = textPageIndex;
+            _data._pageIndex = textPageIndex;
 
-            _currentTextPage = talkData.GetPage(_textPageIndex);
+            _data._currentTextPage = talkData.GetPage(_data._pageIndex);
         }
 
         private Vector2 _pageScroll;
 
         public void OnGUI()
         {
-            GUILayout.Window(0, new Rect(0, 0, Screen.width, 200), x => { }, "hello");
-
-            if (_textPageIndex >= 0)
+            if (_data._pageIndex >= 0)
             {
                 GUILayout.Space(5);
 
                 _pageScroll = EditorGUILayout.BeginScrollView(_pageScroll);
 
-                //here i'm creating a new text page instance!! (TextPage was an struct before, but now this need a refactor!!!)
-                var hightligted = HighlightText(new TextPage(_currentTextPage.Text, _currentTextPage.Sprites, _currentTextPage.Event, _currentTextPage.Highlight));
+                var hightligted = HighlightText(_data._currentTextPage);
+
                 AddRemovePageToolbar();
 
-                var oldText = _currentTextPage.Text.ToString();
+                var oldText = _data._currentTextPage.Text.ToString();
 
                 var text = oldText.ToString();
-                
+
                 GUI.SetNextControlName("Text Area");
                 _textInfo = GUIUtils.SmartTextArea(ref text, SetToClipboard, GUILayout.MinHeight(100));
 
                 EditorGUILayout.Separator();
                 TextPreview(hightligted);
 
-                _currentTextPage.Text = text;
+                if (_data._currentTextPage.Text != text)
+                {
+                    UTalkEditorWindow.RecordToUndo("Text changed");
+
+                    _data._currentTextPage.Text = text;
+                }
 
                 if (_textInfo.TextLengthChanged)
                 {
@@ -177,39 +179,39 @@ namespace uTalk.Editor
         {
             GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-            var nextSkin = _textPageIndex + 1 < _talkData.PagesCount ? _prevNextButtons : _prevNextButtonsDisabled;
-            var prevSkin = _textPageIndex > 0 ? _prevNextButtons : _prevNextButtonsDisabled;
+            var nextSkin = _data._pageIndex + 1 < _talkData.PagesCount ? _prevNextButtons : _prevNextButtonsDisabled;
+            var prevSkin = _data._pageIndex > 0 ? _prevNextButtons : _prevNextButtonsDisabled;
 
             var prev = EditorGUIUtility.IconContent("tab_prev");
 
             GUI.SetNextControlName("Prev");
-            if (GUILayout.Button(prev, prevSkin) && _textPageIndex > 0)
+            if (GUILayout.Button(prev, prevSkin) && _data._pageIndex > 0)
             {
                 UTalkEditorWindow.RecordToUndo("go prev page");
 
                 GUI.FocusControl("Prev");
 
-                _textPageIndex--;
+                _data._pageIndex--;
                 _textInfo.TextEditor.ClearSelectedText();
 
-                _currentTextPage = _talkData.GetPage(_textPageIndex);
+                _data._currentTextPage = _talkData.GetPage(_data._pageIndex);
             }
 
-            GUILayout.Label((_textPageIndex + 1).ToString() + "/" + _talkData.PagesCount, _centeredLabel, GUILayout.Width(40));
+            GUILayout.Label((_data._pageIndex + 1).ToString() + "/" + _talkData.PagesCount, _centeredLabel, GUILayout.Width(40));
 
 
             var next = EditorGUIUtility.IconContent("tab_next");
 
             GUI.SetNextControlName("Next");
-            if (GUILayout.Button(next, nextSkin) && _textPageIndex + 1 < _talkData.PagesCount)
+            if (GUILayout.Button(next, nextSkin) && _data._pageIndex + 1 < _talkData.PagesCount)
             {
                 UTalkEditorWindow.RecordToUndo("advance next page");
 
                 GUI.FocusControl("Next");
 
-                _textPageIndex++;
+                _data._pageIndex++;
                 _textInfo.TextEditor.ClearSelectedText();
-                _currentTextPage = _talkData.GetPage(_textPageIndex);
+                _data._currentTextPage = _talkData.GetPage(_data._pageIndex);
             }
             GUILayout.EndHorizontal();
         }
@@ -226,8 +228,8 @@ namespace uTalk.Editor
 
 
                 _talkData.CreateEmptyPageWithLastPageOptions();
-                _textPageIndex = _talkData.PagesCount - 1;
-                _currentTextPage = _talkData.GetPage(_textPageIndex);
+                _data._pageIndex = _talkData.PagesCount - 1;
+                _data._currentTextPage = _talkData.GetPage(_data._pageIndex);
             }
 
             var buttonSkin = _talkData.PagesCount > 1 ? GUI.skin.button : _disabledButton;
@@ -240,11 +242,11 @@ namespace uTalk.Editor
                 if (_talkData.PagesCount > 1)
                 {
                     UTalkEditorWindow.RecordToUndo("DeletedPage");
-                    _talkData.DeletePage(_textPageIndex);
+                    _talkData.DeletePage(_data._pageIndex);
 
-                    if (_textPageIndex - 1 > -1)
-                        _textPageIndex--;
-                    _currentTextPage = _talkData.GetPage(_textPageIndex);
+                    if (_data._pageIndex - 1 > -1)
+                        _data._pageIndex--;
+                    _data._currentTextPage = _talkData.GetPage(_data._pageIndex);
                 }
             }
             GUILayout.EndHorizontal();
@@ -257,7 +259,7 @@ namespace uTalk.Editor
                 case GUIUtils.TextOperation.Copy:
                 case GUIUtils.TextOperation.Cut:
                     Debug.Log("Cut");
-                    TalkEditorClipboard.SetToClipBoard(_currentTextPage, _currentTextPage.Text, clipboardText, selectIndex, cursor);
+                    TalkEditorClipboard.SetToClipBoard(_data._currentTextPage, _data._currentTextPage.Text, clipboardText, selectIndex, cursor);
                     break;
                 case GUIUtils.TextOperation.Paste:
                     Debug.Log("Paste: " + clipboardText);
@@ -281,7 +283,7 @@ namespace uTalk.Editor
 
                 for (int i = 0; i < selectedWords.Count; i++)
                 {
-                    if (!_currentTextPage.Highlight.ContainsKey(selectedWords[i].WordIndex))
+                    if (!_data._currentTextPage.Highlight.ContainsKey(selectedWords[i].WordIndex))
                     {
                         wordsToHighlight += selectedWords[i].Word + (i + 1 == selectedWords.Count ? null : " | ");
                     }
@@ -293,7 +295,7 @@ namespace uTalk.Editor
 
                     for (int i = 0; i < selectedWords.Count; i++)
                     {
-                        if (!_currentTextPage.Highlight.ContainsKey(selectedWords[i].WordIndex))
+                        if (!_data._currentTextPage.Highlight.ContainsKey(selectedWords[i].WordIndex))
                         {
                             var word = selectedWords[i].Word;
                             var wordIndex = selectedWords[i].WordIndex;
@@ -303,7 +305,7 @@ namespace uTalk.Editor
 
                             var highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, Color.white);
 
-                            _currentTextPage.Highlight.Add(wordIndex, highlight);
+                            _data._currentTextPage.Highlight.Add(wordIndex, highlight);
                         }
                     }
                 }
@@ -322,7 +324,7 @@ namespace uTalk.Editor
                     var wordIndex = selectedWords[i].WordIndex;
                     var globalStartingChar = selectedWords[i].GlobalCharIndex;
 
-                    var containsKey = _currentTextPage.Highlight.ContainsKey(wordIndex);
+                    var containsKey = _data._currentTextPage.Highlight.ContainsKey(wordIndex);
 
                     //Debug.Log("Starting char created: " + startingChar);
                     var localStartCharIndex = Utils.ToLocalStartChar(globalStartingChar, textInfo.Text, word);
@@ -342,7 +344,7 @@ namespace uTalk.Editor
                         {
                             UTalkEditorWindow.RecordToUndo("HRemoved");
 
-                            _currentTextPage.Highlight.Remove(wordIndex);
+                            _data._currentTextPage.Highlight.Remove(wordIndex);
 
                             GUILayout.EndHorizontal();
                             GUILayout.EndVertical();
@@ -354,7 +356,7 @@ namespace uTalk.Editor
 
                         GUILayout.EndHorizontal();
 
-                        var highlight = _currentTextPage.Highlight[wordIndex];
+                        var highlight = _data._currentTextPage.Highlight[wordIndex];
 
                         if (highlight != default)
                         {
@@ -411,12 +413,11 @@ namespace uTalk.Editor
 
                             highlight = new Highlight(wordIndex, localStartCharIndex, highlightLength, color, type, writeSpeedType, normalWriteSpeed);
 
-                            _currentTextPage.Highlight[wordIndex] = highlight;
+                            _data._currentTextPage.Highlight[wordIndex] = highlight;
                         }
 
                         GUILayout.EndVertical();
                         //GUILayout.Space(4);
-
                     }
                 }
 
@@ -459,48 +460,48 @@ namespace uTalk.Editor
             GUILayout.Label(configIcon);
 
             GUILayout.BeginVertical(EditorStyles.helpBox);
-            var talkerName = EditorGUILayout.TextField("Talker Name", _currentTextPage.TalkerName);
+            var talkerName = EditorGUILayout.TextField("Talker Name", _data._currentTextPage.TalkerName);
             EditorGUILayout.Separator();
 
             var writeIcon = EditorGUIUtility.IconContent("d_editicon.sml");
             writeIcon.text = "Write Type";
 
-            var writerType = (WriteType)EditorGUILayout.EnumPopup(writeIcon, _currentTextPage.WriteType);
+            var writerType = (WriteType)EditorGUILayout.EnumPopup(writeIcon, _data._currentTextPage.WriteType);
 
             switch (writerType)
             {
                 case WriteType.Instant:
-                    if (_currentTextPage.CharByCharInfo != default)
+                    if (_data._currentTextPage.CharByCharInfo != default)
                     {
                         UTalkEditorWindow.RecordToUndo("char by char default");
-                        _currentTextPage.CharByCharInfo = default;
+                        _data._currentTextPage.CharByCharInfo = default;
                     }
                     InstantInfoPageOpt();
                     break;
                 case WriteType.CharByChar:
-                    if (_currentTextPage.InstantInfo != default)
+                    if (_data._currentTextPage.InstantInfo != default)
                     {
                         UTalkEditorWindow.RecordToUndo("set instant default");
 
-                        _currentTextPage.InstantInfo = default;
+                        _data._currentTextPage.InstantInfo = default;
 
                     }
                     CharByCharPageOpt();
                     break;
             }
 
-            if (_currentTextPage.WriteType != writerType)
+            if (_data._currentTextPage.WriteType != writerType)
             {
                 UTalkEditorWindow.RecordToUndo("writer name");
 
-                _currentTextPage.WriteType = writerType;
+                _data._currentTextPage.WriteType = writerType;
             }
 
-            if (_currentTextPage.TalkerName != talkerName)
+            if (_data._currentTextPage.TalkerName != talkerName)
             {
                 UTalkEditorWindow.RecordToUndo("Talker name " + talkerName);
 
-                _currentTextPage.TalkerName = talkerName;
+                _data._currentTextPage.TalkerName = talkerName;
             }
 
             EditorGUILayout.Separator();
@@ -528,13 +529,13 @@ namespace uTalk.Editor
                 UTalkEditorWindow.RecordToUndo("add sprite");
                 _pageScroll = Vector2.up * 10000;
 
-                _currentTextPage.Sprites.Add(default);
+                _data._currentTextPage.Sprites.Add(default);
             }
 
             GUILayout.EndHorizontal();
 
 
-            if (_currentTextPage.Sprites.Count > 0)
+            if (_data._currentTextPage.Sprites.Count > 0)
             {
                 GUILayout.Space(5);
 
@@ -543,7 +544,7 @@ namespace uTalk.Editor
 
                 GUILayout.BeginHorizontal();
 
-                for (int i = 0; i < _currentTextPage.Sprites.Count; i++)
+                for (int i = 0; i < _data._currentTextPage.Sprites.Count; i++)
                 {
                     GUILayout.BeginVertical(GUILayout.MaxWidth(60));
 
@@ -554,11 +555,11 @@ namespace uTalk.Editor
                     {
                         UTalkEditorWindow.RecordToUndo("remove sprite");
 
-                        _currentTextPage.Sprites.RemoveAt(i);
+                        _data._currentTextPage.Sprites.RemoveAt(i);
                         break;
                     }
 
-                    _currentTextPage.Sprites[i] = (Sprite)EditorGUILayout.ObjectField("", _currentTextPage.Sprites[i], typeof(Sprite), false, GUILayout.MaxWidth(60));
+                    _data._currentTextPage.Sprites[i] = (Sprite)EditorGUILayout.ObjectField("", _data._currentTextPage.Sprites[i], typeof(Sprite), false, GUILayout.MaxWidth(60));
 
                     GUILayout.EndVertical();
                 }
@@ -572,7 +573,7 @@ namespace uTalk.Editor
 
         private void InstantInfoPageOpt()
         {
-            var instantInfo = _currentTextPage.InstantInfo;
+            var instantInfo = _data._currentTextPage.InstantInfo;
 
             var animIcon = EditorGUIUtility.IconContent("AnimationClip Icon");
             animIcon.text = "Animation";
@@ -585,12 +586,12 @@ namespace uTalk.Editor
                 instantInfo.TextAnimation = animType;
             }
 
-            _currentTextPage.InstantInfo = instantInfo;
+            _data._currentTextPage.InstantInfo = instantInfo;
         }
 
         private void CharByCharPageOpt()
         {
-            var charByCharWriteInfo = _currentTextPage.CharByCharInfo;
+            var charByCharWriteInfo = _data._currentTextPage.CharByCharInfo;
 
             var normalWriteSpeed = EditorGUILayout.FloatField("Normal write delay ", charByCharWriteInfo.NormalWriteSpeed);
             var fastWriteSpeed = EditorGUILayout.FloatField("Fast write delay ", charByCharWriteInfo.FastWriteSpeed);
@@ -642,9 +643,9 @@ namespace uTalk.Editor
                     break;
             }
 
-            
 
-            _currentTextPage.CharByCharInfo = charByCharWriteInfo;
+
+            _data._currentTextPage.CharByCharInfo = charByCharWriteInfo;
         }
 
         //TODO: Detect if a modified text index was changed.
@@ -694,14 +695,14 @@ namespace uTalk.Editor
             _temp.Clear();
 
             //inefficient
-            for (int i = 0; i < _currentTextPage.Highlight.Count; i++)
+            for (int i = 0; i < _data._currentTextPage.Highlight.Count; i++)
             {
-                var key = _currentTextPage.Highlight.Keys.ElementAt(i);
+                var key = _data._currentTextPage.Highlight.Keys.ElementAt(i);
 
-                _temp.Add(key, _currentTextPage.Highlight[key]);
+                _temp.Add(key, _data._currentTextPage.Highlight[key]);
             }
 
-            _currentTextPage.Highlight.Clear();
+            _data._currentTextPage.Highlight.Clear();
 
             for (int i = 0; i < _temp.Count; i++)
             {
@@ -709,7 +710,7 @@ namespace uTalk.Editor
 
                 var index = highlight.WordIndex >= wordIndex ? highlight.WordIndex + wordsAdded : highlight.WordIndex;
 
-                _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar,
+                _data._currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar,
                     highlight.HighlighLength, highlight.Color, highlight.Type, highlight.WriteSpeedType, highlight.NormalWriteSpeed));
             }
         }
@@ -726,10 +727,10 @@ namespace uTalk.Editor
                 {
                     var wIndex = wIndexes[i].WordIndex;
 
-                    if (_currentTextPage.Highlight.ContainsKey(wIndex))
+                    if (_data._currentTextPage.Highlight.ContainsKey(wIndex))
                     {
                         Debug.Log("Selection removed: " + wIndexes[i].Word + " (" + (wIndex) + ")");
-                        _currentTextPage.Highlight.Remove(wIndex);
+                        _data._currentTextPage.Highlight.Remove(wIndex);
                     }
                 }
             }
@@ -740,22 +741,22 @@ namespace uTalk.Editor
 
             for (int i = 0; i < removedCount; i++)
             {
-                if (_currentTextPage.Highlight.ContainsKey(wexactIndex + i))
+                if (_data._currentTextPage.Highlight.ContainsKey(wexactIndex + i))
                 {
                     Debug.Log("By Char: " + (wexactIndex + i));
-                    _currentTextPage.Highlight.Remove(wexactIndex + i);
+                    _data._currentTextPage.Highlight.Remove(wexactIndex + i);
                 }
             }
 
             //inefficient 
-            for (int i = 0; i < _currentTextPage.Highlight.Count; i++)
+            for (int i = 0; i < _data._currentTextPage.Highlight.Count; i++)
             {
-                var key = _currentTextPage.Highlight.Keys.ElementAt(i);
+                var key = _data._currentTextPage.Highlight.Keys.ElementAt(i);
 
-                _temp.Add(key, _currentTextPage.Highlight[key]);
+                _temp.Add(key, _data._currentTextPage.Highlight[key]);
             }
 
-            _currentTextPage.Highlight.Clear();
+            _data._currentTextPage.Highlight.Clear();
 
             var pair = Utils.GetWordIndexPair(oldText, charIndex);
             var wordIndex = pair.Item1;
@@ -769,9 +770,9 @@ namespace uTalk.Editor
                 var index = highlight.WordIndex >= wordIndex ? highlight.WordIndex - removedCount : highlight.WordIndex;
 
                 //If you are mixing two highligted words, for now the created word will have the highligh values of the first one.
-                if (!_currentTextPage.Highlight.ContainsKey(index))
+                if (!_data._currentTextPage.Highlight.ContainsKey(index))
                 {
-                    _currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar,
+                    _data._currentTextPage.Highlight.Add(index, new Highlight(index, highlight.StartLocalChar,
                                                    highlight.HighlighLength, highlight.Color, highlight.Type, highlight.WriteSpeedType, highlight.NormalWriteSpeed));
                 }
             }

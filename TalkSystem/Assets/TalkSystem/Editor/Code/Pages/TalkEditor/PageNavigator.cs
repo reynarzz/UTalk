@@ -44,9 +44,9 @@ namespace uTalk.Editor
 
         public string NavigationName => "Editor";
 
-        public PageNavigator(TalkDataContainer dataContainer, TalkDataContainerScriptable.PageNavigatorState pageState)
+        public PageNavigator(TalkDataContainerScriptable dataContainer, TalkDataContainerScriptable.PageNavigatorState pageState)
         {
-            _dataContainer = dataContainer;
+            _dataContainer = dataContainer.Container;
             _pageNavigatorState = pageState;
 
             _pages = new PagesFactory(this, dataContainer);

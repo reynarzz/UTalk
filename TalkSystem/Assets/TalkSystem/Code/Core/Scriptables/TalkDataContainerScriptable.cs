@@ -45,6 +45,17 @@ namespace uTalk
             public string _talkName;
         }
 
+        [Serializable]
+        public class EditPageData
+        {
+            [HideInInspector] public int _pageIndex;
+            [HideInInspector] public TextPage _currentTextPage;
+        }
+
+        [SerializeField, HideInInspector] private EditPageData _editPageData;
+        public EditPageData EditPagedata => _editPageData;
+
+
         [SerializeField, HideInInspector] private PageNavigatorState _pageState;
         public PageNavigatorState CurrentPageState => _pageState;
 

@@ -34,13 +34,13 @@ namespace uTalk
     {
         private Dictionary<Type, IPage> _pages;
 
-        public PagesFactory(PageNavigator navigator, TalkDataContainer dataContainer)
+        public PagesFactory(PageNavigator navigator, TalkDataContainerScriptable scriptable)
         {
             _pages = new Dictionary<Type, IPage>()
             {
-                { typeof(TalkGroupsPage), new TalkGroupsPage(dataContainer, navigator) },
-                { typeof(TalksPage), new TalksPage(dataContainer, navigator) },
-                { typeof(EditPageText), new EditPageText() },
+                { typeof(TalkGroupsPage), new TalkGroupsPage(scriptable.Container, navigator) },
+                { typeof(TalksPage), new TalksPage(scriptable.Container, navigator) },
+                { typeof(EditPageText), new EditPageText(scriptable.EditPagedata) },
 
             };
         }
