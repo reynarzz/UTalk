@@ -1,12 +1,12 @@
 # UTalk  ![](https://img.shields.io/badge/Release-Beta-green) ![](https://img.shields.io/badge/Licence-MIT-lightgrey)
-A talk system that highlights words in all your text very easy.
+A talk system that highlights words your text very easy.
 
 ## How it looks?
 Let's choose some colors for all the important words!
 
 ![](ReadmeFiles/preview.gif)
 
-## Simple Editor
+## Open the editor: Window > TalkEditor
 ![](ReadmeFiles/editorDemo.gif)
 
 ## Easy to implement!
