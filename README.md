@@ -6,8 +6,7 @@ Let's choose some colors for all the important words!
 
 ![](ReadmeFiles/preview.gif)
 
-## Simple Editor
-Window > TalkEditor
+## Open the editor: Window > TalkEditor
 ![](ReadmeFiles/editorDemo.gif)
 
 ## Easy to implement!
