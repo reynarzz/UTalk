@@ -1,5 +1,5 @@
 # UTalk  ![](https://img.shields.io/badge/Release-Beta-green) ![](https://img.shields.io/badge/Licence-MIT-lightgrey)
-A talk system that highlights words in your text very easy.
+An Unity3D talk system that highlights words in your text very easy.
 
 ## How it looks?
 Let's choose some colors for all the important words!
