@@ -37,7 +37,7 @@ namespace uTalk
     }
 
     /// <summary>Entry point to control the talk system. put this in your GM object.</summary>
-    public class UTalk : MonoSingleton<UTalk>
+    public class UTalk : MonoBehaviour
     {
         [SerializeField] private TalkDataContainerScriptable _scriptableContainer;
 
@@ -65,11 +65,9 @@ namespace uTalk
         private TextPage _currentPage;
 
   
-        protected override void Awake()
+        protected void Awake()
         {
             _writerControl = new WriterControl(this, OnPageWriten);
-
-            base.Awake();
         }
 
         private void Update()
@@ -288,6 +286,12 @@ namespace uTalk
             _isLastPage = _pageIndex + 1 == _talkData.PagesCount;
 
             _canShowNextPage = true;
+        }
+
+        private void OnDestroy()
+        {
+            _talkCallback = null;
+            _onWordEventCallBack = null;
         }
     }
 }
