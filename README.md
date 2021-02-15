@@ -18,21 +18,22 @@ namespace MyProject
 {
     public class Example : MonoBehaviour
     {
+    	[SerializeField] private UTalk _utalk;
 	[SerializeField] private TalkCloudBase _talkCloud;
         
 	private void Update()
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if (!UTalk.Inst.IsTalking)
+                if (!_utalk.IsTalking)
                 {
 		    var talkInfo = new TalkInfo("Group", "SubGroup", "TalkName", "Language");
 
-                    UTalk.Inst.StartTalk(_talkCloud, talkInfo);
+                    _utalk.StartTalk(_talkCloud, talkInfo);
                 }
                 else
                 {
-                    UTalk.Inst.NextPage();
+                    _utalk.NextPage();
                 }
             }
         }
