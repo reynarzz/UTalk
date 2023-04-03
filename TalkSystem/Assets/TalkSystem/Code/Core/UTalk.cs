@@ -302,11 +302,5 @@ namespace uTalk
 
             _canShowNextPage = true;
         }
-
-        private void OnDestroy()
-        {
-            _talkCallback = null;
-            _onWordEventCallBack = null;
-        }
     }
 }
