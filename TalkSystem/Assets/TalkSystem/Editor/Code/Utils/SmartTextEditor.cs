@@ -82,7 +82,7 @@ namespace uTalk.Editor
             //If the current entry is less than 0, 'evt' is an unknown operation.
             if (currentEntry >= 0)
             {
-                var entriesField = dictionary.GetType().GetField("entries", BindingFlags.Instance | BindingFlags.NonPublic);
+                var entriesField = dictionary.GetType().GetField("_entries", BindingFlags.Instance | BindingFlags.NonPublic);
 
                 //Entry[] entries array.
                 var entries = entriesField.GetValue(dictionary) as IEnumerable;

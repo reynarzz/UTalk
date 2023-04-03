@@ -47,7 +47,7 @@ MonoBehaviour:
                         _highlightLength: 11
                         _color:
                           serializedVersion: 2
-                          rgba: 4280954623
+                          rgba: 4280625919
                         _animationType: 0
                         _writeSpeed: 0
                         _normalSpeed: 0
@@ -161,7 +161,7 @@ MonoBehaviour:
           _highlightLength: 11
           _color:
             serializedVersion: 2
-            rgba: 4280954623
+            rgba: 4280625919
           _animationType: 0
           _writeSpeed: 0
           _normalSpeed: 0
