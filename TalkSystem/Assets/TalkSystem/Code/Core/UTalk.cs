@@ -289,9 +289,6 @@ namespace uTalk
         {
             _talkCallback = null;
             _onWordEventCallBack = null;
-
-            _talkCloud.OnCloudShown -= OnCloudShown;
-            _talkCloud.OnCloudHidden -= OnCloudHidden;
         }
 
         private void OnPageWriten()
