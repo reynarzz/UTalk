@@ -41,30 +41,45 @@ namespace uTalk
     {
         [SerializeField] private TalkDataContainerScriptable _scriptableContainer;
 
-        private TalkCloudBase _talkCloud;
+        private Action<string> _onWordEventCallBack;
+        private Action<TalkEvent> _talkCallback;
 
+        private WriterControl _writerControl;
+        private TalkCloudBase _talkCloud;
+        private TextPage _currentPage;
         private TalkData _talkData;
 
         private const int _firstPage = 0;
-        private bool _isLastPage;
         private int _pageIndex;
 
-        public int PageIndex => _pageIndex;
-        public bool IsLastPage => _isLastPage;
-
+        private bool _isLastPage;
         private bool _canShowNextPage;
         private bool _isTalking;
 
-        private Action<TalkEvent> _talkCallback;
-        private Action<string> _onWordEventCallBack;
+        public int PageIndex => _pageIndex;
+        public bool IsRunning => _isTalking;
+        public bool IsLastPage => _isLastPage;
 
-        public bool IsTalking => _isTalking;
+        //Change write speed (if the current writer is different to "instant")
+        public WriteSpeedType WriteSpeed
+        {
+            get
+            {
+                return _writerControl.Writer.WriteSpeedType;
+            }
+            set
+            {
+                if (_isTalking)
+                {
+                    _writerControl.Writer.SetWriteTypeSpeed(value);
+                }
+                else
+                {
+                    Debug.LogError("Not talking!");
+                }
+            }
+        }
 
-        private WriterControl _writerControl;
-
-        private TextPage _currentPage;
-
-  
         protected void Awake()
         {
             _writerControl = new WriterControl(this, OnPageWriten);
@@ -229,18 +244,7 @@ namespace uTalk
             return false;
         }
 
-        //Change write speed (if the current writer is different to "instant")
-        public void SetWriteSpeed(WriteSpeedType writeSpeed)
-        {
-            if (_isTalking)
-            {
-                _writerControl.Writer.SetWriteTypeSpeed(writeSpeed);
-            }
-            else
-            {
-                Debug.LogError("Not talking!");
-            }
-        }
+    
 
         //Call it when a talk is running and the language is changed to update the cloud talk with the new text.
         /// <summary>Call when the language is changed.</summary>
@@ -281,9 +285,20 @@ namespace uTalk
             _talkCloud.OnCloudHidden -= OnCloudHidden;
         }
 
+        private void OnDestroy()
+        {
+            _talkCallback = null;
+            _onWordEventCallBack = null;
+
+            _talkCloud.OnCloudShown -= OnCloudShown;
+            _talkCloud.OnCloudHidden -= OnCloudHidden;
+        }
+
         private void OnPageWriten()
         {
-            _isLastPage = _pageIndex + 1 == _talkData.PagesCount;
+            var nextPageIndex = _pageIndex + 1;
+
+            _isLastPage = nextPageIndex == _talkData.PagesCount;
 
             _canShowNextPage = true;
         }

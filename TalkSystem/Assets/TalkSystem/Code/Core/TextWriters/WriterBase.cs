@@ -32,7 +32,7 @@ namespace uTalk
         private readonly TextAnimationControl _animationControl;
 
         private WriteSpeedType _writeSpeedType;
-        protected WriteSpeedType WriteSpeedType => _writeSpeedType;
+        public WriteSpeedType WriteSpeedType => _writeSpeedType;
 
         public WriterBase(MonoBehaviour mono, TextAnimationControl animationControl)
         {
@@ -75,7 +75,7 @@ namespace uTalk
             _control.SetText(page.Text);
             _animationControl.Init(_control, page);
 
-            //The next code have to be done in a different frame, that's the reason of this line.
+            // Skip this frame, The next code have to be done in a different frame.
             yield return 0;
 
             _control.ReloadCharsVertices();

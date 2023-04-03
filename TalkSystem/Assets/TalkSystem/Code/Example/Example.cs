@@ -32,33 +32,33 @@ namespace uTalk
 {
     public class Example : MonoBehaviour
     {
-        [SerializeField] private UTalk _utalk;
-        [SerializeField] private TalkCloudBase _talkCloud;
         [SerializeField] private TextMeshProUGUI _spaceText;
+        [SerializeField] private TalkCloudBase _talkCloud;
+        [SerializeField] private UTalk _talk;
 
         private void Update()
         {
             if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
             {
-                if (!_utalk.IsTalking)
+                if (!_talk.IsRunning)
                 {
                     var info = new TalkInfo("Default", "SubGroup", "Talk1", Language.English);
 
-                    _utalk.StartTalk(_talkCloud, info, Handler);
+                    _talk.StartTalk(_talkCloud, info, Handler);
                 }
                 else
                 {
-                    var movedToNextPage = _utalk.NextPage();
+                    var movedToNextPage = _talk.NextPage();
 
                     if (!movedToNextPage)
                     {
-                        _utalk.SetWriteSpeed(WriteSpeedType.Fast);
+                        _talk.WriteSpeed = WriteSpeedType.Fast;
                     }
                 }
             }
-            else if (_utalk.IsTalking && (Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.Space)))
+            else if (_talk.IsRunning && (Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.Space)))
             {
-                _utalk.SetWriteSpeed(WriteSpeedType.Normal);
+                _talk.WriteSpeed = WriteSpeedType.Normal;
             }
         }
 
@@ -73,7 +73,7 @@ namespace uTalk
                     _spaceText.enabled = true;
                     break;
                 case TalkEvent.PageChanged:
-                    var pageIndex = _utalk.PageIndex;
+                    var pageIndex = _talk.PageIndex;
                     break;
             }
         }

@@ -9,15 +9,14 @@ namespace uTalk
 {
     public abstract class TextAnimationBase
     {
+        private List<int> _charIndexesToAnimate;
         private TextControl _textControl;
         private TextPage _textPage;
 
-        private List<int> _charIndexesToAnimate;
-
-        protected int CharsToAnimateCount => _charIndexesToAnimate.Count;
-
         protected TextControl TextControl => _textControl;
         protected TextPage TextPage => _textPage;
+
+        protected int CharsToAnimateCount => _charIndexesToAnimate.Count;
 
         public TextAnimationBase()
         {

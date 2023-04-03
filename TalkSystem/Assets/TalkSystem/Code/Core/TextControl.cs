@@ -34,14 +34,13 @@ namespace uTalk
     public class TextControl
     {
         private readonly TextMeshProUGUI _text;
-        private Color32 _startColor;
+        private List<CharWritten> _charsWritten;
         private List<Vector3> _charVertices;
         private List<Color32> _clearColors;
-
-        private Vector2 _textConstAnchoredPosition;
         private Mesh _startingMesh;
 
-        private List<CharWritten> _charsWritten;
+        private Vector2 _textConstAnchoredPosition;
+        private Color32 _startColor;
 
         private struct CharWritten
         {
